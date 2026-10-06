@@ -43,9 +43,10 @@ Both fresh builds produce SHA-256
 The [hosted SDK matrix](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526526282)
 and [release rehearsal](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526518540)
 pass at source `07ddd60e339ed0d86f2ace091e263a7aa369a0b9`. Linux Node 22/24
-and macOS/Windows Node 24 pass the complete package gate. Independent REF-010
-final hosted acceptance remains pending; its pin uses this exact revision and
-checksum. Earlier RC0 runs remain historical evidence.
+and macOS/Windows Node 24 pass the complete package gate. The [independent REF-010 matrix](https://github.com/shashikanth-gs/a2a-schema-contract-reference/actions/runs/37526845838)
+passes on the same four runtime/platform combinations at reference source
+`6c662a312183b5dd189bf941caf86223f1415644`, using this exact SDK revision and
+checksum. M3a acceptance is complete. Earlier RC0 runs remain historical evidence.
 
 ## Consumer and language boundaries
 

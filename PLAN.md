@@ -3,7 +3,7 @@
 Updated: 2026-10-07\
 Status: SDK-001–008 and SDK-016–019 complete for the Node candidate; Python implementation remains planned
 
-Next SDK task: SDK-009 (Python engineering/package foundation), READY. Independent REF-010 final hosted acceptance is tracked in the reference plan.
+Next SDK task: SDK-009 (Python engineering/package foundation), READY. REF-010 and workspace M3a acceptance are complete; Python parity remains next.
 Companion tracking: [reference roadmap](https://github.com/shashikanth-gs/a2a-schema-contract-reference/blob/main/PLAN.md). Workspace milestone tracking is maintained internally.
 
 This repository builds reusable JS/TypeScript and Python client/server packages. The reference repository installs the resulting artifacts and proves real usage. The specification repository owns the normative contract; its initial revision is pinned in [contract-source.json](contract-source.json).

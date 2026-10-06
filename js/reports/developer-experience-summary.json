@@ -24,5 +24,8 @@
   "hostedArtifactHashesVerified": true,
   "frameworkDependencies": [],
   "publication": "disabled",
-  "pythonParity": "pending"
+  "pythonParity": "pending",
+  "referenceHostedMatrix": "https://github.com/shashikanth-gs/a2a-schema-contract-reference/actions/runs/37526845838",
+  "referenceRuntimeCommit": "6c662a312183b5dd189bf941caf86223f1415644",
+  "milestone": "M3a complete"
 }
