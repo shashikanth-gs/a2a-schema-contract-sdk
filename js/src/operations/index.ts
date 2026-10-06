@@ -1,4 +1,5 @@
 import { Worker } from 'node:worker_threads';
+import { performance } from 'node:perf_hooks';
 import { ContractError, fail, type DiagnosticCode, type ErrorContext } from '../core/errors.js';
 import { snapshot } from '../core/json.js';
 import type { ContractCatalog, PreparedRepresentation } from '../core/catalog.js';
@@ -57,6 +58,7 @@ export function createValidationSession(
         operation === 'request' ? 'negotiation' : 'validation',
         options.diagnostics,
         async () => {
+          const started = performance.now();
           if (closed || workers.size >= concurrent) fail('RESOURCE_LIMIT', context);
           if (call.signal?.aborted) fail('VALIDATION_ABORTED', context);
           // The worker receives only bounded JSON snapshots, never closures, logger objects or auth.
@@ -79,7 +81,7 @@ export function createValidationSession(
               if (call.signal?.aborted) aborted();
               timer = setTimeout(
                 () => reject(new ContractError('VALIDATION_TIMEOUT', context)),
-                deadlineMs,
+                Math.max(1, deadlineMs - (performance.now() - started)),
               );
               worker.once('error', () => reject(new ContractError('RESOURCE_LIMIT', context)));
               worker.once('exit', (code) => {
@@ -88,7 +90,9 @@ export function createValidationSession(
               worker.once(
                 'message',
                 (message: { value?: T; code?: DiagnosticCode; context?: ErrorContext }) => {
-                  if (message.code)
+                  if (performance.now() - started >= deadlineMs)
+                    reject(new ContractError('VALIDATION_TIMEOUT', context));
+                  else if (message.code)
                     reject(new ContractError(message.code, message.context ?? context));
                   else resolve(message.value as T);
                 },

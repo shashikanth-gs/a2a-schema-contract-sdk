@@ -1,5 +1,5 @@
 
-added 226 packages, and audited 227 packages in 809ms
+added 226 packages, and audited 227 packages in 740ms
 
 74 packages are looking for funding
   run `npm fund` for details
@@ -38,41 +38,41 @@ All matched files use Prettier code style!
 
 Verified 33 source hashes; packaged seven schemas and attribution.
 
- RUN  v5.0.3 /private/var/folders/rq/0t970n8547587w2l1smj0p500000gn/T/schema-contract-clean-3aP3Mv/js
+ RUN  v5.0.3 /private/var/folders/rq/0t970n8547587w2l1smj0p500000gn/T/schema-contract-clean-ZvCwDk/js
       Coverage enabled with v8
 
 
  Test Files  7 passed (7)
-      Tests  374 passed (374)
-   Start at  22:58:22
-   Duration  30.01s (tests 99%, import 1%)
+      Tests  381 passed (381)
+   Start at  23:25:53
+   Duration  32.37s (tests 99%, import 1%)
 
  % Coverage report from v8
 -------------------|---------|----------|---------|---------|-------------------
 File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
 -------------------|---------|----------|---------|---------|-------------------
-All files          |   95.58 |    93.33 |   97.92 |   97.65 |                   
+All files          |   95.74 |    93.38 |   97.93 |   97.74 |                   
  ...dapters/a2a-js |   87.68 |    89.34 |     100 |   93.33 |                   
   boundary.ts      |   87.59 |    89.34 |     100 |   93.26 | ...41,160,164,170 
  src/client        |   89.88 |    84.26 |   96.55 |   95.45 |                   
   index.ts         |   89.88 |    84.26 |   96.55 |   95.45 | ...85-287,356,372 
- src/operations    |   93.57 |    90.32 |   92.59 |    94.4 |                   
-  index.ts         |   98.38 |     90.9 |     100 |     100 | 79,92-99          
+ src/operations    |    93.1 |    89.47 |   92.59 |   93.84 |                   
+  index.ts         |   96.92 |    89.13 |     100 |   98.14 | 94                
   worker.ts        |      80 |    82.14 |   33.33 |   82.05 | ...,42-43,118-124 
  src/resolver      |    98.4 |    95.91 |     100 |   99.09 |                   
   index.ts         |   98.92 |    96.96 |     100 |   99.37 | 140               
   network.ts       |     100 |    93.18 |     100 |     100 | 50,70,88          
   policy.ts        |   96.29 |    98.41 |     100 |      96 | 59                
   registry.ts      |   97.39 |    92.42 |     100 |      99 | 61                
- src/server        |   94.26 |    88.26 |   96.77 |   97.54 |                   
-  index.ts         |   94.26 |    88.26 |   96.77 |   97.54 | ...24-225,295,574 
+ src/server        |   95.39 |    89.09 |   96.87 |   98.38 |                   
+  index.ts         |   95.39 |    89.09 |   96.87 |   98.38 | 96,110,309,593    
 -------------------|---------|----------|---------|---------|-------------------
 
 =============================== Coverage summary ===============================
-Statements   : 95.58% ( 1429/1495 )
-Branches     : 93.33% ( 1317/1411 )
-Functions    : 97.92% ( 189/193 )
-Lines        : 97.65% ( 1248/1278 )
+Statements   : 95.74% ( 1439/1503 )
+Branches     : 93.38% ( 1326/1420 )
+Functions    : 97.93% ( 190/194 )
+Lines        : 97.74% ( 1258/1287 )
 ================================================================================
 
 > a2a-schema-contract@0.1.0-rc.0 test:package
@@ -84,7 +84,7 @@ Lines        : 97.65% ( 1248/1278 )
 
 Verified 33 source hashes; packaged seven schemas and attribution.
 PASS isolated installed consumer, declarations, exact peer bounds and audit: a2a-schema-contract-0.1.0-rc.0.tgz
-SHA-256 bdc0357ba8cfd499a2b461f97293a78859bcb6fcddb2b8926ccf52852b1fa7dd
+SHA-256 0f29b101df8af091fc2337cdc5eda6f0e7a234cdd18ac9330bf19d65f270c60e
 
 > a2a-schema-contract@0.1.0-rc.0 check:dependencies
 > node scripts/dependency-report.mjs

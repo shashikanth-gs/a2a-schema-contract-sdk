@@ -18,10 +18,12 @@ export async function observe<T>(
 ): Promise<T> {
   const start = performance.now();
   let error: unknown;
+  let rejected = false;
   try {
     return await work();
   } catch (caught) {
     error = caught;
+    rejected = true;
     throw caught;
   } finally {
     if (hook) {
@@ -29,7 +31,7 @@ export async function observe<T>(
         operation,
         correlationId,
         durationMs: performance.now() - start,
-        outcome: error === undefined ? ('success' as const) : ('rejected' as const),
+        outcome: rejected ? ('rejected' as const) : ('success' as const),
         ...(error instanceof ContractError ? { code: error.code } : {}),
       });
       try {

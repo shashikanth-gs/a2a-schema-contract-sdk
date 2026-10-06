@@ -274,3 +274,17 @@ test('branch-error amplification is confined to the worker resource budget', asy
     await session.close();
   }
 });
+
+test('a rejection with undefined reason is still a rejected diagnostic decision', async () => {
+  const events: DiagnosticEvent[] = [];
+  const pending = Promise.withResolvers<never>();
+  pending.reject();
+  await expect(
+    observe(
+      'discovery',
+      (event) => events.push(event),
+      () => pending.promise,
+    ),
+  ).rejects.toBeUndefined();
+  expect(events[0]?.outcome).toBe('rejected');
+});

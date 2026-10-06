@@ -52,7 +52,12 @@ import {
 } from '../adapters/a2a-js/boundary.js';
 export { EXTENSION_URI } from '../core/index.js';
 
-export const SERVER_LIMITS = Object.freeze({ events: 128, bytes: 262144, deadlineMs: 30000 });
+export const SERVER_LIMITS = Object.freeze({
+  events: 128,
+  bytes: 262144,
+  deadlineMs: 30000,
+  executions: 4,
+});
 export interface ExecutionContract extends ContractSelection {
   readonly signal: AbortSignal;
 }
@@ -63,6 +68,8 @@ export interface ContractServerOptions {
   readonly executor: AgentExecutor;
   readonly required?: boolean;
   readonly validation?: ValidationOptions;
+  /** May lower the hard bound on active application executions. */
+  readonly concurrentExecutions?: number;
   /** May shorten the fixed maximum execution deadline. */
   readonly deadlineMs?: number;
   /** Application-owned disconnect/abort signal; never implies a CancelTask call. */
@@ -101,6 +108,13 @@ export function createContractServer(options: ContractServerOptions): ContractSe
   const deadline = options.deadlineMs ?? SERVER_LIMITS.deadlineMs;
   if (!Number.isSafeInteger(deadline) || deadline < 1 || deadline > SERVER_LIMITS.deadlineMs)
     throw new TypeError('Invalid execution deadline.');
+  const maximumExecutions = options.concurrentExecutions ?? SERVER_LIMITS.executions;
+  if (
+    !Number.isSafeInteger(maximumExecutions) ||
+    maximumExecutions < 1 ||
+    maximumExecutions > SERVER_LIMITS.executions
+  )
+    throw new TypeError('Invalid execution concurrency.');
   const catalog = preparedCatalog(options.catalog) ?? parseCatalog(options.catalog);
   const validation = createValidationSession(catalog, options.validation);
   const publicCatalog = lazyCatalog(catalog);
@@ -220,7 +234,7 @@ export function createContractServer(options: ContractServerOptions): ContractSe
       selections.delete(context.context);
       const controller = new AbortController();
       const taskKey = key(context.context, context.taskId);
-      if (active.has(taskKey)) {
+      if (active.has(taskKey) || active.size >= maximumExecutions) {
         failure(context, bus, selection);
         return;
       }
@@ -311,16 +325,21 @@ export function createContractServer(options: ContractServerOptions): ContractSe
       staging.finished = () => {
         open = false;
       };
-      const aborted = new Promise<never>((_, rejectAbort) => {
-        if (signal.aborted) rejectAbort(new Error('Execution aborted.'));
-        else
+      try {
+        signal.throwIfAborted();
+        const aborted = new Promise<never>((_, rejectAbort) => {
           signal.addEventListener('abort', () => rejectAbort(new Error('Execution aborted.')), {
             once: true,
           });
-      });
-      try {
-        signal.throwIfAborted();
-        await Promise.race([options.executor.execute(context, staging), aborted]);
+        });
+        // Install both race handlers before invoking a callback that may throw synchronously.
+        await Promise.race([
+          Promise.resolve().then(() => {
+            signal.throwIfAborted();
+            return options.executor.execute(context, staging);
+          }),
+          aborted,
+        ]);
         open = false;
         if (invalid) reject();
         if (selection) {

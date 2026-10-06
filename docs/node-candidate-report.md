@@ -21,3 +21,11 @@ Individual validator deadline and resource tests passed. The harness now allows
 30-second-bounded external child. Production worker budgets remain 2,000 ms and
 all timeout/cleanup assertions remain enforced. The failed run is retained for
 comparison; it is not acceptance evidence.
+
+
+Windows also exposed a pre-aborted execution race: the abort promise could reject
+before any handler was attached. The executor now checks an already-aborted signal
+before creating the race and defers callback invocation until both race handlers
+are installed. Regression cases cover pre-aborted signals and synchronously
+throwing executors, with zero orphan rejections. This correction changes the
+candidate bytes, so final SDK/reference evidence supersedes the initial hash.

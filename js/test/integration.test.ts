@@ -69,6 +69,8 @@ async function launch(
   deadlineMs = 30000,
   resolve = false,
   cancelHangs = false,
+  syncThrows = false,
+  concurrentExecutions = 4,
 ) {
   let calls = 0;
   const contractServerHolder: { value?: ContractServer } = {};
@@ -268,6 +270,10 @@ async function launch(
       return Promise.reject(new Error('secret-cancel'));
     },
   };
+  if (syncThrows)
+    executor.execute = () => {
+      throw new Error('secret-synchronous-executor');
+    };
   const app = express();
   const store = new InMemoryTaskStore();
   const card = AgentCard.fromJSON({
@@ -308,9 +314,12 @@ async function launch(
     executor,
     required,
     deadlineMs,
+    concurrentExecutions,
     signal: (context) => {
       if ((context.state.get('headers') as Record<string, unknown>)['x-signal-fail'])
         throw new Error('secret-signal-hook');
+      if ((context.state.get('headers') as Record<string, unknown>)['x-pre-abort'])
+        return AbortSignal.abort();
       return context.state.get('signal') as AbortSignal | undefined;
     },
   });
@@ -1091,3 +1100,66 @@ test('closing owned client/server validation shuts down safely and refuses subse
   expect(response.error?.code).toBe(-32602);
   expect(app.calls()).toBe(0);
 });
+
+test('pre-aborted application signals reject before execution with no orphan rejected promise', async () => {
+  const app = await launch();
+  const result = await app.client.invoke(invoke, { serviceParameters: { 'X-Pre-Abort': 'yes' } });
+  expect(result.response).toMatchObject({
+    status: { state: TaskState.TASK_STATE_FAILED },
+    artifacts: [],
+  });
+  expect(app.calls()).toBe(0);
+});
+
+test('synchronously throwing application executors are sanitized without orphan race rejections', async () => {
+  const app = await launch('required', 'required', false, [json, text], 30000, false, false, true);
+  const result = await app.client.invoke(invoke);
+  expect(result.response).toMatchObject({
+    status: { state: TaskState.TASK_STATE_FAILED },
+    artifacts: [],
+  });
+  expect(JSON.stringify(result)).not.toContain('secret');
+});
+
+test('active application execution capacity is bounded and released after cancellation', async () => {
+  const app = await launch(
+    'required',
+    'required',
+    false,
+    [json, text],
+    30000,
+    false,
+    false,
+    false,
+    1,
+  );
+  const iterator = app.client.stream({ ...invoke, metadata: { mode: 'wait' } });
+  const first = await iterator.next();
+  if (first.done || first.value.kind !== 'companion' || first.value.event.payload?.$case !== 'task')
+    throw new Error('Expected initial Task.');
+  const refused = await app.client.invoke(invoke);
+  expect(refused.response).toMatchObject({
+    status: { state: TaskState.TASK_STATE_FAILED },
+    artifacts: [],
+  });
+  expect(app.calls()).toBe(1);
+  await app.client.client.cancelTask(
+    CancelTaskRequest.fromJSON({ id: first.value.event.payload.value.id }),
+  );
+  for await (const event of iterator)
+    if (event.kind === 'result')
+      expect(event.result.response).toMatchObject({
+        status: { state: TaskState.TASK_STATE_CANCELED },
+      });
+  expect((await app.client.invoke(invoke)).payload).toMatchObject({ present: true });
+  expect(app.calls()).toBe(2);
+});
+
+test.each([0, 5, 1.5])(
+  'invalid active-execution limit %s is rejected during construction',
+  async (limit) => {
+    await expect(
+      launch('required', 'required', false, [json, text], 30000, false, false, false, limit),
+    ).rejects.toThrow(TypeError);
+  },
+);

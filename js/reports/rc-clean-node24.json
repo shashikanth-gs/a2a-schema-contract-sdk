@@ -10,28 +10,28 @@
   "environment": "Temporary independent source copy with no inputs/, node_modules/, dist/ or previous reports.",
   "coverage": {
     "lines": {
-      "total": 1278,
-      "covered": 1248,
+      "total": 1287,
+      "covered": 1258,
       "skipped": 0,
-      "pct": 97.65
+      "pct": 97.74
     },
     "statements": {
-      "total": 1495,
-      "covered": 1429,
+      "total": 1503,
+      "covered": 1439,
       "skipped": 0,
-      "pct": 95.58
+      "pct": 95.74
     },
     "functions": {
-      "total": 193,
-      "covered": 189,
+      "total": 194,
+      "covered": 190,
       "skipped": 0,
-      "pct": 97.92
+      "pct": 97.93
     },
     "branches": {
-      "total": 1411,
-      "covered": 1317,
+      "total": 1420,
+      "covered": 1326,
       "skipped": 0,
-      "pct": 93.33
+      "pct": 93.38
     },
     "branchesTrue": {
       "total": 0,

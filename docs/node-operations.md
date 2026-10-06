@@ -119,3 +119,10 @@ accepted baseline on the same runtime, host and workload; comparisons across
 different operating systems are informational. The library makes no throughput
 or low-latency service guarantee. Starting workers per operation favors bounded,
 explicit ownership over retained background workers.
+
+
+Application executions have an additional hard bound of four per server,
+independent of validation worker concurrency. `concurrentExecutions` may lower
+that bound to 1–4. Capacity refusal returns a sanitized failed Task without a
+business call or successful Artifact; cancellation/deadline/shutdown releases
+capacity. The host still owns HTTP ingress limits and TaskStore retention.

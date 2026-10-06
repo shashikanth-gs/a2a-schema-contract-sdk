@@ -603,3 +603,9 @@ and a dry-run file list, without publishing or creating tags.
 See the repository [operations guide](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/blob/main/docs/node-operations.md),
 [release policy](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/blob/main/docs/node-release.md),
 and [changelog](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/blob/main/CHANGELOG.md).
+
+Application executions have an additional hard bound of four per server,
+independent of validation worker concurrency. `concurrentExecutions` may lower
+that bound to 1–4. Capacity refusal returns a sanitized failed Task without a
+business call or successful Artifact; cancellation/deadline/shutdown releases
+capacity. The host still owns HTTP ingress limits and TaskStore retention.

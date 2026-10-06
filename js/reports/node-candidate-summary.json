@@ -9,31 +9,31 @@
     "22": {
       "runtime": "v22.23.3",
       "platform": "darwin/arm64",
-      "tests": 374,
+      "tests": 381,
       "coverage": {
         "lines": {
-          "total": 1278,
-          "covered": 1248,
+          "total": 1287,
+          "covered": 1258,
           "skipped": 0,
-          "pct": 97.65
+          "pct": 97.74
         },
         "statements": {
-          "total": 1495,
-          "covered": 1429,
+          "total": 1503,
+          "covered": 1439,
           "skipped": 0,
-          "pct": 95.58
+          "pct": 95.74
         },
         "functions": {
-          "total": 193,
-          "covered": 189,
+          "total": 194,
+          "covered": 190,
           "skipped": 0,
-          "pct": 97.92
+          "pct": 97.93
         },
         "branches": {
-          "total": 1411,
-          "covered": 1317,
+          "total": 1420,
+          "covered": 1326,
           "skipped": 0,
-          "pct": 93.33
+          "pct": 93.38
         },
         "branchesTrue": {
           "total": 0,
@@ -42,7 +42,7 @@
           "pct": 100
         }
       },
-      "artifactSha256": "bdc0357ba8cfd499a2b461f97293a78859bcb6fcddb2b8926ccf52852b1fa7dd",
+      "artifactSha256": "0f29b101df8af091fc2337cdc5eda6f0e7a234cdd18ac9330bf19d65f270c60e",
       "installedChecks": 26,
       "structuralCases": 20,
       "operationalChecks": [
@@ -59,29 +59,29 @@
         "workload": "Object with one bounded integer; 10 cold core compilations, 10 x 1000 warm validations, five fresh workers and five cold/cache-warm pinned HTTPS preparations.",
         "coreCold": {
           "samples": 10,
-          "medianMs": 4.303167000000002,
-          "maxMs": 8.126207999999998
+          "medianMs": 4.197666999999996,
+          "maxMs": 8.207332999999998
         },
         "coreWarm": {
           "samples": 10,
-          "medianMs": 0.6293330000000026,
-          "maxMs": 0.9003340000000009,
+          "medianMs": 0.6397500000000065,
+          "maxMs": 0.8737920000000088,
           "validationsPerSample": 1000
         },
         "isolated": {
           "samples": 5,
-          "medianMs": 58.52029100000004,
-          "maxMs": 60.87712500000001
+          "medianMs": 64.241792,
+          "maxMs": 89.27895800000005
         },
         "resolverCold": {
           "samples": 5,
-          "medianMs": 44.88816699999995,
-          "maxMs": 49.44912499999998
+          "medianMs": 48.29379200000005,
+          "maxMs": 55.22233299999999
         },
         "resolverWarm": {
           "samples": 5,
-          "medianMs": 42.09375,
-          "maxMs": 43.09258299999999
+          "medianMs": 44.674125000000004,
+          "maxMs": 48.740249999999946
         },
         "regression": {
           "absoluteWorkerAndResolverCeilingMs": 2000,
@@ -94,31 +94,31 @@
     "24": {
       "runtime": "v24.21.0",
       "platform": "darwin/arm64",
-      "tests": 374,
+      "tests": 381,
       "coverage": {
         "lines": {
-          "total": 1278,
-          "covered": 1248,
+          "total": 1287,
+          "covered": 1258,
           "skipped": 0,
-          "pct": 97.65
+          "pct": 97.74
         },
         "statements": {
-          "total": 1495,
-          "covered": 1429,
+          "total": 1503,
+          "covered": 1439,
           "skipped": 0,
-          "pct": 95.58
+          "pct": 95.74
         },
         "functions": {
-          "total": 193,
-          "covered": 189,
+          "total": 194,
+          "covered": 190,
           "skipped": 0,
-          "pct": 97.92
+          "pct": 97.93
         },
         "branches": {
-          "total": 1411,
-          "covered": 1317,
+          "total": 1420,
+          "covered": 1326,
           "skipped": 0,
-          "pct": 93.33
+          "pct": 93.38
         },
         "branchesTrue": {
           "total": 0,
@@ -127,7 +127,7 @@
           "pct": 100
         }
       },
-      "artifactSha256": "bdc0357ba8cfd499a2b461f97293a78859bcb6fcddb2b8926ccf52852b1fa7dd",
+      "artifactSha256": "0f29b101df8af091fc2337cdc5eda6f0e7a234cdd18ac9330bf19d65f270c60e",
       "installedChecks": 26,
       "structuralCases": 20,
       "operationalChecks": [
@@ -144,29 +144,29 @@
         "workload": "Object with one bounded integer; 10 cold core compilations, 10 x 1000 warm validations, five fresh workers and five cold/cache-warm pinned HTTPS preparations.",
         "coreCold": {
           "samples": 10,
-          "medianMs": 4.48958300000001,
-          "maxMs": 7.446957999999995
+          "medianMs": 6.633749999999992,
+          "maxMs": 10.095665999999994
         },
         "coreWarm": {
           "samples": 10,
-          "medianMs": 0.42954199999999787,
-          "maxMs": 0.8599999999999994,
+          "medianMs": 0.48474999999999113,
+          "maxMs": 0.9007080000000087,
           "validationsPerSample": 1000
         },
         "isolated": {
           "samples": 5,
-          "medianMs": 57.70637499999998,
-          "maxMs": 63.26916700000001
+          "medianMs": 58.12312499999996,
+          "maxMs": 65.65312499999999
         },
         "resolverCold": {
           "samples": 5,
-          "medianMs": 51.74791599999992,
-          "maxMs": 63.113166999999976
+          "medianMs": 44.785708,
+          "maxMs": 49.06466700000004
         },
         "resolverWarm": {
           "samples": 5,
-          "medianMs": 38.308958000000075,
-          "maxMs": 39.42279200000007
+          "medianMs": 54.557500000000005,
+          "maxMs": 72.32995800000003
         },
         "regression": {
           "absoluteWorkerAndResolverCeilingMs": 2000,
@@ -211,5 +211,6 @@
       "D14-01"
     ],
     "fullMapping": "docs/requirements.md; existing structural/core/integration/resolver reports; new operations.test.ts and boundary-invariants.test.ts plus independent reference report"
-  }
+  },
+  "supersededHostedRun": "https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37504226397"
 }
