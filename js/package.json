@@ -1,6 +1,6 @@
 {
-  "name": "@shashikanth-gs/a2a-schema-contract",
-  "version": "0.1.0-dev.0",
+  "name": "a2a-schema-contract",
+  "version": "0.1.0-rc.0",
   "private": true,
   "description": "A2A Schema Contract validation, secure HTTPS resolution and official JSON-RPC/HTTP adapters",
   "type": "module",
@@ -33,6 +33,10 @@
     "./resolver": {
       "types": "./dist/resolver/index.d.ts",
       "import": "./dist/resolver/index.js"
+    },
+    "./operations": {
+      "types": "./dist/operations/index.d.ts",
+      "import": "./dist/operations/index.js"
     }
   },
   "files": [
@@ -50,8 +54,10 @@
     "test": "npm run build && vitest run --coverage",
     "test:package": "npm run build && node scripts/package-smoke.mjs",
     "check:clean": "node scripts/clean-check.mjs",
-    "check": "npm run build && npm run format:check && npm run lint && npm run typecheck && npm test && npm run test:package",
-    "prepack": "npm run build"
+    "check": "npm run build && npm run format:check && npm run lint && npm run typecheck && npm test && npm run test:package && npm run check:dependencies",
+    "prepack": "npm run build",
+    "release:rehearsal": "npm run build && node scripts/release-rehearsal.mjs",
+    "check:dependencies": "node scripts/dependency-report.mjs"
   },
   "dependencies": {
     "ajv": "8.20.0"
@@ -78,5 +84,21 @@
     "typescript": "5.9.3",
     "typescript-eslint": "8.71.1",
     "vitest": "5.0.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shashikanth-gs/a2a-schema-contract-sdk.git",
+    "directory": "js"
+  },
+  "homepage": "https://github.com/shashikanth-gs/a2a-schema-contract-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/shashikanth-gs/a2a-schema-contract-sdk/issues"
+  },
+  "keywords": [
+    "a2a",
+    "schema-contract",
+    "json-schema",
+    "validation",
+    "agent"
+  ]
 }

@@ -68,6 +68,7 @@ async function launch(
   representations = [json, text],
   deadlineMs = 30000,
   resolve = false,
+  cancelHangs = false,
 ) {
   let calls = 0;
   const contractServerHolder: { value?: ContractServer } = {};
@@ -263,6 +264,7 @@ async function launch(
     },
     cancelTask() {
       cancelCalls++;
+      if (cancelHangs) return new Promise<void>(() => {});
       return Promise.reject(new Error('secret-cancel'));
     },
   };
@@ -1059,4 +1061,33 @@ test('explicit resolver discovery and prepared server catalog use the same valid
     acceptedOutputRepresentationIds: ['json'],
   });
   expect(result.payload?.present).toBe(true);
+});
+
+test('a noncooperating cancellation callback cannot hold the protocol response open', async () => {
+  const app = await launch('required', 'required', false, [json, text], 200, false, true);
+  const iterator = app.client.stream({ ...invoke, metadata: { mode: 'wait' } });
+  const first = await iterator.next();
+  if (first.done || first.value.kind !== 'companion' || first.value.event.payload?.$case !== 'task')
+    throw new Error('Expected initial Task.');
+  const taskId = first.value.event.payload.value.id;
+  const start = performance.now();
+  const canceled = await app.client.client.cancelTask(CancelTaskRequest.fromJSON({ id: taskId }));
+  expect(performance.now() - start).toBeLessThan(1500);
+  expect(canceled.status?.state).toBe(TaskState.TASK_STATE_CANCELED);
+  for await (const event of iterator)
+    if (event.kind === 'result')
+      expect(event.result.response).toMatchObject({
+        status: { state: TaskState.TASK_STATE_CANCELED },
+        artifacts: [],
+      });
+});
+
+test('closing owned client/server validation shuts down safely and refuses subsequent contracted work', async () => {
+  const app = await launch();
+  await app.client.close();
+  await expect(app.client.invoke(invoke)).rejects.toMatchObject({ code: 'RESOURCE_LIMIT' });
+  await app.contractServer.close();
+  const response = await raw(app.url, SendMessageRequest.toJSON(app.client.prepare(invoke)));
+  expect(response.error?.code).toBe(-32602);
+  expect(app.calls()).toBe(0);
 });

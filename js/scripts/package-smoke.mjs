@@ -44,6 +44,8 @@ try {
     'dist/index.d.ts',
     'dist/resolver/index.js',
     'dist/resolver/index.d.ts',
+    'dist/operations/worker.js',
+    'dist/operations/index.d.ts',
     'dist/resources/manifest.json',
     'dist/resources/LICENSE',
     'dist/resources/NOTICE',
@@ -58,7 +60,7 @@ try {
     JSON.stringify({ private: true, type: 'module' }) + '\n',
   );
   command(npm, ['install', '--omit=dev', '--ignore-scripts', '--no-audit', '--no-fund', tarball]);
-  const installed = path.join(temp, 'node_modules/@shashikanth-gs/a2a-schema-contract');
+  const installed = path.join(temp, 'node_modules/a2a-schema-contract');
   const modules = await readdir(path.join(temp, 'node_modules'));
   assert.ok(!modules.includes('express'));
   assert.ok(!modules.includes('@a2a-js'));
@@ -66,12 +68,12 @@ try {
   const js = `
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import * as root from '@shashikanth-gs/a2a-schema-contract';
-import * as core from '@shashikanth-gs/a2a-schema-contract/core';
-import { createContractResolver } from '@shashikanth-gs/a2a-schema-contract/resolver';
+import * as root from 'a2a-schema-contract';
+import * as core from 'a2a-schema-contract/core';
+import { createContractResolver } from 'a2a-schema-contract/resolver';
 const prepared = await createContractResolver().resolveCatalog({ contracts: [{ id: 'urn:example:external:1', input: { presence: 'none' }, output: { presence: 'none' } }] });
 assert.equal(prepared.getContract('urn:example:external:1').input.presence, 'none');
-await assert.rejects(import('@shashikanth-gs/a2a-schema-contract/dist/resolver/prepared.js'), { code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });
+await assert.rejects(import('a2a-schema-contract/dist/resolver/prepared.js'), { code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });
 for (const api of [root, core]) assert.equal(api.EXTENSION_URI, 'https://w3id.org/a2a-schema-contract/draft/0.1');
 assert.equal(core.SCHEMA_NAMES.length, 7);
 for (const name of core.SCHEMA_NAMES) {
@@ -79,11 +81,14 @@ for (const name of core.SCHEMA_NAMES) {
   assert.equal(schema.$schema, core.JSON_SCHEMA_DIALECT);
 }
 assert.throws(() => core.getSchemaResource('../../package.json'), TypeError);
-await assert.rejects(import('@shashikanth-gs/a2a-schema-contract/dist/core/index.js'), { code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });
-await assert.rejects(import('@shashikanth-gs/a2a-schema-contract/src/core/index.ts'), { code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });
+await assert.rejects(import('a2a-schema-contract/dist/core/index.js'), { code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });
+await assert.rejects(import('a2a-schema-contract/src/core/index.ts'), { code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });
 `;
   await writeFile(path.join(temp, 'consumer.mjs'), js);
   command(process.execPath, ['consumer.mjs']);
+  await cp(path.join(root, 'examples/operations.mjs'), path.join(temp, 'operations.mjs'));
+  const operationsReport = JSON.parse(command(process.execPath, ['operations.mjs']).trim());
+  assert.equal(operationsReport.result, 'PASS');
   // Execute the documented snippet outside the checkout using only public imports.
   await cp(path.join(root, 'examples/resource.mjs'), path.join(temp, 'resource.mjs'));
   command(process.execPath, ['resource.mjs']);
@@ -100,6 +105,7 @@ await assert.rejects(import('@shashikanth-gs/a2a-schema-contract/src/core/index.
     '--no-fund',
     'typescript@5.9.3',
     '@types/node@22.20.5',
+    'ajv-formats@3.0.1',
   ]);
   const tsconfig = {
     compilerOptions: {
@@ -116,8 +122,8 @@ await assert.rejects(import('@shashikanth-gs/a2a-schema-contract/src/core/index.
   };
   await writeFile(path.join(temp, 'tsconfig.json'), JSON.stringify(tsconfig));
   const types = `
-import { parseCatalog, encodePrimary, type Payload, getSchemaResource, type JsonValue, type Presence } from '@shashikanth-gs/a2a-schema-contract';
-import { EXTENSION_URI, type Direction } from '@shashikanth-gs/a2a-schema-contract/core';
+import { parseCatalog, encodePrimary, type Payload, getSchemaResource, type JsonValue, type Presence } from 'a2a-schema-contract';
+import { EXTENSION_URI, type Direction } from 'a2a-schema-contract/core';
 const value: JsonValue = { nullValue: null, list: [false, 'text', 0] };
 const presence: Presence = 'none';
 const direction: Direction = 'input';
@@ -143,6 +149,20 @@ void [value, presence, direction, resource, EXTENSION_URI, unchecked, domain, en
     JSON.stringify({ ...tsconfig, include: ['resolver-types.ts'] }),
   );
   command(process.execPath, [tsc, '-p', 'tsconfig.resolver.json']);
+  await cp(path.join(root, 'examples/operations-types.ts'), path.join(temp, 'operations-types.ts'));
+  await writeFile(
+    path.join(temp, 'tsconfig.operations.json'),
+    JSON.stringify({ ...tsconfig, include: ['operations-types.ts'] }),
+  );
+  command(process.execPath, [tsc, '-p', 'tsconfig.operations.json']);
+  await cp(path.join(root, '../vendor/contract'), path.join(temp, 'conformance-fixture'), {
+    recursive: true,
+  });
+  await cp(path.join(root, 'examples/conformance.mjs'), path.join(temp, 'conformance.mjs'));
+  const conformanceReport = JSON.parse(
+    command(process.execPath, ['conformance.mjs', path.join(temp, 'conformance-fixture')]).trim(),
+  );
+  assert.equal(conformanceReport.installedStructuralCases, 20);
 
   command(npm, [
     'install',
@@ -155,9 +175,9 @@ void [value, presence, direction, resource, EXTENSION_URI, unchecked, domain, en
   await writeFile(
     path.join(temp, 'adapters.mjs'),
     `import assert from 'node:assert/strict';
-import { createContractClient } from '@shashikanth-gs/a2a-schema-contract/client';
-import { createContractServer } from '@shashikanth-gs/a2a-schema-contract/server';
-import { A2A_JS_SDK_VERSION } from '@shashikanth-gs/a2a-schema-contract/adapters/a2a-js';
+import { createContractClient } from 'a2a-schema-contract/client';
+import { createContractServer } from 'a2a-schema-contract/server';
+import { A2A_JS_SDK_VERSION } from 'a2a-schema-contract/adapters/a2a-js';
 assert.equal(typeof createContractClient, 'function'); assert.equal(typeof createContractServer, 'function'); assert.equal(A2A_JS_SDK_VERSION, '1.3.0');
 `,
   );
@@ -174,6 +194,11 @@ assert.equal(typeof createContractClient, 'function'); assert.equal(typeof creat
   );
   assert.equal(externalReport.result, 'PASS');
   assert.equal(externalReport.checks.length, 10);
+  await cp(path.join(root, 'examples/benchmarks.mjs'), path.join(temp, 'benchmarks.mjs'));
+  const benchmarkReport = JSON.parse(
+    command(process.execPath, ['benchmarks.mjs', path.join(temp, 'tls-fixture')]).trim(),
+  );
+  assert.equal(benchmarkReport.result, 'PASS');
 
   await cp(path.join(root, 'examples/http-types.ts'), path.join(temp, 'http-types.ts'));
   await writeFile(
@@ -185,7 +210,7 @@ assert.equal(typeof createContractClient, 'function'); assert.equal(typeof creat
     path.join(temp, 'consumer.ts'),
     types +
       `
-import { A2A_JS_SDK_VERSION, type Client, type AgentExecutor } from '@shashikanth-gs/a2a-schema-contract/adapters/a2a-js';
+import { A2A_JS_SDK_VERSION, type Client, type AgentExecutor } from 'a2a-schema-contract/adapters/a2a-js';
 type Integration = { client: Client; executor: AgentExecutor };
 const peerVersion: '1.3.0' = A2A_JS_SDK_VERSION;
 const integration: Integration | undefined = undefined;
@@ -213,7 +238,7 @@ void [peerVersion, integration];
   const runtimeAudit = JSON.parse(command(npm, ['audit', '--omit=dev', '--json']));
   assert.equal(runtimeAudit.metadata.vulnerabilities.total, 0);
   const report = {
-    task: 'SDK-006',
+    task: 'SDK-007/008',
     runtime: process.version,
     platform: `${process.platform}/${process.arch}`,
     artifact: pack.filename,
@@ -246,7 +271,15 @@ void [peerVersion, integration];
       'strict-resolver-types-without-peer',
       'installed-HTTPS-external-catalog-schema-and-HTTP-SSE-quickstart',
       'private-resolver-branding-seam-rejected',
+      'installed-isolated-core-without-optional-peer',
+      'installed-hostile-schema-timeout-abort-and-worker-cleanup',
+      'strict-installed-operational-types',
+      '20-pinned-structural-cases-against-shipped-schemas',
+      'repeatable-installed-cold-warm-core-worker-and-HTTPS-benchmarks',
     ],
+    operationsReport,
+    conformanceReport,
+    benchmarkReport,
     transportReport,
     externalReport,
     peerBounds: {
@@ -258,12 +291,12 @@ void [peerVersion, integration];
       .update(await readFile(path.join(temp, 'package-lock.json')))
       .digest('hex'),
     limits: [
-      'Bounded HTTPS JSON Schema profile; bundles/XML, worker isolation and operational conformance remain downstream.',
-      'Hosted CI evidence is unavailable until repositories exist remotely.',
+      'Bounded Node JSON/text and HTTPS profile; Python, bundles/XML and other transports remain excluded.',
+      'This report records its own runtime; hosted runs retain independent reports.',
     ],
   };
   await writeFile(
-    path.join(reports, `resolver-package-node${process.versions.node.split('.')[0]}.json`),
+    path.join(reports, `rc-package-node${process.versions.node.split('.')[0]}.json`),
     JSON.stringify(report, null, 2) + '\n',
   );
   console.log(

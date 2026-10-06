@@ -6,7 +6,8 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "inlineSources": true
+    "inlineSources": true,
+    "newLine": "lf"
   },
   "include": ["src/**/*.ts"]
 }

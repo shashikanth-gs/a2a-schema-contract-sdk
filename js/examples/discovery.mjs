@@ -3,7 +3,7 @@ import {
   parseExtension,
   encodePrimary,
   validateInvocation,
-} from '@shashikanth-gs/a2a-schema-contract/core';
+} from 'a2a-schema-contract/core';
 
 const contractId = 'urn:example:contract:unknown-domain:1';
 const catalog = parseExtension({

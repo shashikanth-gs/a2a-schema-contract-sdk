@@ -1,9 +1,9 @@
 # SDK implementation plan
 
 Updated: 2026-10-06  
-Status: SDK-001–006 complete locally; Node operational validation ready
+Status: Node candidate validation in progress; SDK-007 operational implementation and local gates pass
 
-Next task: SDK-007
+Next gate: hosted SDK-007 validation and independent REF-003/004 evidence; then SDK-008 acceptance
 Companion tracking: [reference roadmap](https://github.com/shashikanth-gs/a2a-schema-contract-reference/blob/main/PLAN.md). Workspace milestone tracking is maintained internally.
 
 This repository builds reusable JS/TypeScript and Python client/server packages. The reference repository installs the resulting artifacts and proves real usage. The specification repository owns the normative contract; its initial revision is pinned in [contract-source.json](contract-source.json).
@@ -20,8 +20,8 @@ Each row is the authoritative status for that task. Dependency references to REF
 | SDK-004 | JS A2A client/server integration | DONE | Codex | SDK-003 |
 | SDK-005 | Complete Node presence, negotiation and lifecycle profile | DONE | Codex | SDK-004 |
 | SDK-006 | Secure Node external catalog/schema resolution | DONE | Codex | SDK-005 |
-| SDK-007 | Node conformance, security and operational validation | READY | Unassigned | SDK-006 |
-| SDK-008 | Node developer documentation and release candidate | PLANNED | Unassigned | SDK-007, REF-004 |
+| SDK-007 | Node conformance, security and operational validation | IN_PROGRESS | Codex | SDK-006 |
+| SDK-008 | Node developer documentation and release candidate | IN_PROGRESS | Codex | SDK-007, REF-004 |
 | SDK-009 | Python engineering and package foundation | PLANNED | Unassigned | SDK-008 |
 | SDK-010 | Independent Python inline client/server profile | PLANNED | Unassigned | SDK-009 |
 | SDK-011 | Python secure resolution and operational parity | PLANNED | Unassigned | SDK-010, SDK-006, SDK-007 |
@@ -147,7 +147,7 @@ Acceptance criteria:
 - Establish repeatable cold/warm validation and resolver benchmarks with documented inputs, limits, environment and regression tolerances chosen from evidence.
 - Pass CI on the declared runtime/OS matrix, review dependency/license/security findings, and produce a machine-readable support/conformance report with test/requirement references and known exclusions.
 
-Evidence: Not started.
+Evidence: Started 2026-10-06 by Codex on `codex/m3-node-release-candidate`; operational isolation and independent installed-artifact security validation in progress. Completion gates remain open.
 
 ## SDK-008: Node developer documentation and release candidate
 
@@ -293,3 +293,6 @@ and macOS/Windows Node 24.21.0, including behavioral/installed-package checks,
 compatibility probes and audits. Initial checkout-byte/runtime/test-start issues
 were corrected without changing validator behavior or skipping checks. This
 adds hosted baseline evidence; SDK-007 and the release milestones remain open.
+
+
+| 2026-10-06 | SDK-007/008 candidate work | Owned workers, sanitized hooks, operational/invariant tests, unscoped 0.1.0-rc.0 metadata, installed structural/worker/benchmark gates and disabled publication rehearsal implemented. Fresh Node 22/24 checks pass; hosted and independent reference acceptance remain open. | docs/node-operations.md; docs/node-release.md; js/reports/rc-* |

@@ -18,11 +18,11 @@ describe('published draft identity and resources', () => {
     expect(JSON_SCHEMA_DIALECT).toBe('https://json-schema.org/draft/2020-12/schema');
   });
   test('all public module boundaries expose their declared foundation exports', async () => {
-    const root = await import('@shashikanth-gs/a2a-schema-contract');
-    const core = await import('@shashikanth-gs/a2a-schema-contract/core');
-    const client = await import('@shashikanth-gs/a2a-schema-contract/client');
-    const server = await import('@shashikanth-gs/a2a-schema-contract/server');
-    const adapter = await import('@shashikanth-gs/a2a-schema-contract/adapters/a2a-js');
+    const root = await import('a2a-schema-contract');
+    const core = await import('a2a-schema-contract/core');
+    const client = await import('a2a-schema-contract/client');
+    const server = await import('a2a-schema-contract/server');
+    const adapter = await import('a2a-schema-contract/adapters/a2a-js');
     expect([
       root.EXTENSION_URI,
       core.EXTENSION_URI,
@@ -33,7 +33,7 @@ describe('published draft identity and resources', () => {
     expect(A2A_JS_SDK_VERSION).toBe(adapter.A2A_JS_SDK_VERSION);
   });
   test('installed resources match immutable upstream hashes and namespaces', async () => {
-    const core = await import('@shashikanth-gs/a2a-schema-contract/core');
+    const core = await import('a2a-schema-contract/core');
     const manifest = JSON.parse(
       await readFile(new URL('../../vendor/contract/manifest.json', import.meta.url), 'utf8'),
     ) as { files: Record<string, string> };

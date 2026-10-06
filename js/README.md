@@ -1,10 +1,10 @@
 # JavaScript / TypeScript SDK
 
-Local package `@shashikanth-gs/a2a-schema-contract@0.1.0-dev.0` implements the
-offline inline core and official A2A 1.3.0 JSON-RPC/HTTP client/server integration
-(SDK-003–006). The explicit HTTPS resolver prepares external catalogs and schema
-resource graphs. Publishing is disabled and package ownership is unverified.
-Python remains a scaffold; worker isolation and operational conformance remain SDK-007.
+Release candidate `a2a-schema-contract@0.1.0-rc.0` implements the
+inline JSON/text core, official A2A 1.3.0 JSON-RPC/HTTP/SSE adapters and explicit
+secure HTTPS catalog/schema resolution. Async transport boundaries and resolver
+compilation use owned validation workers with enforceable limits. Install the
+reviewed tarball; npm publishing remains disabled. Python remains a scaffold.
 
 Use patched Node **22 >=22.23.3** or **24 >=24.21.0**, npm and ESM. CommonJS,
 browsers and other runtime lines are unsupported. The optional official SDK peer
@@ -26,10 +26,10 @@ for statements/branches/functions/lines. Aggregate thresholds are 90% statements
 through actual HTTP/SSE and explicit execution/publication assertions; coverage is
 an additional regression gate, not a substitute for those assertions.
 `check:clean` repeats all gates in a temporary source copy without prior builds,
-installed dependencies or workspace inputs. `reports/resolver-*` and
-`artifacts/resolver-node{22,24}` record exact runtimes, coverage and hashes.
-Prior `integration-*`, `core-*` and foundation evidence is retained. Hosted CI is configured;
-hosted portability evidence remains pending.
+installed dependencies or workspace inputs. `reports/rc-*` and
+`artifacts/rc-node{22,24}` record exact runtimes, coverage and hashes.
+Prior resolver, integration, core and foundation evidence is retained.
+Candidate hosted evidence is recorded separately in the repository release report.
 
 ## HTTP client/server quickstart
 
@@ -37,7 +37,7 @@ Install the tarball and the exact peer into an application. Express is the host'
 choice and is not a runtime dependency of this package:
 
 ```sh
-npm install /absolute/path/to/shashikanth-gs-a2a-schema-contract-0.1.0-dev.0.tgz @a2a-js/sdk@1.3.0 express@5.1.0
+npm install /absolute/path/to/a2a-schema-contract-0.1.0-rc.0.tgz @a2a-js/sdk@1.3.0 express@5.1.0
 node http.mjs
 ```
 
@@ -49,7 +49,7 @@ this exact file. [The strict TypeScript example](examples/http-types.ts) is comp
 against installed public declarations.
 
 ```js
-import { discoverContractClient } from '@shashikanth-gs/a2a-schema-contract/client';
+import { discoverContractClient } from 'a2a-schema-contract/client';
 const client = await discoverContractClient('http://localhost:8080', {
   signal: AbortSignal.timeout(5000),
 });
@@ -69,7 +69,7 @@ void inputSchema;
 Discovery validates inline catalogs by default; pass `resolver` to prepare an external catalog/schema graph. The URL factory chooses only
 A2A 1.0 JSON-RPC and guards raw responses before protobuf normalization. A
 configured official `Client` can instead be passed to `createContractClient(client,
-discoveryOptions?, resolver?)`, preserving its fetch, authentication, interceptors and call
+discoveryOptions?, resolver?, validationOptions?)`, preserving its fetch, authentication, interceptors and call
 context. Its transport must use `guardResponseFetch(applicationFetch)` to protect
 raw JSON and SSE carrier exclusivity/types before the official codec. Discovered
 schemas are runtime data; no generic domain type is inferred.
@@ -157,7 +157,7 @@ public context builder to carry an AbortController and abort on response closure
 `execution.signal` composes that signal, the deadline and explicit CancelTask.
 Executors must honor it for their own I/O/cleanup. The boundary removes active
 state/listeners and discards late events; it cannot forcibly stop arbitrary
-application work. Synchronous validator isolation remains SDK-007.
+application work. Async schema boundaries are isolated in owned workers.
 
 Caller `RequestOptions.signal` owns invocation timeout/abort; discovery uses its
 own optional signal and does not retain that signal for later invocations. Transport
@@ -186,7 +186,7 @@ without the official peer or source checkout. To run it after installing a local
 tarball:
 
 ```sh
-npm install /absolute/path/to/shashikanth-gs-a2a-schema-contract-0.1.0-dev.0.tgz
+npm install /absolute/path/to/a2a-schema-contract-0.1.0-rc.0.tgz
 node core.mjs
 ```
 
@@ -196,7 +196,7 @@ import {
   parseExtension,
   encodePrimary,
   validateInvocation,
-} from '@shashikanth-gs/a2a-schema-contract/core';
+} from 'a2a-schema-contract/core';
 
 const contractId = 'urn:example:contract:unknown-domain:1';
 const catalog = parseExtension({
@@ -351,12 +351,9 @@ This deliberately narrows the initial ADR to avoid overlapping repetition.
 | Parts                                | 128 per payload collection                                |
 | Validator diagnostic volume          | First failure; no raw Ajv diagnostics exposed             |
 
-These are preflight budgets, not a wall-clock deadline. Synchronous compilation
-and evaluation remain on the calling thread; enforceable worker isolation,
-deadlines, adversarial performance/security and transport evidence are SDK-007.
-Do not claim untrusted-schema execution is fully isolated yet. There are no
-abort/cancellation controls in this synchronous core; adapter/resource ownership
-arrives in the downstream tasks.
+These are preflight budgets. Explicit synchronous core calls remain on the
+calling thread and have no abort/deadline control. Async transport validation and
+resolver compilation additionally enforce owned worker limits, documented below.
 
 ## Errors and installed resources
 
@@ -394,8 +391,8 @@ Core parsing never retrieves documents. Import the resolver separately (it also
 installs without the optional A2A peer):
 
 ```js
-import { createContractResolver } from '@shashikanth-gs/a2a-schema-contract/resolver';
-import { discoverContractClient } from '@shashikanth-gs/a2a-schema-contract/client';
+import { createContractResolver } from 'a2a-schema-contract/resolver';
+import { discoverContractClient } from 'a2a-schema-contract/client';
 const resolver = createContractResolver({
   allowedOrigins: ['https://contracts.example.org'],
   limits: { responseBytes: 65536, cacheEntries: 8 },
@@ -491,8 +488,8 @@ an absolute `$id`. References into annotation/instance-data objects are refused.
 Separate-document dependency cycles, ambiguous duplicate identities and missing
 targets are refused. Non-fragment `$dynamicRef` and pointers with a percent-encoded
 leading slash remain unsupported; use a literal `#/` prefix. Bundles/XML/XSD
-remain unsupported. Synchronous compiler/validator worker deadlines and wider
-operational guarantees remain SDK-007.
+remain unsupported. Resolver compilation uses an owned worker; trusted
+synchronous prepared-catalog helpers retain the core calling-thread behavior.
 
 Resolver failures are sanitized `ContractError`s. Local diagnostics
 `RESOLUTION_POLICY`, `INTEGRITY_MISMATCH`, `RESOLUTION_ABORTED`,
@@ -517,3 +514,92 @@ The installed-consumer gate copies those public fixtures separately from the
 package and runs the same script. [Strict resolver declarations](examples/resolver-types.ts)
 compile before installing the optional peer. The full threat model and native
 reference restrictions are in [resolver-security.md](../docs/resolver-security.md).
+
+## Isolated validation and operation
+
+Async `invoke`/`stream`, server request/final-event validation and resolver schema
+compilation run in owned workers. Defaults and hard maxima are 2,000 ms per
+operation, four concurrent operations per owner, a 64 MiB V8 old-generation heap
+and a 4 MiB stack. The deadline includes startup and compilation. Workers receive
+no application environment or command-line flags and never retrieve schemas.
+Every result/refusal/abort/timeout awaits worker termination; there is no retained
+worker pool. Saturated sessions return `RESOURCE_LIMIT` with no unbounded queue.
+V8 limits do not promise a hard process RSS cap; configure host memory limits too.
+
+`discoverContractClient(url, { validation: { deadlineMs, concurrent, diagnostics } })`
+and `createContractServer({ ..., validation: { ... } })` configure these limits.
+Only lower values are allowed. `createContractClient` accepts validation options
+as its fourth argument. `client.close()` closes its validation owner;
+`server.close()` also aborts active execution controllers. Close the HTTP host
+separately. Business executors and custom DNS callbacks remain application-owned
+and must honor their signals. Cancellation callbacks have a bounded wait.
+
+The `operations` public subpath supports independent isolated core validation,
+including an installation without the optional official SDK peer:
+
+```js
+import { parseCatalog } from 'a2a-schema-contract/core';
+import { createValidationSession } from 'a2a-schema-contract/operations';
+const catalog = parseCatalog({
+  contracts: [
+    {
+      id: 'urn:example:isolated:1',
+      input: {
+        presence: 'required',
+        representations: [{ id: 'json', mediaType: 'application/json' }],
+      },
+      output: { presence: 'none' },
+    },
+  ],
+});
+const session = createValidationSession(catalog, { deadlineMs: 1000, concurrent: 2 });
+try {
+  const validated = await session.run(
+    'validate',
+    {
+      contractId: 'urn:example:isolated:1',
+      direction: 'input',
+      representationId: 'json',
+      value: { count: 2 },
+    },
+    { signal: AbortSignal.timeout(1500) },
+  );
+  console.log(validated);
+} finally {
+  await session.close();
+}
+```
+
+`session.active` counts owned in-flight workers. `run('capabilities', {})` reports
+representation capabilities using the same isolated compiler. Results remain
+runtime JSON data; supplying a TypeScript result annotation does not prove a
+statically known domain type. Adapter RPC operations used internally are not a
+separate wire protocol. Do not construct internal resolved-schema programs.
+
+Catalog `.select().validate()`, client `.prepare()`, and `outputPart` /
+`outputArtifact` remain synchronous helpers for trusted application schemas and
+values and have no enforceable deadline. Prefer async boundaries and isolated
+sessions for discovered or hostile schemas. The server independently validates
+all staged output before contracted publication, including manually built Parts.
+
+`ValidationOptions.diagnostics` and `ResolverOptions.diagnostics` receive immutable
+facts: operation, generated correlation ID, duration, success/rejection, and an
+optional local code. Discovery measures Agent Card retrieval; negotiation and
+validation have their own facts. Payloads, URLs, schemas, credentials, causes and
+validator prose are absent. Hooks run synchronously and cannot change decisions
+by throwing; keep them short. No logger/backend is required.
+
+`VALIDATION_TIMEOUT` and `VALIDATION_ABORTED` are local diagnostics; existing A2A
+and draft error mappings remain unchanged. A timed-out worker is terminated
+before the call rejects. Requests that fail input validation cause no business
+execution. Output failures release no successful contracted artifacts.
+
+The installed-consumer gate runs the hostile deadline/abort/cleanup example,
+strict operational declarations, all 20 pinned structural cases against the
+shipped schemas, and repeatable cold/warm core/worker/HTTPS benchmarks. The
+release rehearsal command `npm run release:rehearsal` verifies two identical packs
+and a dry-run file list, without publishing or creating tags.
+
+See the repository [operations guide](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/blob/main/docs/node-operations.md),
+[release policy](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/blob/main/docs/node-release.md),
+and [changelog](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/blob/main/CHANGELOG.md).

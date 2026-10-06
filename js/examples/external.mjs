@@ -10,10 +10,10 @@ import { AgentCard, Artifact, Task, TaskState, SendMessageRequest } from '@a2a-j
 import { AgentEvent, InMemoryTaskStore } from '@a2a-js/sdk/server';
 import { agentCardHandler, jsonRpcHandler, UserBuilder } from '@a2a-js/sdk/server/express';
 import { toJsonRpcError } from '@a2a-js/sdk/errors';
-import { EXTENSION_URI, JSON_SCHEMA_DIALECT } from '@shashikanth-gs/a2a-schema-contract/core';
-import { createContractResolver } from '@shashikanth-gs/a2a-schema-contract/resolver';
-import { createContractServer, outputArtifact } from '@shashikanth-gs/a2a-schema-contract/server';
-import { discoverContractClient } from '@shashikanth-gs/a2a-schema-contract/client';
+import { EXTENSION_URI, JSON_SCHEMA_DIALECT } from 'a2a-schema-contract/core';
+import { createContractResolver } from 'a2a-schema-contract/resolver';
+import { createContractServer, outputArtifact } from 'a2a-schema-contract/server';
+import { discoverContractClient } from 'a2a-schema-contract/client';
 
 // This certificate/key is a public local-test fixture. It is never a production credential.
 const fixture = process.argv[2] ?? fileURLToPath(new URL('../test/fixtures/tls/', import.meta.url));

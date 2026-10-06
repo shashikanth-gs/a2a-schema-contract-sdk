@@ -1,3 +1,9 @@
+import {
+  createValidationSession,
+  lazyCatalog,
+  type ValidationOptions,
+} from '../operations/index.js';
+import { observe } from '../operations/diagnostics.js';
 import { randomUUID } from 'node:crypto';
 import type { ContractResolver } from '../resolver/index.js';
 import {
@@ -31,7 +37,6 @@ import {
   type Payload,
 } from '../core/index.js';
 import {
-  consumeResult,
   guardContainer,
   guardParts,
   reject,
@@ -66,6 +71,7 @@ export interface ContractClient {
   readonly catalog: ContractCatalog;
   readonly card: AgentCard;
   prepare(options: InvocationOptions): SendMessageRequest;
+  close(): Promise<void>;
   invoke(options: InvocationOptions, requestOptions?: RequestOptions): Promise<ContractResponse>;
   stream(
     options: InvocationOptions,
@@ -77,9 +83,12 @@ export async function createContractClient(
   client: Client,
   discoveryOptions?: RequestOptions,
   resolver?: ContractResolver,
+  validationOptions: ValidationOptions = {},
 ): Promise<ContractClient> {
   if (client.protocolVersion !== '1.0' || client.transport.protocolName !== 'JSONRPC') reject();
-  const card = await client.getAgentCard(discoveryOptions);
+  const card = await observe('discovery', validationOptions.diagnostics, () =>
+    client.getAgentCard(discoveryOptions),
+  );
   const extensions = card.capabilities?.extensions.filter((e) => e.uri === EXTENSION_URI) ?? [];
   if (extensions.length !== 1) reject();
   const catalog = resolver
@@ -87,42 +96,55 @@ export async function createContractClient(
         ...(discoveryOptions?.signal ? { signal: discoveryOptions.signal } : {}),
       })
     : parseExtension(extensions[0]);
-  function prepare(options: InvocationOptions): SendMessageRequest {
-    const contract = catalog.getContract(options.contractId);
-    const parts: unknown[] = [];
-    if (options.input)
-      parts.push(
-        encodePrimary(
-          catalog.select(contract.id, 'input', options.input.representationId),
-          options.input.value,
-          'a2a-js-1.3.0',
-        ),
-      );
-    if (options.companions) parts.push(...options.companions);
-    if (!parts.length) parts.push({ text: 'Invoke contract.', mediaType: 'text/plain' });
-    guardParts(parts);
-    if (options.metadata?.[EXTENSION_URI] !== undefined) reject();
-    const invocation = {
-      contractId: contract.id,
-      ...(options.input ? { inputRepresentationId: options.input.representationId } : {}),
-      ...(options.acceptedOutputRepresentationIds === undefined
-        ? {}
-        : { acceptedOutputRepresentationIds: options.acceptedOutputRepresentationIds }),
+  const validation = createValidationSession(catalog, validationOptions);
+  const publicCatalog = lazyCatalog(catalog);
+  const prepare = (options: InvocationOptions) => prepareRequest(catalog, options);
+  const prepareAsync = async (options: InvocationOptions, requestOptions?: RequestOptions) =>
+    SendMessageRequest.fromJSON(
+      await validation.run(
+        'prepare',
+        {
+          ...options,
+          ...(options.configuration
+            ? {
+                configuration: Object.fromEntries(
+                  Object.entries(options.configuration).filter(([, value]) => value !== undefined),
+                ),
+              }
+            : {}),
+        },
+        {
+          context: { origin: 'local' },
+          ...(requestOptions?.signal ? { signal: requestOptions.signal } : {}),
+        },
+      ),
+    );
+  async function selectionFor(
+    request: SendMessageRequest,
+    requestOptions?: RequestOptions,
+  ): Promise<ContractSelection> {
+    const selected = await validation.run<{
+      invocation: ContractSelection['invocation'];
+      input: Payload;
+      outputRepresentationId?: string;
+    }>(
+      'request',
+      SendMessageRequest.toJSON(request),
+      requestOptions?.signal ? { signal: requestOptions.signal } : {},
+    );
+    return {
+      invocation: selected.invocation,
+      input: selected.input,
+      ...(selected.outputRepresentationId
+        ? {
+            output: publicCatalog.select(
+              selected.invocation.contractId,
+              'output',
+              selected.outputRepresentationId,
+            ),
+          }
+        : {}),
     };
-    const request = SendMessageRequest.fromJSON({
-      message: {
-        messageId: randomUUID(),
-        role: 'ROLE_USER',
-        parts,
-        taskId: options.taskId ?? '',
-        contextId: options.contextId ?? '',
-      },
-      metadata: { ...options.metadata, [EXTENSION_URI]: invocation },
-      ...(options.configuration ? { configuration: options.configuration } : {}),
-      ...(options.tenant === undefined ? {} : { tenant: options.tenant }),
-    });
-    selectRequest(catalog, request);
-    return request;
   }
   const activate = (options?: RequestOptions): RequestOptions => {
     const existing = Object.entries(options?.serviceParameters ?? {})
@@ -136,11 +158,12 @@ export async function createContractClient(
       ),
     };
   };
-  function checked(
+  async function checked(
     selection: ContractSelection,
     response: Message | Task,
     request: SendMessageRequest,
-  ): ContractResponse {
+    requestOptions?: RequestOptions,
+  ): Promise<ContractResponse> {
     if ('parts' in response) {
       if (
         response.role !== Role.ROLE_AGENT ||
@@ -170,7 +193,7 @@ export async function createContractClient(
           !selection.invocation.acceptedOutputRepresentationIds.includes(selectedId))
       )
         reject();
-      const output = catalog.select(
+      const output = publicCatalog.select(
         selection.invocation.contractId,
         'output',
         selectedId,
@@ -184,28 +207,39 @@ export async function createContractClient(
         reject();
       selection = Object.freeze({ ...selection, output });
     }
-    return Object.freeze({ response, payload: consumeResult(catalog, selection, response) });
+    const payload = await validation.run<Payload | undefined>(
+      'result',
+      {
+        request: SendMessageRequest.toJSON(request),
+        response: 'parts' in response ? Message.toJSON(response) : Task.toJSON(response),
+        ...(selection.output ? { outputRepresentationId: selection.output.representation.id } : {}),
+      },
+      requestOptions?.signal ? { signal: requestOptions.signal } : {},
+    );
+    return Object.freeze({ response, payload });
   }
   return Object.freeze({
     client,
     catalog,
     card,
+    close: () => validation.close(),
     prepare,
     async invoke(options: InvocationOptions, requestOptions?: RequestOptions) {
-      const request = prepare(options);
-      const selection = selectRequest(catalog, request);
+      const request = await prepareAsync(options, requestOptions);
+      const selection = await selectionFor(request, requestOptions);
       return checked(
         selection,
         await client.sendMessage(request, activate(requestOptions)),
         request,
+        requestOptions,
       );
     },
     async *stream(
       options: InvocationOptions,
       requestOptions?: RequestOptions,
     ): AsyncGenerator<ContractStreamEvent> {
-      const request = prepare(options);
-      const selection = selectRequest(catalog, request);
+      const request = await prepareAsync(options, requestOptions);
+      const selection = await selectionFor(request, requestOptions);
       let task: Task | undefined;
       let count = 0;
       let bytes = 0;
@@ -224,7 +258,10 @@ export async function createContractClient(
         if (payload.$case === 'message') {
           if (task) reject();
           done = true;
-          yield { kind: 'result', result: checked(selection, payload.value, request) };
+          yield {
+            kind: 'result',
+            result: await checked(selection, payload.value, request, requestOptions),
+          };
           continue;
         }
         if (payload.$case === 'task') {
@@ -260,7 +297,7 @@ export async function createContractClient(
         if (!task.status) reject();
         if (stopStates.has(task.status.state)) {
           done = true;
-          const result = checked(selection, task, request);
+          const result = await checked(selection, task, request, requestOptions);
           if (task.status.state === TaskState.TASK_STATE_COMPLETED) {
             for (const pending of withheld) yield { kind: 'companion', event: pending };
           }
@@ -282,6 +319,7 @@ export interface DiscoveryOptions {
   readonly fetchImpl?: typeof fetch;
   readonly path?: string;
   readonly signal?: AbortSignal;
+  readonly validation?: ValidationOptions;
 }
 export async function discoverContractClient(
   url: string,
@@ -304,6 +342,7 @@ export async function discoverContractClient(
     await factory.createFromUrl(url, options.path),
     options.signal ? { signal: options.signal } : undefined,
     options.resolver,
+    options.validation,
   );
 }
 function guardEnvelope(value: unknown): void {
@@ -388,4 +427,45 @@ export function guardResponseFetch(fetchImpl: typeof fetch): typeof fetch {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+export function prepareRequest(
+  catalog: ContractCatalog,
+  options: InvocationOptions,
+): SendMessageRequest {
+  const contract = catalog.getContract(options.contractId);
+  const parts: unknown[] = [];
+  if (options.input)
+    parts.push(
+      encodePrimary(
+        catalog.select(contract.id, 'input', options.input.representationId),
+        options.input.value,
+        'a2a-js-1.3.0',
+      ),
+    );
+  if (options.companions) parts.push(...options.companions);
+  if (!parts.length) parts.push({ text: 'Invoke contract.', mediaType: 'text/plain' });
+  guardParts(parts);
+  if (options.metadata?.[EXTENSION_URI] !== undefined) reject();
+  const invocation = {
+    contractId: contract.id,
+    ...(options.input ? { inputRepresentationId: options.input.representationId } : {}),
+    ...(options.acceptedOutputRepresentationIds === undefined
+      ? {}
+      : { acceptedOutputRepresentationIds: options.acceptedOutputRepresentationIds }),
+  };
+  const request = SendMessageRequest.fromJSON({
+    message: {
+      messageId: randomUUID(),
+      role: 'ROLE_USER',
+      parts,
+      taskId: options.taskId ?? '',
+      contextId: options.contextId ?? '',
+    },
+    metadata: { ...options.metadata, [EXTENSION_URI]: invocation },
+    ...(options.configuration ? { configuration: options.configuration } : {}),
+    ...(options.tenant === undefined ? {} : { tenant: options.tenant }),
+  });
+  selectRequest(catalog, request);
+  return request;
 }

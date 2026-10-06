@@ -194,3 +194,35 @@ a connection. Compiler/validator worker isolation stays SDK-007.
 
 See [resolver security](resolver-security.md), [public API](../js/README.md),
 and [resolver completion evidence](resolver-report.md). No normative source was modified.
+
+
+## ADR-011: Owned worker validation at asynchronous boundaries
+
+Accepted 2026-10-06 for SDK-007. Keep synchronous core/encoding helpers for trusted
+application use and run untrusted async selection, final output validation and
+resolver compilation in owned workers. Use a 2-second operation deadline,
+64 MiB V8 old-generation limit, 4 MiB stack and four operations per owner; allow
+only lower configured budgets. Include startup in the deadline, refuse saturation
+without queue growth, and await physical termination for every outcome. Workers
+receive no application environment/flags, logger/auth callbacks or validator
+network loader. Preserve external document/resource identity across structured
+cloning so redirect-relative refs retain their accepted SDK-006 semantics.
+
+Carry immutable, offline schema programs internally between resolver and binding;
+trusted synchronous helpers compile lazily when explicitly called. Validation
+never coerces/defaults/removes instance fields. Bound errors and use existing
+wire mappings. Retain public TaskStore orchestration and cooperative application
+execution signals. Diagnose with optional allowlisted facts, not payload logs.
+Worker startup has measured overhead; cold/warm installed benchmarks make that
+cost visible. This isolates validator work, not arbitrary business closures or
+native process memory. See node-operations.md and the candidate evidence report.
+
+## ADR-012: Unscoped private Node candidate and deferred registry ownership
+
+Accepted at the maintainer's request on 2026-10-06. The first npm name is
+`a2a-schema-contract`; the scoped placeholder is replaced in imports and locks.
+Use `0.1.0-rc.0` and retain `private=true`. The name returned public-registry E404;
+this is an availability observation, not a reservation or ownership claim. No
+scope exists to verify. Initial npm account/name ownership and registry OIDC
+configuration are publication prerequisites, separately authorized after artifact
+candidate validation. M3 uses tarballs and reproducible rehearsal evidence.

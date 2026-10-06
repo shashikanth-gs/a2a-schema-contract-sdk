@@ -1,0 +1,92 @@
+
+added 226 packages, and audited 227 packages in 809ms
+
+74 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+> a2a-schema-contract@0.1.0-rc.0 check
+> npm run build && npm run format:check && npm run lint && npm run typecheck && npm test && npm run test:package && npm run check:dependencies
+
+
+> a2a-schema-contract@0.1.0-rc.0 build
+> node scripts/resources.mjs && tsc -p tsconfig.build.json
+
+Verified 33 source hashes; packaged seven schemas and attribution.
+
+> a2a-schema-contract@0.1.0-rc.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> a2a-schema-contract@0.1.0-rc.0 lint
+> eslint .
+
+
+> a2a-schema-contract@0.1.0-rc.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+> a2a-schema-contract@0.1.0-rc.0 test
+> npm run build && vitest run --coverage
+
+
+> a2a-schema-contract@0.1.0-rc.0 build
+> node scripts/resources.mjs && tsc -p tsconfig.build.json
+
+Verified 33 source hashes; packaged seven schemas and attribution.
+
+ RUN  v5.0.3 /private/var/folders/rq/0t970n8547587w2l1smj0p500000gn/T/schema-contract-clean-3aP3Mv/js
+      Coverage enabled with v8
+
+
+ Test Files  7 passed (7)
+      Tests  374 passed (374)
+   Start at  22:58:22
+   Duration  30.01s (tests 99%, import 1%)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   95.58 |    93.33 |   97.92 |   97.65 |                   
+ ...dapters/a2a-js |   87.68 |    89.34 |     100 |   93.33 |                   
+  boundary.ts      |   87.59 |    89.34 |     100 |   93.26 | ...41,160,164,170 
+ src/client        |   89.88 |    84.26 |   96.55 |   95.45 |                   
+  index.ts         |   89.88 |    84.26 |   96.55 |   95.45 | ...85-287,356,372 
+ src/operations    |   93.57 |    90.32 |   92.59 |    94.4 |                   
+  index.ts         |   98.38 |     90.9 |     100 |     100 | 79,92-99          
+  worker.ts        |      80 |    82.14 |   33.33 |   82.05 | ...,42-43,118-124 
+ src/resolver      |    98.4 |    95.91 |     100 |   99.09 |                   
+  index.ts         |   98.92 |    96.96 |     100 |   99.37 | 140               
+  network.ts       |     100 |    93.18 |     100 |     100 | 50,70,88          
+  policy.ts        |   96.29 |    98.41 |     100 |      96 | 59                
+  registry.ts      |   97.39 |    92.42 |     100 |      99 | 61                
+ src/server        |   94.26 |    88.26 |   96.77 |   97.54 |                   
+  index.ts         |   94.26 |    88.26 |   96.77 |   97.54 | ...24-225,295,574 
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 95.58% ( 1429/1495 )
+Branches     : 93.33% ( 1317/1411 )
+Functions    : 97.92% ( 189/193 )
+Lines        : 97.65% ( 1248/1278 )
+================================================================================
+
+> a2a-schema-contract@0.1.0-rc.0 test:package
+> npm run build && node scripts/package-smoke.mjs
+
+
+> a2a-schema-contract@0.1.0-rc.0 build
+> node scripts/resources.mjs && tsc -p tsconfig.build.json
+
+Verified 33 source hashes; packaged seven schemas and attribution.
+PASS isolated installed consumer, declarations, exact peer bounds and audit: a2a-schema-contract-0.1.0-rc.0.tgz
+SHA-256 bdc0357ba8cfd499a2b461f97293a78859bcb6fcddb2b8926ccf52852b1fa7dd
+
+> a2a-schema-contract@0.1.0-rc.0 check:dependencies
+> node scripts/dependency-report.mjs
+
+PASS dependency audit and reviewed license metadata: 226 installed packages

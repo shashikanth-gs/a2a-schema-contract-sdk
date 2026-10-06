@@ -1,14 +1,10 @@
-import type { AnySchema, ValidateFunction } from 'ajv/dist/2020.js';
-import { JSON_SCHEMA_DIALECT, type JsonValue } from '../core/constants.js';
+import type { ValidateFunction } from 'ajv/dist/2020.js';
+import { createValidationSession, type ValidationSession } from '../operations/index.js';
+import { compileProgram, type SchemaProgram } from '../operations/program.js';
+import { type JsonValue } from '../core/constants.js';
 import { fail, type ErrorContext } from '../core/errors.js';
 import { isRecord } from '../core/json.js';
-import {
-  inspectSchema,
-  schemaValidator,
-  mapSchemas,
-  oneSchema,
-  arraySchemas,
-} from '../core/schema.js';
+import { inspectSchema, mapSchemas, oneSchema, arraySchemas } from '../core/schema.js';
 
 export interface ResourceDocument {
   readonly value: JsonValue;
@@ -29,9 +25,12 @@ export async function prepareSchema(
   limits: GraphLimits,
   context: ErrorContext,
   checkpoint: () => void,
+  signal?: AbortSignal,
+  onProgram?: (program: SchemaProgram) => void,
+  track?: (session: ValidationSession) => void,
 ): Promise<ValidateFunction> {
-  const ajv = schemaValidator();
   const resources = new Map<string, JsonValue>();
+  const registrations = new Map<string, JsonValue>();
   const loaded = new Set<string>();
   const visiting = new Set<string>();
   const locations = new Set<string>();
@@ -125,15 +124,11 @@ export async function prepareSchema(
     for (const [id, node] of localIds) resources.set(id, node);
     resources.set(document.uri, document.value);
     resources.set(requested, document.value);
+    registrations.set(document.uri, document.value);
+    registrations.set(requested, document.value);
     visiting.add(document.uri);
     visiting.add(requested);
     for (const id of localIds.keys()) visiting.add(id);
-    try {
-      ajv.addSchema(document.value as AnySchema, document.uri);
-      if (requested !== document.uri) ajv.addSchema(document.value as AnySchema, requested);
-    } catch {
-      fail('SCHEMA_INVALID', context);
-    }
     for (const uri of new Set(refs)) {
       checkpoint();
       // Local recursive schemas remain native; a dependency back-edge across documents is refused.
@@ -156,11 +151,20 @@ export async function prepareSchema(
   // References into annotations are not schemas and must not bypass profile inspection.
   for (const target of targets)
     if (!locations.has(location(target))) fail('SCHEMA_INVALID', context);
+  const program = { entry, documents: [...registrations].map(([uri, value]) => ({ uri, value })) };
+  const session = createValidationSession({ contracts: [] });
+  track?.(session);
   try {
-    const validate = ajv.compile({ $schema: JSON_SCHEMA_DIALECT, $ref: entry });
+    await session.run('compile', program, { context, ...(signal ? { signal } : {}) });
     checkpoint();
-    return validate;
-  } catch {
-    return fail('SCHEMA_INVALID', context);
+    onProgram?.(program);
+    let compiled: ValidateFunction | undefined;
+    // Explicit synchronous core/helper calls are trusted; all async boundaries use the program in workers.
+    return ((value: unknown) => {
+      compiled ??= compileProgram(program, context);
+      return compiled(value);
+    }) as ValidateFunction;
+  } finally {
+    await session.close();
   }
 }

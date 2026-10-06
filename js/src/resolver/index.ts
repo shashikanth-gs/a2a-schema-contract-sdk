@@ -1,3 +1,6 @@
+import type { ValidationSession } from '../operations/index.js';
+import { registerProgram, type SchemaProgram } from '../operations/program.js';
+import { observe, type DiagnosticHook } from '../operations/diagnostics.js';
 import { createHash, timingSafeEqual } from 'node:crypto';
 import type { ValidateFunction } from 'ajv/dist/2020.js';
 import {
@@ -31,6 +34,7 @@ export const RESOLVER_LIMITS = Object.freeze({
 });
 export type ResolverLimits = typeof RESOLVER_LIMITS;
 export interface ResolverOptions extends NetworkPolicy {
+  readonly diagnostics?: DiagnosticHook;
   /** Exact document URIs whose immutability the administrator guarantees. ETags are not proof. */
   readonly immutableResources?: readonly string[];
   /** Independent pins for native transitive dependencies; a root digest does not pin them. */
@@ -101,6 +105,7 @@ export function createContractResolver(options: ResolverOptions = {}): ContractR
       timeout.signal,
       ...(resolution.signal ? [resolution.signal] : []),
     ]);
+    const compilations = new Set<ValidationSession>();
     let totalBytes = 0;
     let fetched = 0;
     // One coherent resource snapshot per preparation, including uncacheable mutable documents.
@@ -257,6 +262,7 @@ export function createContractResolver(options: ResolverOptions = {}): ContractR
       }
       const structural = parseCatalog(data, context.origin);
       const validators = new Map<string, ValidateFunction>();
+      const programs: Record<string, SchemaProgram> = {};
       for (const contract of structural.contracts)
         for (const direction of ['input', 'output'] as const) {
           for (const representation of contract[direction].representations ?? []) {
@@ -287,6 +293,11 @@ export function createContractResolver(options: ResolverOptions = {}): ContractR
               limits,
               scoped,
               checkpoint,
+              signal,
+              (program) => {
+                programs[JSON.stringify([contract.id, direction, representation.id])] = program;
+              },
+              (session) => compilations.add(session),
             );
             validators.set(JSON.stringify([contract.id, direction, representation.id]), validate);
           }
@@ -304,6 +315,7 @@ export function createContractResolver(options: ResolverOptions = {}): ContractR
       });
       checkpoint();
       rememberCatalog(catalog);
+      registerProgram(catalog, { contracts: catalog.contracts, schemas: programs });
       return catalog;
     }
     let onAbort: (() => void) | undefined;
@@ -328,16 +340,17 @@ export function createContractResolver(options: ResolverOptions = {}): ContractR
       clearTimeout(timer);
       if (onAbort) signal.removeEventListener('abort', onAbort);
       timeout.abort();
+      await Promise.all([...compilations].map((session) => session.close()));
       active--;
     }
   }
   return Object.freeze({
     resolveCatalog: (value: unknown, resolution?: ResolutionOptions) =>
-      run(value, 'catalog', resolution),
+      observe('resolution', options.diagnostics, () => run(value, 'catalog', resolution)),
     resolveExtensionParams: (value: unknown, resolution?: ResolutionOptions) =>
-      run(value, 'params', resolution),
+      observe('resolution', options.diagnostics, () => run(value, 'params', resolution)),
     resolveExtension: (value: unknown, resolution?: ResolutionOptions) =>
-      run(value, 'extension', resolution),
+      observe('resolution', options.diagnostics, () => run(value, 'extension', resolution)),
     clearCache() {
       cache.clear();
       cacheBytes = 0;

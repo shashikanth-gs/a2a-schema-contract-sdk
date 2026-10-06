@@ -1,0 +1,215 @@
+{
+  "profile": "Node first release candidate",
+  "packageName": "a2a-schema-contract",
+  "version": "0.1.0-rc.0",
+  "date": "2026-10-06",
+  "result": "LOCAL_PASS_HOSTED_AND_REFERENCE_PENDING",
+  "sourceState": "Validation on M3 working tree; subsequent commit and hosted/reference acceptance recorded in docs/node-candidate-report.md",
+  "runtimes": {
+    "22": {
+      "runtime": "v22.23.3",
+      "platform": "darwin/arm64",
+      "tests": 374,
+      "coverage": {
+        "lines": {
+          "total": 1278,
+          "covered": 1248,
+          "skipped": 0,
+          "pct": 97.65
+        },
+        "statements": {
+          "total": 1495,
+          "covered": 1429,
+          "skipped": 0,
+          "pct": 95.58
+        },
+        "functions": {
+          "total": 193,
+          "covered": 189,
+          "skipped": 0,
+          "pct": 97.92
+        },
+        "branches": {
+          "total": 1411,
+          "covered": 1317,
+          "skipped": 0,
+          "pct": 93.33
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "artifactSha256": "bdc0357ba8cfd499a2b461f97293a78859bcb6fcddb2b8926ccf52852b1fa7dd",
+      "installedChecks": 26,
+      "structuralCases": 20,
+      "operationalChecks": [
+        "hostile-schema-deadline",
+        "valid-core-worker-without-peer",
+        "abort-termination",
+        "zero-active-workers",
+        "diagnostic-redaction"
+      ],
+      "benchmarks": {
+        "result": "PASS",
+        "node": "v22.23.3",
+        "platform": "darwin/arm64",
+        "workload": "Object with one bounded integer; 10 cold core compilations, 10 x 1000 warm validations, five fresh workers and five cold/cache-warm pinned HTTPS preparations.",
+        "coreCold": {
+          "samples": 10,
+          "medianMs": 4.303167000000002,
+          "maxMs": 8.126207999999998
+        },
+        "coreWarm": {
+          "samples": 10,
+          "medianMs": 0.6293330000000026,
+          "maxMs": 0.9003340000000009,
+          "validationsPerSample": 1000
+        },
+        "isolated": {
+          "samples": 5,
+          "medianMs": 58.52029100000004,
+          "maxMs": 60.87712500000001
+        },
+        "resolverCold": {
+          "samples": 5,
+          "medianMs": 44.88816699999995,
+          "maxMs": 49.44912499999998
+        },
+        "resolverWarm": {
+          "samples": 5,
+          "medianMs": 42.09375,
+          "maxMs": 43.09258299999999
+        },
+        "regression": {
+          "absoluteWorkerAndResolverCeilingMs": 2000,
+          "investigateSameEnvironmentMedianMultiplier": 3
+        },
+        "workerReuse": "Each isolated call starts a new worker; warm refers to compiled synchronous core or resolver representation-byte cache."
+      },
+      "runtimeAudit": "zero vulnerabilities; isolated installed audit is a required check"
+    },
+    "24": {
+      "runtime": "v24.21.0",
+      "platform": "darwin/arm64",
+      "tests": 374,
+      "coverage": {
+        "lines": {
+          "total": 1278,
+          "covered": 1248,
+          "skipped": 0,
+          "pct": 97.65
+        },
+        "statements": {
+          "total": 1495,
+          "covered": 1429,
+          "skipped": 0,
+          "pct": 95.58
+        },
+        "functions": {
+          "total": 193,
+          "covered": 189,
+          "skipped": 0,
+          "pct": 97.92
+        },
+        "branches": {
+          "total": 1411,
+          "covered": 1317,
+          "skipped": 0,
+          "pct": 93.33
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "artifactSha256": "bdc0357ba8cfd499a2b461f97293a78859bcb6fcddb2b8926ccf52852b1fa7dd",
+      "installedChecks": 26,
+      "structuralCases": 20,
+      "operationalChecks": [
+        "hostile-schema-deadline",
+        "valid-core-worker-without-peer",
+        "abort-termination",
+        "zero-active-workers",
+        "diagnostic-redaction"
+      ],
+      "benchmarks": {
+        "result": "PASS",
+        "node": "v24.21.0",
+        "platform": "darwin/arm64",
+        "workload": "Object with one bounded integer; 10 cold core compilations, 10 x 1000 warm validations, five fresh workers and five cold/cache-warm pinned HTTPS preparations.",
+        "coreCold": {
+          "samples": 10,
+          "medianMs": 4.48958300000001,
+          "maxMs": 7.446957999999995
+        },
+        "coreWarm": {
+          "samples": 10,
+          "medianMs": 0.42954199999999787,
+          "maxMs": 0.8599999999999994,
+          "validationsPerSample": 1000
+        },
+        "isolated": {
+          "samples": 5,
+          "medianMs": 57.70637499999998,
+          "maxMs": 63.26916700000001
+        },
+        "resolverCold": {
+          "samples": 5,
+          "medianMs": 51.74791599999992,
+          "maxMs": 63.113166999999976
+        },
+        "resolverWarm": {
+          "samples": 5,
+          "medianMs": 38.308958000000075,
+          "maxMs": 39.42279200000007
+        },
+        "regression": {
+          "absoluteWorkerAndResolverCeilingMs": 2000,
+          "investigateSameEnvironmentMedianMultiplier": 3
+        },
+        "workerReuse": "Each isolated call starts a new worker; warm refers to compiled synchronous core or resolver representation-byte cache."
+      },
+      "runtimeAudit": "zero vulnerabilities; isolated installed audit is a required check"
+    }
+  },
+  "excluded": [
+    "Python and cross-language pairings",
+    "Bundles/XML/XSD",
+    "Other transports and peer/runtime versions",
+    "Unrestricted JSON Schema dialect, regex/numeric/media/carrier support",
+    "Registry publication and registry OIDC provenance"
+  ],
+  "requirements": {
+    "advertiser": [
+      "D04-01",
+      "D04-02",
+      "D05-01"
+    ],
+    "client": [
+      "D07-01",
+      "D07-05",
+      "D11-01"
+    ],
+    "server": [
+      "D09-01",
+      "D09-02",
+      "D09-03",
+      "D10-01",
+      "D12-01"
+    ],
+    "resolver": [
+      "D08-03",
+      "D13-01",
+      "D13-02"
+    ],
+    "operations": [
+      "D14-01"
+    ],
+    "fullMapping": "docs/requirements.md; existing structural/core/integration/resolver reports; new operations.test.ts and boundary-invariants.test.ts plus independent reference report"
+  }
+}

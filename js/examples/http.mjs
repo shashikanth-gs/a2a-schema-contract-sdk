@@ -5,9 +5,9 @@ import { AgentCard, Artifact, Task, TaskState, SendMessageRequest } from '@a2a-j
 import { AgentEvent, InMemoryTaskStore, ServerCallContext } from '@a2a-js/sdk/server';
 import { agentCardHandler, jsonRpcHandler, UserBuilder } from '@a2a-js/sdk/server/express';
 import { toJsonRpcError } from '@a2a-js/sdk/errors';
-import { EXTENSION_URI } from '@shashikanth-gs/a2a-schema-contract/core';
-import { createContractServer, outputArtifact } from '@shashikanth-gs/a2a-schema-contract/server';
-import { discoverContractClient } from '@shashikanth-gs/a2a-schema-contract/client';
+import { EXTENSION_URI } from 'a2a-schema-contract/core';
+import { createContractServer, outputArtifact } from 'a2a-schema-contract/server';
+import { discoverContractClient } from 'a2a-schema-contract/client';
 
 const contractId = 'https://contracts.example.org/double/1.0';
 const representation = {

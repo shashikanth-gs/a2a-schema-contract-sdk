@@ -15,3 +15,5 @@ __pycache__/
 .env.*
 !.env.example
 .DS_Store
+
+js/reports/m3-development/

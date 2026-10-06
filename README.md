@@ -11,7 +11,7 @@ validates input before business execution and validates complete output before
 publishing a successful contracted result. The client also validates the peer's
 response.
 
-**Development preview:** the Node implementation supports the community draft
+**Node release candidate:** the Node implementation supports the community draft
 `v0.1.0-draft.1`. Python support is planned. npm and PyPI packages have not been
 published; use the source checkout or a locally built npm tarball. Worker
 isolation and broader operational validation are still in progress. See the
@@ -120,3 +120,12 @@ for usage questions.
 | `research/` | Published A2A SDK compatibility probes |
 
 Licensed under [Apache-2.0](LICENSE).
+
+
+The candidate uses the unscoped **`a2a-schema-contract`** name. Async transport
+validation and resolver compilation run in owned workers with bounded deadlines,
+heap limits, concurrency and physical cleanup. Optional diagnostics omit payloads
+and credentials. See the [operations guide](docs/node-operations.md),
+[release policy](docs/node-release.md) and [changelog](CHANGELOG.md).
+`npm run release:rehearsal` performs a dry run and two reproducible packs; it never
+publishes or creates a release tag. Candidate CI evidence is tracked in PLAN.md.

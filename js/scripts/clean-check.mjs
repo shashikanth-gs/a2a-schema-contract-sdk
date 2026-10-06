@@ -32,13 +32,17 @@ try {
   const reportDir = path.join(root, 'js/reports');
   await mkdir(reportDir, { recursive: true });
   await cp(
-    path.join(scratch, `js/reports/resolver-package-node${major}.json`),
-    path.join(reportDir, `resolver-package-node${major}.json`),
+    path.join(scratch, `js/reports/rc-package-node${major}.json`),
+    path.join(reportDir, `rc-package-node${major}.json`),
   );
   const packageReport = JSON.parse(
-    await readFile(path.join(reportDir, `resolver-package-node${major}.json`), 'utf8'),
+    await readFile(path.join(reportDir, `rc-package-node${major}.json`), 'utf8'),
   );
-  const artifactDir = path.join(root, `js/artifacts/resolver-node${major}`);
+  await cp(
+    path.join(scratch, `js/reports/rc-dependencies-node${major}.json`),
+    path.join(reportDir, `rc-dependencies-node${major}.json`),
+  );
+  const artifactDir = path.join(root, `js/artifacts/rc-node${major}`);
   await mkdir(artifactDir, { recursive: true });
   await cp(
     path.join(scratch, 'js/artifacts', packageReport.artifact),
@@ -48,10 +52,10 @@ try {
     await readFile(path.join(scratch, 'js/coverage/coverage-summary.json'), 'utf8'),
   ).total;
   await writeFile(
-    path.join(reportDir, `resolver-clean-node${major}.json`),
+    path.join(reportDir, `rc-clean-node${major}.json`),
     JSON.stringify(
       {
-        task: 'SDK-006',
+        task: 'SDK-007/008',
         runtime: process.version,
         platform: `${process.platform}/${process.arch}`,
         commands: ['npm ci', 'npm run check'],
@@ -59,15 +63,15 @@ try {
         environment:
           'Temporary independent source copy with no inputs/, node_modules/, dist/ or previous reports.',
         coverage,
-        hostedCi: 'Not run; workflows configured locally.',
+        hostedCi: 'Local run; hosted CI is tracked separately in the release-candidate report.',
       },
       null,
       2,
     ) + '\n',
   );
-  await writeFile(path.join(reportDir, `resolver-clean-node${major}.log`), output);
+  await writeFile(path.join(reportDir, `rc-clean-node${major}.log`), output);
   console.log(
-    `PASS fresh npm ci + complete package checks on ${process.version}; reports/resolver-clean-node${major}.json`,
+    `PASS fresh npm ci + complete package checks on ${process.version}; reports/rc-clean-node${major}.json`,
   );
 } catch (error) {
   if (error.stdout) output += error.stdout.toString();

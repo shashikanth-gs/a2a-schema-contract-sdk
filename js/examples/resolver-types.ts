@@ -3,8 +3,8 @@ import {
   type ContractResolver,
   type ResolverOptions,
   type Address,
-} from '@shashikanth-gs/a2a-schema-contract/resolver';
-import type { ContractCatalog, JsonValue } from '@shashikanth-gs/a2a-schema-contract/core';
+} from 'a2a-schema-contract/resolver';
+import type { ContractCatalog, JsonValue } from 'a2a-schema-contract/core';
 
 const options: ResolverOptions = {
   allowedOrigins: ['https://contracts.example.org'],
