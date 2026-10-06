@@ -40,8 +40,8 @@ execution signal and must keep synchronous CPU work off the application thread.
 ## Configuration and cleanup
 
 ```ts
-import { discoverContractClient } from 'a2a-schema-contract/client';
-const client = await discoverContractClient('https://agent.example.org', {
+import { discoverContractClient } from "a2a-schema-contract/client";
+const client = await discoverContractClient("https://agent.example.org", {
   signal: AbortSignal.timeout(5000),
   validation: { deadlineMs: 1000, concurrent: 2 },
 });
@@ -90,14 +90,14 @@ the 10-second preparation budget, graph/byte limits and cache ownership.
 
 ## Failure diagnosis
 
-| Diagnostic | Action |
-|---|---|
-| `VALIDATION_TIMEOUT` | Review schema complexity and chosen deadline; never retry a side-effecting call automatically. The failed worker has been terminated. |
-| `VALIDATION_ABORTED` | Check the caller signal or session shutdown; no validation result is accepted. |
-| `RESOURCE_LIMIT` | Check session concurrency, JSON depth/size, staging limits, resolver graph/byte bounds, or worker heap limits. |
-| `INSTANCE_INVALID` | Compare the candidate with the advertised schema; validation never coerces or supplies defaults. |
-| `RESOLUTION_POLICY` / `INTEGRITY_MISMATCH` | Correct trusted configuration or the pinned resource; do not weaken policy to accept an unexpected document. |
-| Failed Task with `OUTPUT_CONTRACT_VIOLATION` | Correct the executor result or event sequence; no successful contracted output escaped. |
+| Diagnostic                                   | Action                                                                                                                                |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `VALIDATION_TIMEOUT`                         | Review schema complexity and chosen deadline; never retry a side-effecting call automatically. The failed worker has been terminated. |
+| `VALIDATION_ABORTED`                         | Check the caller signal or session shutdown; no validation result is accepted.                                                        |
+| `RESOURCE_LIMIT`                             | Check session concurrency, JSON depth/size, staging limits, resolver graph/byte bounds, or worker heap limits.                        |
+| `INSTANCE_INVALID`                           | Compare the candidate with the advertised schema; validation never coerces or supplies defaults.                                      |
+| `RESOLUTION_POLICY` / `INTEGRITY_MISMATCH`   | Correct trusted configuration or the pinned resource; do not weaken policy to accept an unexpected document.                          |
+| Failed Task with `OUTPUT_CONTRACT_VIOLATION` | Correct the executor result or event sequence; no successful contracted output escaped.                                               |
 
 Local diagnostics are not new extension wire codes. Binding failures continue
 to use the existing A2A error carriers and permitted draft details. Payload and
@@ -119,7 +119,6 @@ accepted baseline on the same runtime, host and workload; comparisons across
 different operating systems are informational. The library makes no throughput
 or low-latency service guarantee. Starting workers per operation favors bounded,
 explicit ownership over retained background workers.
-
 
 Application executions have an additional hard bound of four per server,
 independent of validation worker concurrency. `concurrentExecutions` may lower

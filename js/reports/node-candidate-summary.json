@@ -3,8 +3,8 @@
   "packageName": "a2a-schema-contract",
   "version": "0.1.0-rc.0",
   "date": "2026-10-06",
-  "result": "LOCAL_PASS_HOSTED_AND_REFERENCE_PENDING",
-  "sourceState": "Validation on M3 working tree; subsequent commit and hosted/reference acceptance recorded in docs/node-candidate-report.md",
+  "result": "PASS",
+  "sourceState": "Accepted runtime source checkpoint; subsequent documentation/evidence commits do not alter package bytes",
   "runtimes": {
     "22": {
       "runtime": "v22.23.3",
@@ -212,5 +212,30 @@
     ],
     "fullMapping": "docs/requirements.md; existing structural/core/integration/resolver reports; new operations.test.ts and boundary-invariants.test.ts plus independent reference report"
   },
-  "supersededHostedRun": "https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37504226397"
+  "supersededHostedRun": "https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37504226397",
+  "sdkSourceCommit": "7481b002f55a0961ea4ee21e36da446f2a3b9ea8",
+  "hostedSdkReport": "hosted-sdk-node-candidate.json",
+  "supersededHostedRuns": [
+    "https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37504226397",
+    "https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37507608435"
+  ],
+  "tasks": [
+    "SDK-007",
+    "SDK-008"
+  ],
+  "reference": {
+    "sourceCommit": "0a428afdf81bfee952d351763507db598f3512b5",
+    "run": "https://github.com/shashikanth-gs/a2a-schema-contract-reference/actions/runs/37510461774",
+    "tests": 48,
+    "inlineScenarios": 37,
+    "securityScenarios": 43,
+    "skipped": 0,
+    "matrix": [
+      "Linux Node 22.23.3",
+      "Linux Node 24.21.0",
+      "macOS Node 24.21.0",
+      "Windows Node 24.21.0"
+    ],
+    "report": "https://github.com/shashikanth-gs/a2a-schema-contract-reference/blob/codex/m3-node-release-candidate/js/reports/node-candidate-summary.json"
+  }
 }
