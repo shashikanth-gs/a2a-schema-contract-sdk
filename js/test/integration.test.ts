@@ -813,13 +813,19 @@ describe('real JSON-RPC installed-shape integration', () => {
   });
   test('abort propagates to cooperative business execution and late output is discarded', async () => {
     const app = await launch();
-    await expect(
-      app.client.invoke(
-        { ...invoke, metadata: { mode: 'wait' } },
-        { signal: AbortSignal.timeout(60) },
-      ),
+    const controller = new AbortController();
+    const rejected = expect(
+      app.client.invoke({ ...invoke, metadata: { mode: 'wait' } }, { signal: controller.signal }),
     ).rejects.toThrow();
-    await vi.waitFor(() => expect(app.signals[0]?.aborted).toBe(true));
+    try {
+      // Assert execution has started before testing in-flight cancellation on slower runners.
+      await vi.waitFor(() => expect(app.signals).toHaveLength(1), { timeout: 2000 });
+      controller.abort();
+      await rejected;
+      await vi.waitFor(() => expect(app.signals[0]?.aborted).toBe(true), { timeout: 2000 });
+    } finally {
+      controller.abort();
+    }
     expect(app.calls()).toBe(1);
   });
 });

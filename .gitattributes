@@ -1,0 +1,3 @@
+* text=auto eol=lf
+# Pinned normative resources must preserve their exact bytes on every checkout.
+vendor/contract/** -text
