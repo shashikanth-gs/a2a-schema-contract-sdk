@@ -1,0 +1,14 @@
+{
+  "contracts": [
+    {
+      "id": "urn:example:contract:invalid-none:1",
+      "input": {
+        "presence": "none",
+        "representations": [
+          { "id": "text", "mediaType": "text/plain" }
+        ]
+      },
+      "output": { "presence": "none" }
+    }
+  ]
+}

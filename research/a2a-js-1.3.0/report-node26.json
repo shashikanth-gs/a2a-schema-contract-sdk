@@ -1,0 +1,165 @@
+{
+  "task": "SDK-001",
+  "date": "2026-10-06",
+  "runtime": "v26.5.0",
+  "platform": "darwin/arm64",
+  "sdk": "1.3.0",
+  "lockSha256": "8d4683ea98dda742e058ac5217a7cf6b0372b67ff64f236a37b686f1a92461b5",
+  "passed": 30,
+  "results": [
+    {
+      "id": "codec-object",
+      "result": "PASS",
+      "finding": "JSON value retained by public Part codecs."
+    },
+    {
+      "id": "codec-empty-object",
+      "result": "PASS",
+      "finding": "JSON value retained by public Part codecs."
+    },
+    {
+      "id": "codec-array",
+      "result": "PASS",
+      "finding": "JSON value retained by public Part codecs."
+    },
+    {
+      "id": "codec-empty-array",
+      "result": "PASS",
+      "finding": "JSON value retained by public Part codecs."
+    },
+    {
+      "id": "codec-string",
+      "result": "PASS",
+      "finding": "JSON value retained by public Part codecs."
+    },
+    {
+      "id": "codec-empty-string-data",
+      "result": "PASS",
+      "finding": "JSON value retained by public Part codecs."
+    },
+    {
+      "id": "codec-number",
+      "result": "PASS",
+      "finding": "JSON value retained by public Part codecs."
+    },
+    {
+      "id": "codec-zero",
+      "result": "PASS",
+      "finding": "JSON value retained by public Part codecs."
+    },
+    {
+      "id": "codec-boolean",
+      "result": "PASS",
+      "finding": "JSON value retained by public Part codecs."
+    },
+    {
+      "id": "codec-root-null-loss",
+      "result": "PASS",
+      "finding": "Root data:null is serialized but decoded as absent; adapter must reject it."
+    },
+    {
+      "id": "codec-invalid-content-normalization",
+      "result": "PASS",
+      "finding": "Codecs coerce text and choose the first content member; raw-wire guards are required."
+    },
+    {
+      "id": "codec-empty-text-media-metadata",
+      "result": "PASS",
+      "finding": "Empty text, media parameters and namespaced metadata survive."
+    },
+    {
+      "id": "http-discovery-public-client",
+      "result": "PASS",
+      "finding": "Public factory discovers the advertised 1.0 JSON-RPC interface and params."
+    },
+    {
+      "id": "http-object",
+      "result": "PASS",
+      "finding": "Object/scalar/array value and metadata retain their identity across real HTTP."
+    },
+    {
+      "id": "http-empty-object",
+      "result": "PASS",
+      "finding": "Object/scalar/array value and metadata retain their identity across real HTTP."
+    },
+    {
+      "id": "http-array",
+      "result": "PASS",
+      "finding": "Object/scalar/array value and metadata retain their identity across real HTTP."
+    },
+    {
+      "id": "http-empty-array",
+      "result": "PASS",
+      "finding": "Object/scalar/array value and metadata retain their identity across real HTTP."
+    },
+    {
+      "id": "http-string",
+      "result": "PASS",
+      "finding": "Object/scalar/array value and metadata retain their identity across real HTTP."
+    },
+    {
+      "id": "http-empty-string-data",
+      "result": "PASS",
+      "finding": "Object/scalar/array value and metadata retain their identity across real HTTP."
+    },
+    {
+      "id": "http-number",
+      "result": "PASS",
+      "finding": "Object/scalar/array value and metadata retain their identity across real HTTP."
+    },
+    {
+      "id": "http-zero",
+      "result": "PASS",
+      "finding": "Object/scalar/array value and metadata retain their identity across real HTTP."
+    },
+    {
+      "id": "http-boolean",
+      "result": "PASS",
+      "finding": "Object/scalar/array value and metadata retain their identity across real HTTP."
+    },
+    {
+      "id": "http-root-null-loss",
+      "result": "PASS",
+      "finding": "Invalid content-less Part reaches executor after null decoding; SDK is not a validity boundary."
+    },
+    {
+      "id": "http-empty-text-parameters-message-result",
+      "result": "PASS",
+      "finding": "Standalone Message response supported with exact media spelling and result metadata."
+    },
+    {
+      "id": "http-no-output-task-storage",
+      "result": "PASS",
+      "finding": "Completed Task with no Artifact and result echo survives public task storage/getTask."
+    },
+    {
+      "id": "http-activation-context-isolation",
+      "result": "PASS",
+      "finding": "Activation and application headers are per call; SDK requires explicit addActivatedExtension."
+    },
+    {
+      "id": "http-required-activation-before-executor",
+      "result": "PASS",
+      "finding": "Required extension missing produces existing A2A -32008 before executor call."
+    },
+    {
+      "id": "http-stream-public-events",
+      "result": "PASS",
+      "finding": "SSE emits initial Task then status update with namespaced metadata."
+    },
+    {
+      "id": "executor-throw-detail-loss-and-disclosure",
+      "result": "PASS",
+      "finding": "SDK catches executor exceptions, logs them and echoes their text; adapter must sanitize and publish its own failed Task."
+    },
+    {
+      "id": "error-info-namespaced-string-detail",
+      "result": "PASS",
+      "finding": "Existing ErrorInfo.metadata supports a namespaced serialized draft detail without inventing a protobuf type."
+    }
+  ],
+  "exclusions": [
+    "No extension boundary implementation/conformance claim.",
+    "No gRPC/REST/legacy/browser/CJS/cancellation guarantee."
+  ]
+}

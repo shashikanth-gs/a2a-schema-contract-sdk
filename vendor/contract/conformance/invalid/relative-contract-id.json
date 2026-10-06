@@ -1,0 +1,9 @@
+{
+  "contracts": [
+    {
+      "id": "contracts/example/1",
+      "input": { "presence": "none" },
+      "output": { "presence": "none" }
+    }
+  ]
+}

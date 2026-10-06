@@ -1,0 +1,71 @@
+{
+  "contracts": [
+    {
+      "id": "https://contracts.example.org/air-shopping/1.0",
+      "description": "Large request and response schemas delivered outside the Agent Card.",
+      "skillIds": ["air-shopping"],
+      "input": {
+        "presence": "required",
+        "representations": [
+          {
+            "id": "request-json",
+            "mediaType": "application/vnd.example.air-shopping-request+json",
+            "schema": {
+              "uri": "https://schemas.example.org/air-shopping/1.0/request.schema.json",
+              "mediaType": "application/schema+json",
+              "dialect": "https://json-schema.org/draft/2020-12/schema",
+              "integrity": {
+                "algorithm": "sha-256",
+                "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              }
+            }
+          },
+          {
+            "id": "request-xml",
+            "mediaType": "application/vnd.example.air-shopping-request+xml",
+            "schema": {
+              "bundle": {
+                "uri": "https://schemas.example.org/air-shopping/1.0/xsd-request.zip",
+                "mediaType": "application/zip",
+                "integrity": {
+                  "algorithm": "sha-512",
+                  "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+                }
+              },
+              "entrypoint": "schemas/AirShoppingRQ.xsd",
+              "mediaType": "application/xml",
+              "dialect": "https://www.w3.org/TR/xmlschema11-1/"
+            }
+          }
+        ]
+      },
+      "output": {
+        "presence": "required",
+        "representations": [
+          {
+            "id": "response-json",
+            "mediaType": "application/vnd.example.air-shopping-response+json",
+            "schema": {
+              "uri": "https://schemas.example.org/air-shopping/1.0/response.schema.json",
+              "mediaType": "application/schema+json",
+              "dialect": "https://json-schema.org/draft/2020-12/schema"
+            }
+          },
+          {
+            "id": "response-xml",
+            "mediaType": "application/vnd.example.air-shopping-response+xml",
+            "schema": {
+              "bundle": {
+                "uri": "https://schemas.example.org/air-shopping/1.0/xsd-response.zip",
+                "mediaType": "application/zip"
+              },
+              "entrypoint": "schemas/AirShoppingRS.xsd",
+              "mediaType": "application/xml",
+              "dialect": "https://www.w3.org/TR/xmlschema11-1/"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

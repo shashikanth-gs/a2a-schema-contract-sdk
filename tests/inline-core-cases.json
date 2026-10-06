@@ -1,0 +1,473 @@
+{
+  "formatVersion": 1,
+  "profile": "offline-inline-core",
+  "contractId": "urn:example:contract:test:1",
+  "cases": [
+    {
+      "id": "unfamiliar-object",
+      "operation": "validate",
+      "schema": {
+        "type": "object",
+        "required": [
+          "count"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "value": {
+        "count": 0
+      },
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "id": "no-coercion",
+      "operation": "validate",
+      "schema": {
+        "type": "integer"
+      },
+      "value": "1",
+      "expected": {
+        "accepted": false,
+        "diagnostic": "INSTANCE_INVALID"
+      }
+    },
+    {
+      "id": "no-default-insertion",
+      "operation": "validate",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "default": 1
+          }
+        },
+        "required": [
+          "count"
+        ]
+      },
+      "value": {},
+      "expected": {
+        "accepted": false,
+        "diagnostic": "INSTANCE_INVALID"
+      }
+    },
+    {
+      "id": "no-property-removal",
+      "operation": "validate",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "value": {
+        "secret": "never-in-errors"
+      },
+      "expected": {
+        "accepted": false,
+        "diagnostic": "INSTANCE_INVALID"
+      }
+    },
+    {
+      "id": "null-present",
+      "operation": "validate",
+      "schema": true,
+      "value": null,
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "id": "empty-array-present",
+      "operation": "validate",
+      "schema": true,
+      "value": [],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "id": "empty-object-present",
+      "operation": "validate",
+      "schema": true,
+      "value": {},
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "id": "boolean-false-schema",
+      "operation": "validate",
+      "schema": false,
+      "value": null,
+      "expected": {
+        "accepted": false,
+        "diagnostic": "INSTANCE_INVALID"
+      }
+    },
+    {
+      "id": "annotation-email",
+      "operation": "validate",
+      "schema": {
+        "type": "string",
+        "format": "email"
+      },
+      "value": "invalid-email",
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "id": "annotation-unknown-format",
+      "operation": "validate",
+      "schema": {
+        "format": "example-new-format"
+      },
+      "value": "anything",
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "id": "unicode-codepoint-length",
+      "operation": "validate",
+      "schema": {
+        "type": "string",
+        "maxLength": 1,
+        "minLength": 1
+      },
+      "value": "😀",
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "id": "unsafe-integer",
+      "operation": "validate",
+      "schema": true,
+      "value": 9007199254740992,
+      "expected": {
+        "accepted": false,
+        "diagnostic": "UNSUPPORTED_NUMBER"
+      }
+    },
+    {
+      "id": "decimal-multiple-unsupported",
+      "operation": "validate",
+      "schema": {
+        "multipleOf": 0.1
+      },
+      "value": 0.3,
+      "expected": {
+        "accepted": false,
+        "diagnostic": "UNSUPPORTED_NUMBER"
+      }
+    },
+    {
+      "id": "regex-nested-repetition-unsupported",
+      "operation": "validate",
+      "schema": {
+        "pattern": "(a+)+$"
+      },
+      "value": "a",
+      "expected": {
+        "accepted": false,
+        "diagnostic": "UNSUPPORTED_REGEX"
+      }
+    },
+    {
+      "id": "overlapping-repetition-unsupported",
+      "operation": "validate",
+      "schema": {
+        "pattern": "a+a+$"
+      },
+      "value": "a",
+      "expected": {
+        "accepted": false,
+        "diagnostic": "UNSUPPORTED_REGEX"
+      }
+    },
+    {
+      "id": "required-format-assertion-unsupported",
+      "operation": "validate",
+      "schema": {
+        "$vocabulary": {
+          "https://json-schema.org/draft/2020-12/vocab/format-assertion": true
+        }
+      },
+      "value": "x",
+      "expected": {
+        "accepted": false,
+        "diagnostic": "UNSUPPORTED_VOCABULARY"
+      }
+    },
+    {
+      "id": "optional-custom-vocabulary",
+      "operation": "validate",
+      "schema": {
+        "$vocabulary": {
+          "https://example.org/vocab": false
+        },
+        "type": "boolean"
+      },
+      "value": true,
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "id": "optional-vocabulary-unknown-assertion",
+      "operation": "validate",
+      "schema": {
+        "$vocabulary": {
+          "https://example.org/vocab": false
+        },
+        "customAssertion": true
+      },
+      "value": true,
+      "expected": {
+        "accepted": false,
+        "diagnostic": "UNSUPPORTED_KEYWORD"
+      }
+    },
+    {
+      "id": "dialect-mismatch",
+      "operation": "validate",
+      "schema": {
+        "$schema": "https://example.org/custom-dialect"
+      },
+      "value": {},
+      "expected": {
+        "accepted": false,
+        "diagnostic": "UNSUPPORTED_DIALECT"
+      }
+    },
+    {
+      "id": "native-local-pointer",
+      "operation": "validate",
+      "schema": {
+        "$defs": {
+          "value": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "$ref": "#/$defs/value"
+      },
+      "value": 0,
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "id": "external-reference-unavailable",
+      "operation": "validate",
+      "schema": {
+        "$ref": "https://schemas.example.org/protected/1"
+      },
+      "value": {},
+      "expected": {
+        "accepted": false,
+        "diagnostic": "SCHEMA_UNAVAILABLE"
+      }
+    },
+    {
+      "id": "root-null-adapter-rejected",
+      "operation": "encode",
+      "schema": true,
+      "value": null,
+      "expected": {
+        "accepted": false,
+        "diagnostic": "UNSUPPORTED_CARRIER"
+      },
+      "carrier": "a2a-js-1.3.0"
+    },
+    {
+      "id": "nested-null-adapter-preserved",
+      "operation": "encode",
+      "schema": true,
+      "value": {
+        "nested": null
+      },
+      "expected": {
+        "accepted": true
+      },
+      "carrier": "a2a-js-1.3.0"
+    },
+    {
+      "id": "empty-text-present",
+      "operation": "validate",
+      "schema": {
+        "type": "string"
+      },
+      "value": "",
+      "expected": {
+        "accepted": true
+      },
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "text-rejects-object",
+      "operation": "validate",
+      "schema": true,
+      "value": {},
+      "expected": {
+        "accepted": false,
+        "diagnostic": "INVALID_CARRIER"
+      },
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "required-absent",
+      "operation": "decode",
+      "presence": "required",
+      "parts": [
+        {
+          "text": "trigger"
+        }
+      ],
+      "expected": {
+        "accepted": false,
+        "diagnostic": "PAYLOAD_PRESENCE_VIOLATION"
+      }
+    },
+    {
+      "id": "optional-absent",
+      "operation": "decode",
+      "presence": "optional",
+      "parts": [
+        {
+          "text": "trigger"
+        }
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "id": "none-absent",
+      "operation": "decode",
+      "presence": "none",
+      "parts": [
+        {
+          "text": "trigger"
+        }
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "id": "none-present",
+      "operation": "decode",
+      "presence": "none",
+      "parts": [
+        {
+          "data": {},
+          "mediaType": "application/json",
+          "metadata": {
+            "https://w3id.org/a2a-schema-contract/draft/0.1": {
+              "contractId": "urn:example:contract:test:1",
+              "direction": "input",
+              "representationId": "json",
+              "role": "primary"
+            }
+          }
+        }
+      ],
+      "expected": {
+        "accepted": false,
+        "diagnostic": "PAYLOAD_PRESENCE_VIOLATION"
+      },
+      "representationId": "json"
+    },
+    {
+      "id": "two-primaries",
+      "operation": "decode",
+      "presence": "required",
+      "parts": [
+        {
+          "data": {},
+          "mediaType": "application/json",
+          "metadata": {
+            "https://w3id.org/a2a-schema-contract/draft/0.1": {
+              "contractId": "urn:example:contract:test:1",
+              "direction": "input",
+              "representationId": "json",
+              "role": "primary"
+            }
+          }
+        },
+        {
+          "data": {},
+          "mediaType": "application/json",
+          "metadata": {
+            "https://w3id.org/a2a-schema-contract/draft/0.1": {
+              "contractId": "urn:example:contract:test:1",
+              "direction": "input",
+              "representationId": "json",
+              "role": "primary"
+            }
+          }
+        }
+      ],
+      "expected": {
+        "accepted": false,
+        "diagnostic": "PAYLOAD_PRESENCE_VIOLATION"
+      },
+      "representationId": "json"
+    },
+    {
+      "id": "same-media-companion-unselected",
+      "operation": "decode",
+      "presence": "required",
+      "parts": [
+        {
+          "data": {},
+          "mediaType": "application/json",
+          "metadata": {
+            "https://w3id.org/a2a-schema-contract/draft/0.1": {
+              "contractId": "urn:example:contract:test:1",
+              "direction": "input",
+              "representationId": "json",
+              "role": "primary"
+            }
+          }
+        },
+        {
+          "data": {
+            "anything": true
+          },
+          "mediaType": "application/json"
+        }
+      ],
+      "expected": {
+        "accepted": true
+      },
+      "representationId": "json"
+    },
+    {
+      "id": "ajv-ignored-proto-schema-map-rejected",
+      "operation": "validate",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "__proto__": {
+            "type": "integer"
+          }
+        }
+      },
+      "value": {
+        "__proto__": "invalid"
+      },
+      "expected": {
+        "accepted": false,
+        "diagnostic": "UNSUPPORTED_KEYWORD"
+      }
+    }
+  ]
+}

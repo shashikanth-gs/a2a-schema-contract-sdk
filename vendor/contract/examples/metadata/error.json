@@ -1,0 +1,10 @@
+{
+  "code": "INSTANCE_INVALID",
+  "contractId": "https://contracts.example.org/extract-contact/1.0",
+  "direction": "input",
+  "representationId": "contact-json",
+  "instancePath": "/email",
+  "schemaLocation": "https://schemas.example.org/contact/1.0#/properties/email",
+  "keyword": "format",
+  "message": "Value does not satisfy the declared format."
+}

@@ -1,0 +1,33 @@
+{
+  "checkedOn": "2026-10-06",
+  "sources": [
+    {
+      "name": "released-extension-sample",
+      "revision": "29417a5bb4038f804f310ce4fffd267a9375aa90",
+      "url": "https://raw.githubusercontent.com/a2aproject/a2a-js/29417a5bb4038f804f310ce4fffd267a9375aa90/src/samples/extensions/README.md",
+      "sha256": "4b610b1b76c6cd47d46077039e0bbd82ee064d243ec7bfec863ff555d2e17bd9",
+      "bytes": 2794
+    },
+    {
+      "name": "a2ui",
+      "revision": "46ecc2d04793c0b8b1c77f8acd9d7ab4e34746c2",
+      "url": "https://raw.githubusercontent.com/a2ui-project/a2ui/46ecc2d04793c0b8b1c77f8acd9d7ab4e34746c2/README.md",
+      "sha256": "cc9d9e4889650eff107c7882395bda1564957367ffb5436a6c6633510e9c5007",
+      "bytes": 9044
+    },
+    {
+      "name": "traceability",
+      "revision": "6603ba3f2c31a7ef33e70b9d8b5b5f8be42ac9a3",
+      "url": "https://raw.githubusercontent.com/a2aproject/a2a-samples/6603ba3f2c31a7ef33e70b9d8b5b5f8be42ac9a3/extensions/traceability/v1/spec.md",
+      "sha256": "bb86c5957efa4582eea79f6885626e193cabe063cd64179fa80c9dbf22dd1b4a",
+      "bytes": 2868
+    },
+    {
+      "name": "a202",
+      "revision": "8473b0421fdc2a0d9e4bcd299cf9937ee68bf556",
+      "url": "https://raw.githubusercontent.com/a202-protocol/a202/8473b0421fdc2a0d9e4bcd299cf9937ee68bf556/reference/README.md",
+      "sha256": "7d94740f45fb9c030e363ebd67817dbaeb58db092313221b77cf2194884fda95",
+      "bytes": 3860
+    }
+  ]
+}

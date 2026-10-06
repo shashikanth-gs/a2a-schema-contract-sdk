@@ -1,0 +1,132 @@
+{
+  "task": "SDK-001",
+  "sourceCommit": "a5c007510faa3fce85190f2e76e402faf0e897ad",
+  "runtime": "v26.5.0",
+  "ajv": "8.20.0",
+  "ajvFormats": "3.0.1",
+  "verifiedSourceFiles": 33,
+  "passed": 20,
+  "results": [
+    {
+      "file": "conformance/valid/minimal-none-to-none.json",
+      "schema": "catalog",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "conformance/valid/boolean-json-schema.json",
+      "schema": "catalog",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "conformance/../examples/catalogs/text-to-json.json",
+      "schema": "catalog",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "conformance/../examples/catalogs/json-to-text.json",
+      "schema": "catalog",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "conformance/../examples/catalogs/no-input-to-json.json",
+      "schema": "catalog",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "conformance/../examples/catalogs/json-to-no-output.json",
+      "schema": "catalog",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "conformance/../examples/catalogs/optional-schemaless.json",
+      "schema": "catalog",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "conformance/../examples/catalogs/large-external-schemas.json",
+      "schema": "catalog",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "conformance/invalid/none-with-representations.json",
+      "schema": "catalog",
+      "expected": false,
+      "result": "PASS"
+    },
+    {
+      "file": "conformance/invalid/required-without-representations.json",
+      "schema": "catalog",
+      "expected": false,
+      "result": "PASS"
+    },
+    {
+      "file": "conformance/invalid/relative-contract-id.json",
+      "schema": "catalog",
+      "expected": false,
+      "result": "PASS"
+    },
+    {
+      "file": "conformance/invalid/unsafe-bundle-entrypoint.json",
+      "schema": "catalog",
+      "expected": false,
+      "result": "PASS"
+    },
+    {
+      "file": "examples/extension-params-inline.json",
+      "schema": "extension-params",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "examples/extension-params-external.json",
+      "schema": "extension-params",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "examples/metadata/invocation-text-to-json.json",
+      "schema": "invocation-metadata",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "examples/metadata/invocation-no-input.json",
+      "schema": "invocation-metadata",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "examples/metadata/result-json.json",
+      "schema": "result-metadata",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "examples/metadata/result-no-output.json",
+      "schema": "result-metadata",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "examples/metadata/primary-input-part.json",
+      "schema": "part-metadata",
+      "expected": true,
+      "result": "PASS"
+    },
+    {
+      "file": "examples/metadata/error.json",
+      "schema": "error-detail",
+      "expected": true,
+      "result": "PASS"
+    }
+  ],
+  "scope": "Pinned structural fixtures only; domain format assertions in upstream runner do not define SDK payload semantics."
+}

@@ -1,0 +1,4 @@
+{
+  "contractId": "https://contracts.example.org/daily-status/1.0",
+  "acceptedOutputRepresentationIds": ["status-json"]
+}

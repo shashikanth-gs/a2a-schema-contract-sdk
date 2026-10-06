@@ -1,0 +1,25 @@
+{
+  "contracts": [
+    {
+      "id": "https://contracts.example.org/submit-audit-event/1.0",
+      "description": "Submit an event; successful task completion is the acknowledgement.",
+      "input": {
+        "presence": "required",
+        "representations": [
+          {
+            "id": "audit-event-json",
+            "mediaType": "application/vnd.example.audit-event+json",
+            "schema": {
+              "uri": "https://schemas.example.org/audit-event/1.0/schema.json",
+              "mediaType": "application/schema+json",
+              "dialect": "https://json-schema.org/draft/2020-12/schema"
+            }
+          }
+        ]
+      },
+      "output": {
+        "presence": "none"
+      }
+    }
+  ]
+}

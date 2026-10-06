@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/result-metadata.schema.json",
+  "title": "A2A Schema Contract result metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contractId"],
+  "properties": {
+    "contractId": {
+      "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/absoluteUri"
+    },
+    "outputRepresentationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    }
+  }
+}

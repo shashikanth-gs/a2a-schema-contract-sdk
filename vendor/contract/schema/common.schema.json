@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json",
+  "title": "A2A Schema Contract common definitions",
+  "$defs": {
+    "absoluteUri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^[A-Za-z][A-Za-z0-9+.-]*:"
+    },
+    "mediaType": {
+      "type": "string",
+      "minLength": 3,
+      "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+/[!#$%&'*+.^_`|~0-9A-Za-z-]+(?:\\s*;\\s*[!#$%&'*+.^_`|~0-9A-Za-z-]+=(?:[!#$%&'*+.^_`|~0-9A-Za-z-]+|\"[^\"\\r\\n]*\"))*$"
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": ["sha-256", "sha-512"]
+        },
+        "value": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "algorithm": { "const": "sha-256" } },
+            "required": ["algorithm"]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9+/]{43}=$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "algorithm": { "const": "sha-512" } },
+            "required": ["algorithm"]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9+/]{86}==$"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

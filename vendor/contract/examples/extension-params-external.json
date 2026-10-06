@@ -1,0 +1,10 @@
+{
+  "catalog": {
+    "uri": "https://agent.example.org/.well-known/a2a-schema-contracts.json",
+    "mediaType": "application/json",
+    "integrity": {
+      "algorithm": "sha-256",
+      "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+}

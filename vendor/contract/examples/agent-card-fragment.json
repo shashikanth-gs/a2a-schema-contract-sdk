@@ -1,0 +1,29 @@
+{
+  "capabilities": {
+    "extensions": [
+      {
+        "uri": "https://w3id.org/a2a-schema-contract/draft/0.1",
+        "description": "Advertises application payload contracts.",
+        "required": false,
+        "params": {
+          "catalog": {
+            "uri": "https://agent.example.org/.well-known/a2a-schema-contracts.json",
+            "mediaType": "application/json",
+            "integrity": {
+              "algorithm": "sha-256",
+              "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+            }
+          }
+        }
+      }
+    ]
+  },
+  "defaultInputModes": [
+    "text/plain",
+    "application/vnd.example.contact+json"
+  ],
+  "defaultOutputModes": [
+    "text/plain",
+    "application/vnd.example.contact+json"
+  ]
+}

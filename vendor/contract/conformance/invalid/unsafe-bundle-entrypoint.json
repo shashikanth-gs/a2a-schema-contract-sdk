@@ -1,0 +1,25 @@
+{
+  "contracts": [
+    {
+      "id": "urn:example:contract:unsafe-bundle:1",
+      "input": { "presence": "none" },
+      "output": {
+        "presence": "required",
+        "representations": [
+          {
+            "id": "xml",
+            "mediaType": "application/xml",
+            "schema": {
+              "bundle": {
+                "uri": "https://schemas.example.org/archive.zip",
+                "mediaType": "application/zip"
+              },
+              "entrypoint": "../outside.xsd",
+              "mediaType": "application/xml"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

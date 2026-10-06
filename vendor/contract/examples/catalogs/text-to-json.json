@@ -1,0 +1,42 @@
+{
+  "contracts": [
+    {
+      "id": "https://contracts.example.org/extract-contact/1.0",
+      "description": "Extract a contact from natural-language text.",
+      "skillIds": ["extract-contact"],
+      "input": {
+        "presence": "required",
+        "representations": [
+          {
+            "id": "plain-text",
+            "mediaType": "text/plain; charset=utf-8"
+          }
+        ]
+      },
+      "output": {
+        "presence": "required",
+        "representations": [
+          {
+            "id": "contact-json",
+            "mediaType": "application/vnd.example.contact+json",
+            "schema": {
+              "mediaType": "application/schema+json",
+              "dialect": "https://json-schema.org/draft/2020-12/schema",
+              "inline": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "$id": "https://schemas.example.org/contact/1.0",
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["name"],
+                "properties": {
+                  "name": { "type": "string", "minLength": 1 },
+                  "email": { "type": "string", "format": "email" }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

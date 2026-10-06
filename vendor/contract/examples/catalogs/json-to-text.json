@@ -1,0 +1,31 @@
+{
+  "contracts": [
+    {
+      "id": "https://contracts.example.org/explain-order/1.0",
+      "description": "Explain a structured order in plain language.",
+      "input": {
+        "presence": "required",
+        "representations": [
+          {
+            "id": "order-json",
+            "mediaType": "application/vnd.example.order+json",
+            "schema": {
+              "uri": "https://schemas.example.org/order/1.0/schema.json",
+              "mediaType": "application/schema+json",
+              "dialect": "https://json-schema.org/draft/2020-12/schema"
+            }
+          }
+        ]
+      },
+      "output": {
+        "presence": "required",
+        "representations": [
+          {
+            "id": "plain-text",
+            "mediaType": "text/plain; charset=utf-8"
+          }
+        ]
+      }
+    }
+  ]
+}

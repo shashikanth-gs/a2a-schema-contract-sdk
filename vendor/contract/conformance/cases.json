@@ -1,0 +1,20 @@
+{
+  "catalog": {
+    "valid": [
+      "valid/minimal-none-to-none.json",
+      "valid/boolean-json-schema.json",
+      "../examples/catalogs/text-to-json.json",
+      "../examples/catalogs/json-to-text.json",
+      "../examples/catalogs/no-input-to-json.json",
+      "../examples/catalogs/json-to-no-output.json",
+      "../examples/catalogs/optional-schemaless.json",
+      "../examples/catalogs/large-external-schemas.json"
+    ],
+    "invalid": [
+      "invalid/none-with-representations.json",
+      "invalid/required-without-representations.json",
+      "invalid/relative-contract-id.json",
+      "invalid/unsafe-bundle-entrypoint.json"
+    ]
+  }
+}

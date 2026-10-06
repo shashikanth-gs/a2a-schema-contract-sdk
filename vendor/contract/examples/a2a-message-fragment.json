@@ -1,0 +1,21 @@
+{
+  "messageId": "01-example",
+  "role": "ROLE_USER",
+  "parts": [
+    {
+      "text": "Ada Lovelace, ada@example.org",
+      "mediaType": "text/plain; charset=utf-8",
+      "metadata": {
+        "https://w3id.org/a2a-schema-contract/draft/0.1": {
+          "contractId": "https://contracts.example.org/extract-contact/1.0",
+          "direction": "input",
+          "representationId": "plain-text",
+          "role": "primary"
+        }
+      }
+    }
+  ],
+  "extensions": [
+    "https://w3id.org/a2a-schema-contract/draft/0.1"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "catalog": {
+    "inline": {
+      "contracts": [
+        {
+          "id": "https://contracts.example.org/greeting/1.0",
+          "input": {
+            "presence": "required",
+            "representations": [
+              { "id": "text", "mediaType": "text/plain" }
+            ]
+          },
+          "output": {
+            "presence": "required",
+            "representations": [
+              { "id": "text", "mediaType": "text/plain" }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

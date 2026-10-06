@@ -1,0 +1,4 @@
+{
+  "contractId": "https://contracts.example.org/extract-contact/1.0",
+  "outputRepresentationId": "contact-json"
+}

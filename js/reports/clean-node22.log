@@ -1,0 +1,71 @@
+
+added 151 packages, and audited 152 packages in 701ms
+
+46 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+> @shashikanth-gs/a2a-schema-contract@0.1.0-dev.0 check
+> npm run build && npm run format:check && npm run lint && npm run typecheck && npm test && npm run test:package
+
+
+> @shashikanth-gs/a2a-schema-contract@0.1.0-dev.0 build
+> node scripts/resources.mjs && tsc -p tsconfig.build.json
+
+Verified 33 source hashes; packaged seven schemas and attribution.
+
+> @shashikanth-gs/a2a-schema-contract@0.1.0-dev.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> @shashikanth-gs/a2a-schema-contract@0.1.0-dev.0 lint
+> eslint .
+
+
+> @shashikanth-gs/a2a-schema-contract@0.1.0-dev.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+> @shashikanth-gs/a2a-schema-contract@0.1.0-dev.0 test
+> npm run build && vitest run --coverage
+
+
+> @shashikanth-gs/a2a-schema-contract@0.1.0-dev.0 build
+> node scripts/resources.mjs && tsc -p tsconfig.build.json
+
+Verified 33 source hashes; packaged seven schemas and attribution.
+
+ RUN  v5.0.3 /private/var/folders/rq/0t970n8547587w2l1smj0p500000gn/T/schema-contract-clean-pyaBIr/js
+      Coverage enabled with v8
+
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  13:27:24
+   Duration  103ms (tests 33%, transform 32%, worker 20%, import 14%)
+
+ % Coverage report from v8
+No files with missing coverage.
+2 files fully covered.
+3 empty files skipped.
+
+=============================== Coverage summary ===============================
+Statements   : 100% ( 8/8 )
+Branches     : 100% ( 2/2 )
+Functions    : 100% ( 1/1 )
+Lines        : 100% ( 8/8 )
+================================================================================
+
+> @shashikanth-gs/a2a-schema-contract@0.1.0-dev.0 test:package
+> npm run build && node scripts/package-smoke.mjs
+
+
+> @shashikanth-gs/a2a-schema-contract@0.1.0-dev.0 build
+> node scripts/resources.mjs && tsc -p tsconfig.build.json
+
+Verified 33 source hashes; packaged seven schemas and attribution.
+PASS isolated installed consumer, declarations, exact peer bounds and audit: shashikanth-gs-a2a-schema-contract-0.1.0-dev.0.tgz
+SHA-256 e8d328aa34b3ad555648f7933b060403650c3a8118e42af946506cdbd6144668

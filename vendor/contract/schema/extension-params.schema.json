@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/extension-params.schema.json",
+  "title": "A2A Schema Contract AgentExtension.params",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["catalog"],
+      "properties": {
+        "catalog": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["inline"],
+          "properties": {
+            "inline": {
+              "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/catalog.schema.json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["catalog"],
+      "properties": {
+        "catalog": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["uri", "mediaType"],
+          "properties": {
+            "uri": {
+              "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/absoluteUri"
+            },
+            "mediaType": {
+              "const": "application/json"
+            },
+            "integrity": {
+              "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/integrity"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

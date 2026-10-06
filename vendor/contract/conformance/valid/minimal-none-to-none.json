@@ -1,0 +1,9 @@
+{
+  "contracts": [
+    {
+      "id": "urn:example:contract:no-application-payload:1",
+      "input": { "presence": "none" },
+      "output": { "presence": "none" }
+    }
+  ]
+}

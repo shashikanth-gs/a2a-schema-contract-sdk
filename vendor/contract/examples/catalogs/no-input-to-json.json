@@ -1,0 +1,25 @@
+{
+  "contracts": [
+    {
+      "id": "https://contracts.example.org/daily-status/1.0",
+      "description": "Produce the current daily status without an application payload.",
+      "input": {
+        "presence": "none"
+      },
+      "output": {
+        "presence": "required",
+        "representations": [
+          {
+            "id": "status-json",
+            "mediaType": "application/vnd.example.daily-status+json",
+            "schema": {
+              "uri": "https://schemas.example.org/daily-status/1.0/schema.json",
+              "mediaType": "application/schema+json",
+              "dialect": "https://json-schema.org/draft/2020-12/schema"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

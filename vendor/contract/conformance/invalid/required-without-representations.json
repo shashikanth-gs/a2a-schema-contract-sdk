@@ -1,0 +1,9 @@
+{
+  "contracts": [
+    {
+      "id": "urn:example:contract:missing-representation:1",
+      "input": { "presence": "required" },
+      "output": { "presence": "none" }
+    }
+  ]
+}

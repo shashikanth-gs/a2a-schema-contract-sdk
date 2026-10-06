@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/catalog.schema.json",
+  "title": "A2A Schema Contract catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contracts"],
+  "properties": {
+    "contracts": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/contract" }
+    }
+  },
+  "$defs": {
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "input", "output"],
+      "properties": {
+        "id": {
+          "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/absoluteUri"
+        },
+        "description": { "type": "string" },
+        "skillIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "supersedes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/absoluteUri"
+          }
+        },
+        "input": { "$ref": "#/$defs/direction" },
+        "output": { "$ref": "#/$defs/direction" }
+      }
+    },
+    "direction": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["presence"],
+          "properties": {
+            "presence": { "const": "none" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["presence", "representations"],
+          "properties": {
+            "presence": { "enum": ["required", "optional"] },
+            "representations": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/representation" }
+            }
+          }
+        }
+      ]
+    },
+    "representation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "mediaType"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "mediaType": {
+          "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/mediaType"
+        },
+        "description": { "type": "string" },
+        "schema": { "$ref": "#/$defs/schemaDescriptor" }
+      }
+    },
+    "schemaDescriptor": {
+      "oneOf": [
+        { "$ref": "#/$defs/inlineSchema" },
+        { "$ref": "#/$defs/externalSchema" },
+        { "$ref": "#/$defs/bundledSchema" }
+      ]
+    },
+    "schemaBase": {
+      "type": "object",
+      "properties": {
+        "mediaType": {
+          "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/mediaType"
+        },
+        "dialect": {
+          "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/absoluteUri"
+        }
+      }
+    },
+    "inlineSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inline", "mediaType"],
+      "properties": {
+        "inline": true,
+        "mediaType": {
+          "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/mediaType"
+        },
+        "dialect": {
+          "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/absoluteUri"
+        }
+      }
+    },
+    "externalSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uri", "mediaType"],
+      "properties": {
+        "uri": {
+          "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/absoluteUri"
+        },
+        "mediaType": {
+          "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/mediaType"
+        },
+        "dialect": {
+          "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/absoluteUri"
+        },
+        "integrity": {
+          "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/integrity"
+        }
+      }
+    },
+    "bundledSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bundle", "entrypoint", "mediaType"],
+      "properties": {
+        "bundle": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["uri", "mediaType"],
+          "properties": {
+            "uri": {
+              "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/absoluteUri"
+            },
+            "mediaType": {
+              "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/mediaType"
+            },
+            "integrity": {
+              "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/integrity"
+            }
+          }
+        },
+        "entrypoint": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+        },
+        "mediaType": {
+          "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/mediaType"
+        },
+        "dialect": {
+          "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/absoluteUri"
+        }
+      }
+    }
+  }
+}

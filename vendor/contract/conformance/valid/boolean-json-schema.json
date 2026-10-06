@@ -1,0 +1,22 @@
+{
+  "contracts": [
+    {
+      "id": "urn:example:contract:boolean-schema:1",
+      "input": {
+        "presence": "required",
+        "representations": [
+          {
+            "id": "anything-json",
+            "mediaType": "application/json",
+            "schema": {
+              "inline": true,
+              "mediaType": "application/schema+json",
+              "dialect": "https://json-schema.org/draft/2020-12/schema"
+            }
+          }
+        ]
+      },
+      "output": { "presence": "none" }
+    }
+  ]
+}

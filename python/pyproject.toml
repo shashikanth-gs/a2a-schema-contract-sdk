@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "a2a-schema-contract"
+version = "0.0.0"
+description = "Scaffold for the A2A Schema Contract client/server SDK"
+
+[tool.setuptools.packages.find]
+where = ["src"]
