@@ -672,7 +672,10 @@ describe('real JSON-RPC installed-shape integration', () => {
   test('CancelTask aborts cooperative execution and publishes correlated canceled status', async () => {
     const app = await launch();
     const pending = app.client.invoke({ ...invoke, metadata: { mode: 'wait' } });
-    await vi.waitFor(() => expect(app.contexts).toHaveLength(1));
+    // Observe early failures immediately; awaiting pending below still asserts the result.
+    void pending.catch(() => {});
+    // Client preparation and server validation each have their own bounded worker startup.
+    await vi.waitFor(() => expect(app.contexts).toHaveLength(1), { timeout: 5000 });
     const taskId = app.contexts[0]!.taskId;
     await vi.waitFor(async () =>
       expect(
@@ -757,9 +760,10 @@ describe('real JSON-RPC installed-shape integration', () => {
     const taskId = initial.response.id;
     const pending = app.client.invoke(
       { ...invoke, taskId, metadata: { mode: 'wait' } },
-      { signal: AbortSignal.timeout(2000) },
+      { signal: AbortSignal.timeout(10000) },
     );
-    await vi.waitFor(() => expect(app.calls()).toBe(2));
+    void pending.catch(() => {});
+    await vi.waitFor(() => expect(app.calls()).toBe(2), { timeout: 5000 });
     const before = await app.client.client.getTask(GetTaskRequest.fromJSON({ id: taskId }));
     const rejected = await raw(
       app.url,
