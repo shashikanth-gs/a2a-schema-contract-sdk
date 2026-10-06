@@ -11,7 +11,7 @@ validates input before business execution and validates complete output before
 publishing a successful contracted result. The client also validates the peer's
 response.
 
-**Node release candidate:** the Node implementation supports the community draft
+**Node SDK:** the Node implementation supports the community draft
 `v0.1.0-draft.1`. Python support is planned. npm and PyPI packages have not been
 published; use the source checkout or a locally built npm tarball. Worker
 isolation and operational validation pass the supported hosted matrix. See the
@@ -28,6 +28,16 @@ isolation and operational validation pass the supported hosted matrix. See the
 The SDK preserves caller data: validation does not insert defaults, coerce values
 or remove properties. Dynamic discovery returns runtime-validated JSON; it does
 not invent a statically known domain type.
+
+## Shared application APIs
+
+The Node SDK adds skill-associated discovery, immutable prepared-schema resource
+views, compact explicit invocation and validated embedded/external advertisement.
+These APIs belong in the shared SDK; future framework adapters consume them.
+See [developer experience](docs/developer-experience.md) and
+[metadata binding](docs/metadata-binding.md). Python parity remains planned.
+The current working candidate is `0.1.0-rc.1`; the earlier hosted `rc.0` evidence
+does not establish hosted acceptance of these additions.
 
 ## Get started
 

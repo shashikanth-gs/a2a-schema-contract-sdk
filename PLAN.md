@@ -1,9 +1,9 @@
 # SDK implementation plan
 
-Updated: 2026-10-06  
-Status: SDK-001–008 complete; validated Node release candidate
+Updated: 2026-10-07\
+Status: SDK-001–008 complete for the original Node candidate; shared SDK developer-experience work accepted and pending
 
-Next task: SDK-009 (Python engineering and package foundation)
+Next task: SDK-016 (Node skill-associated discovery). SDK-017/019 and Python foundation SDK-009 are also READY.
 Companion tracking: [reference roadmap](https://github.com/shashikanth-gs/a2a-schema-contract-reference/blob/main/PLAN.md). Workspace milestone tracking is maintained internally.
 
 This repository builds reusable JS/TypeScript and Python client/server packages. The reference repository installs the resulting artifacts and proves real usage. The specification repository owns the normative contract; its initial revision is pinned in [contract-source.json](contract-source.json).
@@ -23,12 +23,22 @@ Each row is the authoritative status for that task. Dependency references to REF
 | SDK-007 | Node conformance, security and operational validation | DONE | Codex | SDK-006 |
 | SDK-008 | Node developer documentation and release candidate | DONE | Codex | SDK-007, REF-004 |
 | SDK-009 | Python engineering and package foundation | READY | Unassigned | SDK-008 |
-| SDK-010 | Independent Python inline client/server profile | PLANNED | Unassigned | SDK-009 |
-| SDK-011 | Python secure resolution and operational parity | PLANNED | Unassigned | SDK-010, SDK-006, SDK-007 |
+| SDK-010 | Independent Python inline client/server profile | PLANNED | Unassigned | SDK-009, SDK-016, SDK-018, SDK-019 |
+| SDK-011 | Python secure resolution and operational parity | PLANNED | Unassigned | SDK-010, SDK-006, SDK-007, SDK-017 |
 | SDK-012 | Python developer documentation and release candidate | PLANNED | Unassigned | SDK-011, REF-006 |
-| SDK-013 | Joint release rehearsal and maintenance readiness | PLANNED | Unassigned | SDK-008, SDK-012, REF-008 |
+| SDK-013 | Joint release rehearsal and maintenance readiness | PLANNED | Unassigned | SDK-008, SDK-012, SDK-016–019, REF-008, REF-010 |
 | SDK-014 | Safe schema-bundle support in both languages | DEFERRED | Unassigned | SDK-013 |
 | SDK-015 | Explicit XML/XSD validation support in both languages | DEFERRED | Unassigned | SDK-014 |
+| SDK-016 | Node skill-associated contract discovery | IN_PROGRESS | Codex | SDK-008 |
+| SDK-017 | Node public prepared-schema resource access | IN_PROGRESS | Codex | SDK-006, SDK-007 |
+| SDK-018 | Node catalog advertisement and invocation convenience | IN_PROGRESS | Codex | SDK-016, SDK-017 |
+| SDK-019 | Explicit metadata binding and interoperability fixtures | IN_PROGRESS | Codex | SDK-008 |
+
+SDK-016–019 add shared application APIs, not framework integrations. Node delivery
+is followed by independent Python parity in SDK-010/011. See ADR-013 and the
+[developer-experience review](docs/developer-experience-review.md). Existing DONE
+rows retain their original scope; the earlier candidate and targeted review tests
+do not complete the new work.
 
 ## Working rules and completion standard
 
@@ -192,6 +202,7 @@ Acceptance criteria:
 - Complete discovery → activation → input validation → execution → output validation → client validation, including all supported presence/media/lifecycle/atomic streaming cases.
 - Pass shared semantic cases and real Python transport tests, including zero execution for invalid input, no successful invalid output, nonconforming peer rejection and request isolation.
 - Document Python client/server APIs and quickstarts as part of the task.
+- Independently implement ADR-013's skill-associated discovery, inline schema inspection, validated catalog advertisement and compact explicit invocation APIs. Carry SDK-016/018/019's shared expected outcomes into Python; ambiguous associations never become implicit routing or dispatch.
 
 Evidence: Not started.
 
@@ -207,6 +218,7 @@ Acceptance criteria:
 - Match sanitized errors, diagnostic hooks, correlation, concurrent-request isolation and cancellation/cleanup behavior without requiring a telemetry backend.
 - Run mapped conformance/security cases and repeatable performance baselines against installed wheels. Compare semantic decisions with Node; validator message wording may differ.
 - Update the Python support matrix, resolver documentation and threat model. Bundles/XML stay unsupported until later coverage tasks.
+- Implement ADR-013/SDK-017's immutable prepared-schema/resource view with matching entrypoint/base/reference semantics. Inspection performs no retrieval, exposes no validator internals or credentials, and remains usable after cache clearing.
 
 Evidence: Not started.
 
@@ -236,6 +248,7 @@ Acceptance criteria:
 - Configure least-privilege CI, protected release workflows when remote infrastructure exists, lockfile/update automation and artifact provenance/SBOM/license reports appropriate to shipped dependencies.
 - Include clean-checkout support, backup/recovery for failed release steps and package-publishing setup instructions. Remote setup not yet available is an explicit open item, not claimed complete.
 - Produce a first-release readiness report with requirement coverage, benchmark/support matrix, residual restrictions and executable validation instructions.
+- Include SDK-016–019, REF-010 and Python discovery/resource-view parity evidence. Original M3 acceptance alone is insufficient for the expanded developer-experience scope.
 
 Evidence: Not started.
 
@@ -267,6 +280,61 @@ Acceptance criteria:
 
 Evidence: Deferred; excluded from first release gates.
 
+## SDK-016: Node skill-associated contract discovery
+
+Outcome: applications discover an advertised skill and inspect candidate contracts without hand-writing the skill/catalog join.
+
+Acceptance criteria:
+
+- Expose a public framework-independent view joining advertised skills with optional contract.skillIds, including direction presence, representations and support diagnostics.
+- Cover many-to-many associations, unassociated contracts, absent/stale skill references and no supported representations. Do not invent draft error codes or mandatory mapping rules.
+- Return all candidates without first-match routing. Invocation retains an explicit contract choice; application handler registration remains separate.
+- Preserve immutable snapshots and runtime-validated JSON semantics without asserting invented static domain types.
+- Ship plain-JS/strict-TS public examples/tests and shared expected outcomes for SDK-010 and REF-010's installed workflow.
+
+Evidence: Started 2026-10-07 by Codex in the shared SDK implementation batch; acceptance pending.
+
+## SDK-017: Node public prepared-schema resource access
+
+Outcome: applications and future adapters inspect prepared schemas without duplicating secure resolution.
+
+Acceptance criteria:
+
+- Expose a typed immutable view of the descriptor, dialect, entrypoint and required resource documents; preserve native IDs/base URIs/fragments/aliases and supported reference semantics.
+- Provide one inspection workflow for inline/external schemas, explicit schemaless/Boolean/unsupported outcomes, and no schema weakening through flattening or dereferencing.
+- Inspection causes no retrieval or request-time compilation and exposes no credentials, mutable cache, network handles or compiled validators. Preserve resolver policy and disclosure ownership.
+- Prove snapshot isolation, cache clearing, worker cleanup independence and existing bounds; cover redirected bases, fragments, local references and supported recursion with independent expected resource identities.
+- Ship public JS/TS examples, installed-artifact checks and shared resource-view cases for SDK-011. Provider/framework translation remains outside this API.
+
+Evidence: Started 2026-10-07 by Codex; public access and installed acceptance pending.
+
+## SDK-018: Node catalog advertisement and invocation convenience
+
+Outcome: ordinary applications advertise and consume embedded/external contracts with a compact supported recipe.
+
+Acceptance criteria:
+
+- Provide validated catalog authoring/advertisement helpers for embedded catalogs and external descriptors, including media type and integrity/immutability policy. Prepared server execution and public advertisement describe the same intended snapshot.
+- Demonstrate external advertisement without replacing AgentExtension.params after construction. Preserve other extensions, skills, required activation, host authentication/context/storage and resolver policy.
+- Compose public discovery, inspection, explicit contract choice, negotiation, validation and invocation. Fill wire metadata without making applications reconstruct protocol structures.
+- Report ambiguity before dispatch; choose a representation only when caller constraints leave one supported option. No hidden routing, weakening, validation bypass, invocation retry or implicit retrieval.
+- Ship plain-JS/strict-TS structured and text-to-JSON recipes with invalid-input/output cases, cleanup and limitations. REF-010 consumes installed artifacts; SDK-010 supplies Python parity.
+
+Evidence: Started 2026-10-07 by Codex with SDK-016/017; acceptance pending.
+
+## SDK-019: Explicit metadata binding and interoperability fixtures
+
+Outcome: independent implementers reproduce a documented A2A 1.0 binding without guessing metadata placement.
+
+Acceptance criteria:
+
+- Document operation invocation, Part primary and Task/standalone Message/final-status result metadata with valid request/response/failure fixtures. Distinguish the local binding policy from the pinned draft's under-specified placement.
+- Prepare a reviewable clarification covering the Message-metadata example and operation binding. Upstream posting, pinned-source changes and new protocol identifiers are outside this task.
+- Exercise independent peer fixtures, conflicting duplicates, missing activation/contract-result echo/identity and unrelated-extension coexistence. Distinguish required contract echoes from the binding's optional activation-response header; declare unsupported placements and preserve validation/publication guarantees.
+- Supply shared cases and migration guidance for SDK-010/011 and REF-006. Record tested scope without claiming arbitrary framework compatibility or maintainer endorsement.
+
+Evidence: Started 2026-10-07 by Codex; ADR-005 remains the binding policy; fixtures/clarification pending.
+
 ## Progress log
 
 | Date | Task | Update | Evidence |
@@ -276,6 +344,7 @@ Evidence: Deferred; excluded from first release gates.
 | 2026-10-06 | SDK-002 | DONE; strict ESM package, fresh toolchain/lock, verified resources, configured CI and clean tarball consumers | docs/foundation-report.md; both Node 22/24 clean gates pass; SDK-003 READY |
 | 2026-10-06 | SDK-003 | DONE; offline inline core and public APIs, frozen validation/metadata/codecs/errors, shared vectors and installed examples | docs/inline-core-report.md; 192 tests/100% coverage and 14 consumer checks on fresh Node 22/24; SDK-004 READY |
 | 2026-10-06 | SDK-004/005 | Combined inline HTTP/SSE batch DONE locally; SDK-006 READY | Integration report and paired clean/installed-artifact evidence |
+| 2026-10-07 | SDK-016–019 planning | Accepted shared discovery, prepared-schema access, catalog/invocation convenience and binding clarification; implementation pending. Python parity and joint readiness dependencies updated. | ADR-013; docs/developer-experience-review.md; REF-010 |
 
 | 2026-10-06 | SDK-006 | DONE locally; SDK-007 READY | Resolver report: 359 tests and 21 installed-consumer checks on fresh Node 22/24; explicit HTTPS policy, graph/integrity/auth/cache and public transport evidence; worker/operational validation remains next |
 

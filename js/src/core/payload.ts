@@ -1,6 +1,6 @@
-import { EXTENSION_URI, type Direction, type JsonValue } from './constants.js';
 import type { ContractCatalog, PreparedRepresentation } from './catalog.js';
-import { fail, type ErrorContext } from './errors.js';
+import { type Direction, EXTENSION_URI, type JsonValue } from './constants.js';
+import { type ErrorContext, fail } from './errors.js';
 import { absoluteUri, isRecord, LIMITS, snapshot } from './json.js';
 import { matchMediaTypes } from './media.js';
 import { checkStructure } from './structure.js';

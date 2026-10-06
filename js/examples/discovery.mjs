@@ -1,7 +1,7 @@
 import {
+  encodePrimary,
   EXTENSION_URI,
   parseExtension,
-  encodePrimary,
   validateInvocation,
 } from 'a2a-schema-contract/core';
 

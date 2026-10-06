@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { performance } from 'node:perf_hooks';
+
 import { ContractError, type DiagnosticCode } from '../core/errors.js';
 
 export interface DiagnosticEvent {

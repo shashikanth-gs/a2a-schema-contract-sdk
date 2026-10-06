@@ -5,15 +5,16 @@ import { readFile } from 'node:fs/promises';
 import { createServer } from 'node:https';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import express from 'express';
-import { AgentCard, Artifact, Task, TaskState, SendMessageRequest } from '@a2a-js/sdk';
+
+import { AgentCard, Artifact, SendMessageRequest, Task, TaskState } from '@a2a-js/sdk';
+import { toJsonRpcError } from '@a2a-js/sdk/errors';
 import { AgentEvent, InMemoryTaskStore } from '@a2a-js/sdk/server';
 import { agentCardHandler, jsonRpcHandler, UserBuilder } from '@a2a-js/sdk/server/express';
-import { toJsonRpcError } from '@a2a-js/sdk/errors';
+import { discoverContractClient } from 'a2a-schema-contract/client';
 import { EXTENSION_URI, JSON_SCHEMA_DIALECT } from 'a2a-schema-contract/core';
 import { createContractResolver } from 'a2a-schema-contract/resolver';
 import { createContractServer, outputArtifact } from 'a2a-schema-contract/server';
-import { discoverContractClient } from 'a2a-schema-contract/client';
+import express from 'express';
 
 // This certificate/key is a public local-test fixture. It is never a production credential.
 const fixture = process.argv[2] ?? fileURLToPath(new URL('../test/fixtures/tls/', import.meta.url));
@@ -85,9 +86,18 @@ const resolverOptions = {
 };
 let http;
 try {
-  const prepared = await createContractResolver(resolverOptions).resolveCatalog(source, {
-    origin: 'local',
-  });
+  const prepared = await createContractResolver(resolverOptions).resolveExtensionParams(
+    {
+      catalog: {
+        uri: origin + '/catalog',
+        mediaType: 'application/json',
+        integrity: catalogIntegrity,
+      },
+    },
+    {
+      origin: 'local',
+    },
+  );
   let calls = 0;
   const adapter = createContractServer({
     card: AgentCard.fromJSON({
@@ -101,6 +111,7 @@ try {
       skills: [],
     }),
     catalog: prepared,
+    catalogDelivery: 'external',
     taskStore: new InMemoryTaskStore(),
     required: true,
     executor: {
@@ -126,13 +137,6 @@ try {
       async cancelTask() {},
     },
   });
-  adapter.card.capabilities.extensions.find((e) => e.uri === EXTENSION_URI).params = {
-    catalog: {
-      uri: origin + '/catalog',
-      mediaType: 'application/json',
-      integrity: catalogIntegrity,
-    },
-  };
   const app = express();
   app.use(express.json({ limit: '256kb' }));
   app.use('/.well-known/agent-card.json', agentCardHandler({ agentCardProvider: adapter.handler }));

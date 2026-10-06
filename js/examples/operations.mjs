@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { parseCatalog, JSON_SCHEMA_DIALECT } from 'a2a-schema-contract/core';
+
+import { JSON_SCHEMA_DIALECT, parseCatalog } from 'a2a-schema-contract/core';
 import { createValidationSession } from 'a2a-schema-contract/operations';
 
 const id = 'urn:example:isolated:1';

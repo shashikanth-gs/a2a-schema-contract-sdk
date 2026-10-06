@@ -1,11 +1,5 @@
-import {
-  createValidationSession,
-  lazyCatalog,
-  type ValidationOptions,
-} from '../operations/index.js';
-import { observe } from '../operations/diagnostics.js';
 import { randomUUID } from 'node:crypto';
-import type { ContractResolver } from '../resolver/index.js';
+
 import {
   AgentCard,
   Extensions,
@@ -13,37 +7,48 @@ import {
   Part,
   Role,
   SendMessageRequest,
+  type StreamResponse,
   Task,
   TaskState,
   TaskStatusUpdateEvent,
-  type StreamResponse,
 } from '@a2a-js/sdk';
 import {
+  type Client,
   ClientFactory,
   DefaultAgentCardResolver,
   JsonRpcTransportFactory,
+  type RequestOptions,
   ServiceParameters,
   withA2AExtensions,
-  type Client,
-  type RequestOptions,
 } from '@a2a-js/sdk/client';
+
 import {
-  EXTENSION_URI,
-  encodePrimary,
-  matchMediaTypes,
-  parseExtension,
-  type ContractCatalog,
-  type JsonValue,
-  type Payload,
-} from '../core/index.js';
-import {
+  type ContractSelection,
   guardContainer,
   guardParts,
   reject,
   selectRequest,
   stopStates,
-  type ContractSelection,
 } from '../adapters/a2a-js/boundary.js';
+import {
+  type ContractCatalog,
+  type ContractDiscovery,
+  encodePrimary,
+  EXTENSION_URI,
+  type JsonValue,
+  matchMediaTypes,
+  parseExtension,
+  type Payload,
+  type SelectedInvocation,
+} from '../core/index.js';
+import { snapshot } from '../core/json.js';
+import { observe } from '../operations/diagnostics.js';
+import {
+  createValidationSession,
+  lazyCatalog,
+  type ValidationOptions,
+} from '../operations/index.js';
+import type { ContractResolver } from '../resolver/index.js';
 
 export { EXTENSION_URI } from '../core/index.js';
 
@@ -63,6 +68,11 @@ export interface ContractResponse {
   readonly response: Message | Task;
   readonly payload: Payload | undefined;
 }
+/** Compact application input; protocol representation metadata is selected before dispatch. */
+export interface ContractInvocationOptions extends Omit<InvocationOptions, 'input'> {
+  readonly input?: unknown;
+  readonly inputRepresentationId?: string;
+}
 export type ContractStreamEvent =
   | { readonly kind: 'companion'; readonly event: StreamResponse }
   | { readonly kind: 'result'; readonly result: ContractResponse };
@@ -70,6 +80,11 @@ export interface ContractClient {
   readonly client: Client;
   readonly catalog: ContractCatalog;
   readonly card: AgentCard;
+  describe(): Promise<ContractDiscovery>;
+  invokeContract(
+    options: ContractInvocationOptions,
+    requestOptions?: RequestOptions,
+  ): Promise<ContractResponse>;
   prepare(options: InvocationOptions): SendMessageRequest;
   close(): Promise<void>;
   invoke(options: InvocationOptions, requestOptions?: RequestOptions): Promise<ContractResponse>;
@@ -218,10 +233,38 @@ export async function createContractClient(
     );
     return Object.freeze({ response, payload });
   }
-  return Object.freeze({
+  const contractClient: ContractClient = Object.freeze({
     client,
     catalog,
     card,
+    async describe() {
+      const skills = (AgentCard.toJSON(card) as { skills?: unknown }).skills ?? [];
+      return snapshot(await validation.run('describe', { skills }), {
+        origin: 'remote',
+      }) as unknown as ContractDiscovery;
+    },
+    async invokeContract(options: ContractInvocationOptions, requestOptions?: RequestOptions) {
+      const checked = snapshot(options, {
+        origin: 'local',
+      }) as unknown as ContractInvocationOptions;
+      const { input, inputRepresentationId, acceptedOutputRepresentationIds, ...rest } = checked;
+      const selected = await validation.run<SelectedInvocation>(
+        'selection',
+        {
+          contractId: checked.contractId,
+          ...(Object.hasOwn(checked, 'input') ? { input } : {}),
+          ...(inputRepresentationId === undefined ? {} : { inputRepresentationId }),
+          ...(acceptedOutputRepresentationIds === undefined
+            ? {}
+            : { acceptedOutputRepresentationIds }),
+        },
+        {
+          context: { origin: 'local' },
+          ...(requestOptions?.signal ? { signal: requestOptions.signal } : {}),
+        },
+      );
+      return contractClient.invoke({ ...rest, ...selected }, requestOptions);
+    },
     close: () => validation.close(),
     prepare,
     async invoke(options: InvocationOptions, requestOptions?: RequestOptions) {
@@ -313,6 +356,7 @@ export async function createContractClient(
       if (!done) reject();
     },
   });
+  return contractClient;
 }
 export interface DiscoveryOptions {
   readonly resolver?: ContractResolver;

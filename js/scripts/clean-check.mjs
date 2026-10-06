@@ -32,17 +32,17 @@ try {
   const reportDir = path.join(root, 'js/reports');
   await mkdir(reportDir, { recursive: true });
   await cp(
-    path.join(scratch, `js/reports/rc-package-node${major}.json`),
-    path.join(reportDir, `rc-package-node${major}.json`),
+    path.join(scratch, `js/reports/dx-package-node${major}.json`),
+    path.join(reportDir, `dx-package-node${major}.json`),
   );
   const packageReport = JSON.parse(
-    await readFile(path.join(reportDir, `rc-package-node${major}.json`), 'utf8'),
+    await readFile(path.join(reportDir, `dx-package-node${major}.json`), 'utf8'),
   );
   await cp(
     path.join(scratch, `js/reports/rc-dependencies-node${major}.json`),
     path.join(reportDir, `rc-dependencies-node${major}.json`),
   );
-  const artifactDir = path.join(root, `js/artifacts/rc-node${major}`);
+  const artifactDir = path.join(root, `js/artifacts/dx-node${major}`);
   await mkdir(artifactDir, { recursive: true });
   await cp(
     path.join(scratch, 'js/artifacts', packageReport.artifact),
@@ -52,10 +52,10 @@ try {
     await readFile(path.join(scratch, 'js/coverage/coverage-summary.json'), 'utf8'),
   ).total;
   await writeFile(
-    path.join(reportDir, `rc-clean-node${major}.json`),
+    path.join(reportDir, `dx-clean-node${major}.json`),
     JSON.stringify(
       {
-        task: 'SDK-007/008',
+        task: 'SDK-016–019',
         runtime: process.version,
         platform: `${process.platform}/${process.arch}`,
         commands: ['npm ci', 'npm run check'],
@@ -69,9 +69,9 @@ try {
       2,
     ) + '\n',
   );
-  await writeFile(path.join(reportDir, `rc-clean-node${major}.log`), output);
+  await writeFile(path.join(reportDir, `dx-clean-node${major}.log`), output);
   console.log(
-    `PASS fresh npm ci + complete package checks on ${process.version}; reports/rc-clean-node${major}.json`,
+    `PASS fresh npm ci + complete package checks on ${process.version}; reports/dx-clean-node${major}.json`,
   );
 } catch (error) {
   if (error.stdout) output += error.stdout.toString();

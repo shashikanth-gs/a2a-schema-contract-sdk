@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
-import { format } from 'prettier';
 import { createHash } from 'node:crypto';
 import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+
+import { format } from 'prettier';
 
 const snapshot = new URL('../../vendor/contract/', import.meta.url);
 const dist = new URL('../dist/', import.meta.url);

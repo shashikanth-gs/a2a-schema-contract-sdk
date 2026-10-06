@@ -1,11 +1,12 @@
 import { expect, test } from 'vitest';
-import { parseCatalog, ContractError, JSON_SCHEMA_DIALECT } from '../src/core/index.js';
+
+import { ContractError, JSON_SCHEMA_DIALECT, parseCatalog } from '../src/core/index.js';
+import { type DiagnosticEvent, observe } from '../src/operations/diagnostics.js';
 import {
   createValidationSession,
   lazyCatalog,
   VALIDATION_LIMITS,
 } from '../src/operations/index.js';
-import { observe, type DiagnosticEvent } from '../src/operations/diagnostics.js';
 import {
   catalogCompiler,
   catalogProgram,

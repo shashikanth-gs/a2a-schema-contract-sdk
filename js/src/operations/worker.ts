@@ -1,10 +1,12 @@
 import { isMainThread, parentPort, workerData } from 'node:worker_threads';
+
 import { createCatalog } from '../core/catalog.js';
-import { ContractError, fail, type ErrorContext } from '../core/errors.js';
+import { describeContracts, selectInvocation, type SimpleInvocation } from '../core/discovery.js';
+import { ContractError, type ErrorContext, fail } from '../core/errors.js';
 import {
-  compileProgram,
   catalogCompiler,
   type CatalogProgram,
+  compileProgram,
   type SchemaProgram,
 } from './program.js';
 
@@ -38,6 +40,10 @@ export async function dispatchOperation(
             context.origin,
           )
           .validate(value.value, context.origin);
+      } else if (operation === 'describe') {
+        result = describeContracts(catalog, value.skills);
+      } else if (operation === 'selection') {
+        result = selectInvocation(catalog, value as unknown as SimpleInvocation);
       } else if (operation === 'capabilities') {
         result = catalog.contracts.flatMap((contract) =>
           ['input', 'output'].map((direction) => ({

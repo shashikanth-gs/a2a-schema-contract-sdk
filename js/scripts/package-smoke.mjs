@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { cp, mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -96,6 +96,14 @@ await assert.rejects(import('a2a-schema-contract/src/core/index.ts'), { code: 'E
   command(process.execPath, ['core.mjs']);
   await cp(path.join(root, 'examples/discovery.mjs'), path.join(temp, 'discovery.mjs'));
   command(process.execPath, ['discovery.mjs']);
+  await cp(
+    path.join(root, 'examples/developer-experience.mjs'),
+    path.join(temp, 'developer-experience.mjs'),
+  );
+  const discoveryReport = JSON.parse(
+    command(process.execPath, ['developer-experience.mjs']).trim(),
+  );
+  assert.equal(discoveryReport.result, 'PASS');
   // Strict core declarations must work before the optional official SDK is installed.
   command(npm, [
     'install',
@@ -143,6 +151,12 @@ void [value, presence, direction, resource, EXTENSION_URI, unchecked, domain, en
   await writeFile(path.join(temp, 'consumer.ts'), types);
   const tsc = path.join(temp, 'node_modules/typescript/bin/tsc');
   command(process.execPath, [tsc, '-p', 'tsconfig.json']);
+  await cp(path.join(root, 'examples/discovery-types.ts'), path.join(temp, 'discovery-types.ts'));
+  await writeFile(
+    path.join(temp, 'tsconfig.discovery.json'),
+    JSON.stringify({ ...tsconfig, include: ['discovery-types.ts'] }),
+  );
+  command(process.execPath, [tsc, '-p', 'tsconfig.discovery.json']);
   await cp(path.join(root, 'examples/resolver-types.ts'), path.join(temp, 'resolver-types.ts'));
   await writeFile(
     path.join(temp, 'tsconfig.resolver.json'),
@@ -238,7 +252,7 @@ void [peerVersion, integration];
   const runtimeAudit = JSON.parse(command(npm, ['audit', '--omit=dev', '--json']));
   assert.equal(runtimeAudit.metadata.vulnerabilities.total, 0);
   const report = {
-    task: 'SDK-007/008',
+    task: 'SDK-016–019',
     runtime: process.version,
     platform: `${process.platform}/${process.arch}`,
     artifact: pack.filename,
@@ -276,8 +290,11 @@ void [peerVersion, integration];
       'strict-installed-operational-types',
       '20-pinned-structural-cases-against-shipped-schemas',
       'repeatable-installed-cold-warm-core-worker-and-HTTPS-benchmarks',
+      'installed-skill-discovery-schema-resources-and-selection-without-peer',
+      'strict-immutable-discovery-types-without-peer',
     ],
     operationsReport,
+    discoveryReport,
     conformanceReport,
     benchmarkReport,
     transportReport,
@@ -296,7 +313,7 @@ void [peerVersion, integration];
     ],
   };
   await writeFile(
-    path.join(reports, `rc-package-node${process.versions.node.split('.')[0]}.json`),
+    path.join(reports, `dx-package-node${process.versions.node.split('.')[0]}.json`),
     JSON.stringify(report, null, 2) + '\n',
   );
   console.log(

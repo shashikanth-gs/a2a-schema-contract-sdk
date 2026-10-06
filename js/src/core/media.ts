@@ -1,4 +1,4 @@
-import { fail, type ErrorContext } from './errors.js';
+import { type ErrorContext, fail } from './errors.js';
 
 export type Media = 'json' | 'text';
 export function media(value: string, context: ErrorContext): Media {

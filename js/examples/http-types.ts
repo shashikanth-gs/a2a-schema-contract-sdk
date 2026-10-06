@@ -1,7 +1,7 @@
 import { AgentCard, Artifact, Task } from '@a2a-js/sdk';
 import { AgentEvent, InMemoryTaskStore } from '@a2a-js/sdk/server';
-import { createContractServer, outputArtifact } from 'a2a-schema-contract/server';
 import { discoverContractClient, type InvocationOptions } from 'a2a-schema-contract/client';
+import { createContractServer, outputArtifact } from 'a2a-schema-contract/server';
 const contractId = 'urn:typed:1';
 const representation = { id: 'json', mediaType: 'application/json' };
 const server = createContractServer({

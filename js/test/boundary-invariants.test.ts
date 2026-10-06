@@ -1,11 +1,12 @@
-import { expect, test } from 'vitest';
-import { AgentEvent } from '@a2a-js/sdk/server';
 import { Message, Task, TaskArtifactUpdateEvent, TaskStatusUpdateEvent } from '@a2a-js/sdk';
+import { AgentEvent } from '@a2a-js/sdk/server';
+import { expect, test } from 'vitest';
+
+import { prepareRequest } from '../src/client/index.js';
 import { EXTENSION_URI, JSON_SCHEMA_DIALECT, parseCatalog } from '../src/core/index.js';
 import { dispatchOperation } from '../src/operations/worker.js';
-import { encodeEvents, decodeEvents, validateEvents } from '../src/server/index.js';
-import { prepareRequest } from '../src/client/index.js';
 import type { WireEvent } from '../src/server/index.js';
+import { decodeEvents, encodeEvents, validateEvents } from '../src/server/index.js';
 
 const id = 'urn:boundary-invariants:1';
 const context = { origin: 'remote' as const };

@@ -1,45 +1,47 @@
 import { once } from 'node:events';
-import express from 'express';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+
 import {
   AgentCard,
   Artifact,
+  CancelTaskRequest,
+  GetTaskRequest,
+  ListTasksRequest,
   Message,
   Part,
   SendMessageRequest,
   Task,
+  TaskArtifactUpdateEvent,
   TaskState,
   TaskStatusUpdateEvent,
-  TaskArtifactUpdateEvent,
-  ListTasksRequest,
-  GetTaskRequest,
-  CancelTaskRequest,
 } from '@a2a-js/sdk';
+import { toJsonRpcError } from '@a2a-js/sdk/errors';
 import {
   AgentEvent,
-  InMemoryTaskStore,
-  ServerCallContext,
   type AgentExecutor,
+  InMemoryTaskStore,
   type RequestContext,
+  ServerCallContext,
 } from '@a2a-js/sdk/server';
 import { agentCardHandler, jsonRpcHandler, UserBuilder } from '@a2a-js/sdk/server/express';
-import { toJsonRpcError } from '@a2a-js/sdk/errors';
-import { ContractError, EXTENSION_URI, type Presence } from '../src/core/index.js';
+import express from 'express';
+import { afterEach, describe, expect, test, vi } from 'vitest';
+
+import { guardJsonRpcRequest } from '../src/adapters/a2a-js/index.js';
 import {
-  createContractServer,
-  outputArtifact,
-  outputPart,
-  type ContractServer,
-} from '../src/server/index.js';
-import {
+  type ContractClient,
   createContractClient,
   discoverContractClient,
   guardResponseFetch,
-  type ContractClient,
   type InvocationOptions,
 } from '../src/client/index.js';
+import { ContractError, EXTENSION_URI, type Presence } from '../src/core/index.js';
 import { createContractResolver } from '../src/resolver/index.js';
-import { guardJsonRpcRequest } from '../src/adapters/a2a-js/index.js';
+import {
+  type ContractServer,
+  createContractServer,
+  outputArtifact,
+  outputPart,
+} from '../src/server/index.js';
 
 const id = 'urn:example:integration:1';
 const json = {

@@ -1,26 +1,28 @@
 import { readFileSync } from 'node:fs';
+
+import type { ValidateFunction } from 'ajv';
 import { describe, expect, test } from 'vitest';
+
 import {
+  type CarrierProfile,
+  type ContractCatalog,
   ContractError,
+  decodePrimary,
+  type DiagnosticCode,
+  type Direction,
+  encodePrimary,
   EXTENSION_URI,
   JSON_SCHEMA_DIALECT,
+  matchMediaTypes,
   parseCatalog,
   parseExtension,
   parseExtensionParams,
-  encodePrimary,
-  decodePrimary,
   validateInvocation,
   validateResult,
-  matchMediaTypes,
-  type ContractCatalog,
-  type DiagnosticCode,
-  type Direction,
-  type CarrierProfile,
 } from '../src/core/index.js';
-import { snapshot, LIMITS, absoluteUri } from '../src/core/json.js';
-import { checkStructure } from '../src/core/structure.js';
+import { absoluteUri, LIMITS, snapshot } from '../src/core/json.js';
 import { checkInstance } from '../src/core/schema.js';
-import type { ValidateFunction } from 'ajv';
+import { checkStructure } from '../src/core/structure.js';
 
 const id = 'urn:example:contract:test:1';
 const otherId = 'https://contracts.example.org/other/v2';

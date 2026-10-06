@@ -1,16 +1,17 @@
 import type { ValidateFunction } from 'ajv/dist/2020.js';
+
 import {
-  JSON_SCHEMA_DIALECT,
-  EXTENSION_URI,
   type Direction,
+  EXTENSION_URI,
+  JSON_SCHEMA_DIALECT,
   type JsonValue,
   type Presence,
 } from './constants.js';
-import { ContractError, fail, type DiagnosticCode, type ErrorContext } from './errors.js';
+import { ContractError, type DiagnosticCode, type ErrorContext, fail } from './errors.js';
 import { isRecord, snapshot, versionedId } from './json.js';
-import { media, type Media } from './media.js';
-import { checkStructure } from './structure.js';
+import { type Media, media } from './media.js';
 import { checkInstance, compileSchema } from './schema.js';
+import { checkStructure } from './structure.js';
 
 export interface Integrity {
   readonly algorithm: 'sha-256' | 'sha-512';
@@ -28,6 +29,18 @@ export interface SchemaDescriptor {
     readonly integrity?: Integrity;
   };
   readonly entrypoint?: string;
+}
+export interface CatalogReference {
+  readonly uri: string;
+  readonly mediaType: 'application/json';
+  readonly integrity?: Integrity;
+}
+export interface SchemaResources {
+  readonly entry: string;
+  readonly documents: readonly { readonly uri: string; readonly value: JsonValue }[];
+}
+export interface PreparedSchema extends SchemaResources {
+  readonly descriptor: SchemaDescriptor;
 }
 export interface Representation {
   readonly id: string;
@@ -62,6 +75,14 @@ export interface RepresentationCapability {
 }
 export interface ContractCatalog {
   readonly contracts: readonly Contract[];
+  /** Present only when this catalog was acquired through approved external resolution. */
+  readonly reference?: CatalogReference;
+  /** Inspect the immutable resource snapshot without fetching or compiling a validator. */
+  schema(
+    contractId: string,
+    direction: Direction,
+    representationId: string,
+  ): PreparedSchema | undefined;
   getContract(id: string, origin?: 'local' | 'remote'): Contract;
   select(
     contractId: string,
@@ -90,6 +111,10 @@ export function createCatalog(
   value: unknown,
   origin: 'local' | 'remote',
   compile: (descriptor: SchemaDescriptor, context: ErrorContext) => ValidateFunction,
+  prepared: {
+    readonly schemas?: Readonly<Record<string, SchemaResources>>;
+    readonly reference?: CatalogReference;
+  } = {},
 ): ContractCatalog {
   const context: ErrorContext = { origin };
   const data = snapshot(value, context);
@@ -162,6 +187,31 @@ export function createCatalog(
   }
   return Object.freeze({
     contracts,
+    ...(prepared.reference ? { reference: prepared.reference } : {}),
+    schema(contractId: string, direction: Direction, representationId: string) {
+      if (direction !== 'input' && direction !== 'output') fail('INVALID_STRUCTURE', context);
+      const contract = getContract(contractId, origin, direction);
+      const representation = contract[direction].representations?.find(
+        (r) => r.id === representationId,
+      );
+      const scoped = { origin, contractId, direction, representationId };
+      if (!representation) fail('REPRESENTATION_NOT_SUPPORTED', scoped);
+      const descriptor = representation.schema;
+      if (!descriptor) return undefined;
+      if (descriptor.dialect !== JSON_SCHEMA_DIALECT) fail('UNSUPPORTED_DIALECT', scoped);
+      if (descriptor.mediaType !== 'application/schema+json')
+        fail('UNSUPPORTED_MEDIA_TYPE', scoped);
+      const resources =
+        prepared.schemas?.[JSON.stringify([contractId, direction, representationId])];
+      if (resources) return Object.freeze({ descriptor, ...resources });
+      if (!Object.hasOwn(descriptor, 'inline')) fail('SCHEMA_UNAVAILABLE', scoped);
+      const entry = `urn:a2a-schema-contract:inline:${encodeURIComponent(JSON.stringify([contractId, direction, representationId]))}`;
+      return Object.freeze({
+        descriptor,
+        entry,
+        documents: Object.freeze([Object.freeze({ uri: entry, value: descriptor.inline! })]),
+      });
+    },
     getContract,
     select,
     capabilities(contractId: string, direction: Direction): readonly RepresentationCapability[] {

@@ -7,7 +7,7 @@ Source: pinned draft sections 4–16, seven schemas, all examples, positive/nega
 | D04-01 / 4   | advertiser, client                   | AgentCard placement; exact extension URI; invalid params; inline/external exclusive forms                                                              | SDK-003/004                  | T/K; [integration evidence and case map](integration-report.md), `js/test/integration.test.ts`, installed HTTP/SSE quickstart; core evidence retained; resolver/isolation/provider/Python obligations remain with their named tasks |
 | D04-02 / 4   | advertiser, resolver                 | External catalog immutable or integrity-pinned; reject mutable/unpinned resources; prefer external for large discovery                                 | SDK-006                      | N; ADR-010; external catalog pin/immutability refusal and cache tests; [resolver report](resolver-report.md), `js/test/resolver.test.ts`                                                                                            |
 | D04-03 / 4   | advertiser, server                   | required=true only for dependency on extension; optional baseline works; required absence refused before execution                                     | SDK-004/005                  | T/K; [integration evidence and case map](integration-report.md), `js/test/integration.test.ts`, installed HTTP/SSE quickstart; core evidence retained; resolver/isolation/provider/Python obligations remain with their named tasks |
-| D04-04 / 4   | client, server                       | skillIds descriptive; never route/select contract by skill ID                                                                                          | SDK-003/004                  | T/K; [integration evidence and case map](integration-report.md), `js/test/integration.test.ts`, installed HTTP/SSE quickstart; core evidence retained; resolver/isolation/provider/Python obligations remain with their named tasks |
+| D04-04 / 4   | client, server                       | skillIds descriptive; discovery associations allowed; explicit contract IDs select requests                                                                                          | SDK-003/004                  | T/K; [integration evidence and case map](integration-report.md), `js/test/integration.test.ts`, installed HTTP/SSE quickstart; core evidence retained; resolver/isolation/provider/Python obligations remain with their named tasks |
 | D05-01 / 5   | advertiser, client, server           | Absolute immutable versioned contract ID; reject relative/latest; duplicate contracts; duplicate representations within direction                      | SDK-003                      | K; duplicate/versioned ID tests; immutability advertiser-owned; [core evidence](inline-core-report.md)                                                                                                                              |
 | D05-02 / 5   | advertiser, client, server           | required exactly one; optional zero/one; none zero; representations mandatory for required/optional, forbidden for none                                | SDK-003/005                  | T/K; [integration evidence and case map](integration-report.md), `js/test/integration.test.ts`, installed HTTP/SSE quickstart; core evidence retained; resolver/isolation/provider/Python obligations remain with their named tasks |
 | D05-03 / 5   | client, server                       | Alternatives not simultaneous primaries; schemas optional but media required; wrong identity/direction/cardinality                                     | SDK-003/005                  | T/K; [integration evidence and case map](integration-report.md), `js/test/integration.test.ts`, installed HTTP/SSE quickstart; core evidence retained; resolver/isolation/provider/Python obligations remain with their named tasks |
@@ -47,6 +47,25 @@ Source: pinned draft sections 4–16, seven schemas, all examples, positive/nega
 | D16-01 / 16  | all                                  | Structural schemas plus prose obligations; upstream positive/negative/security vectors; independently validated language implementations               | SDK-007/010/011/013; REF-006 | P; 20 structural checks are insufficient for behavior                                                                                                                                                                               |
 
 SHOULD/MAY recommendations are represented above: baseline optional extension, large external catalogs/hierarchies/bundles, schema/$id dialect agreement, no-output Task, provider assistance/repair, authenticated catalogs, diagnostic disclosure and vectors. Unsupported optional behavior is explicit in the support matrix. All seven schemas and every upstream example/fixture have been read and preserved byte-for-byte under the verified vendor manifest; structural fixture evidence cannot satisfy semantic rows by itself.
+
+## Shared application API work accepted 2026-10-07
+
+ADR-013 distinguishes descriptive skill association from protocol routing:
+consumers may use skillIds to find candidate contracts, then explicitly select
+the contractId emitted in the request. RC1 implements the shared Node APIs; [current evidence](developer-experience-report.md)
+records their acceptance separately from Python parity.
+
+| Work | Relationship to existing requirements | Pending delivery and acceptance |
+| --- | --- | --- |
+| Skill-associated discovery | D04-04 association semantics and D05-01 explicit identity | SDK-016; Python SDK-010; installed REF-010 and four-pairing REF-006 |
+| Public prepared-schema resources | D08-01/03 schema descriptors and native references; D13 resolver/security policy | SDK-017; Python SDK-011; REF-010/006 |
+| Catalog advertisement/invocation helpers | D04-01/02, D07 selection/activation and existing validation guarantees | SDK-018; Python SDK-010; REF-010/006 |
+| Binding clarification | D07-02 invocation placement and D10-04 result echo | SDK-019 shared fixtures; Python SDK-010/011; REF-006 |
+
+These API deliverables do not add normative wire requirements or weaken the
+supported profile. Node implementation and fresh package evidence are recorded in the
+developer-experience report; Python and four-pairing evidence remain pending.
+Original Node candidate evidence remains scoped to the earlier tasks.
 
 ## SDK-001 acceptance matrix
 

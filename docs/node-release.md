@@ -1,6 +1,6 @@
 # Node release candidate and publication policy
 
-The candidate package is **`a2a-schema-contract@0.1.0-rc.0`**, unscoped at the
+The candidate package is **`a2a-schema-contract@0.1.0-rc.1`**, unscoped at the
 maintainer's request. It can be installed from the reviewed npm tarball. It is
 not available from the npm registry yet. `private: true` keeps publishing disabled.
 The public registry returned E404 for the chosen name on 2026-10-06; that result
@@ -37,7 +37,7 @@ pass for the actual candidate revision; an older green run is insufficient.
 
 | Identifier | Policy |
 |---|---|
-| npm package | SemVer; this release is `0.1.0-rc.0`, independently versioned from Python. |
+| npm package | SemVer; this release is `0.1.0-rc.1`, independently versioned from Python. |
 | A2A protocol | Exactly 1.0 over JSON-RPC/HTTP/SSE with official peer 1.3.0. |
 | Extension URI | `https://w3id.org/a2a-schema-contract/draft/0.1`; it identifies the pinned draft, not the npm version. |
 | Domain contract ID | Immutable, absolute and explicitly versioned by its advertiser. |

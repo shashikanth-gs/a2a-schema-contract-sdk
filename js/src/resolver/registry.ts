@@ -1,10 +1,11 @@
 import type { ValidateFunction } from 'ajv/dist/2020.js';
+
+import { type JsonValue } from '../core/constants.js';
+import { type ErrorContext, fail } from '../core/errors.js';
+import { isRecord } from '../core/json.js';
+import { arraySchemas, inspectSchema, mapSchemas, oneSchema } from '../core/schema.js';
 import { createValidationSession, type ValidationSession } from '../operations/index.js';
 import { compileProgram, type SchemaProgram } from '../operations/program.js';
-import { type JsonValue } from '../core/constants.js';
-import { fail, type ErrorContext } from '../core/errors.js';
-import { isRecord } from '../core/json.js';
-import { inspectSchema, mapSchemas, oneSchema, arraySchemas } from '../core/schema.js';
 
 export interface ResourceDocument {
   readonly value: JsonValue;

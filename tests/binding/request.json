@@ -1,0 +1,36 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "SendMessage",
+  "params": {
+    "message": {
+      "messageId": "binding-input-1",
+      "role": "ROLE_USER",
+      "parts": [
+        {
+          "data": {
+            "origin": "BLR"
+          },
+          "mediaType": "application/json",
+          "metadata": {
+            "https://w3id.org/a2a-schema-contract/draft/0.1": {
+              "contractId": "urn:example:flight-search:1",
+              "direction": "input",
+              "representationId": "json",
+              "role": "primary"
+            }
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "https://w3id.org/a2a-schema-contract/draft/0.1": {
+        "contractId": "urn:example:flight-search:1",
+        "inputRepresentationId": "json",
+        "acceptedOutputRepresentationIds": [
+          "json"
+        ]
+      }
+    }
+  }
+}

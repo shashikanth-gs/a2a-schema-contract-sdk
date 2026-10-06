@@ -1,14 +1,16 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
+
 import { describe, expect, test } from 'vitest';
+
 import { A2A_JS_SDK_VERSION } from '../src/adapters/a2a-js/index.js';
 import {
   A2A_PROTOCOL_VERSION,
   EXTENSION_URI,
+  type ExtensionSchemaName,
   getSchemaResource,
   JSON_SCHEMA_DIALECT,
   SCHEMA_NAMES,
-  type ExtensionSchemaName,
 } from '../src/core/index.js';
 
 describe('published draft identity and resources', () => {

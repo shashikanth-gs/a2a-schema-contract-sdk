@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
-import { performance } from 'node:perf_hooks';
 import { createHash } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
 import { once } from 'node:events';
+import { readFile } from 'node:fs/promises';
 import { createServer } from 'node:https';
 import path from 'node:path';
-import { parseCatalog, JSON_SCHEMA_DIALECT } from 'a2a-schema-contract/core';
-import { createContractResolver } from 'a2a-schema-contract/resolver';
+import { performance } from 'node:perf_hooks';
+
+import { JSON_SCHEMA_DIALECT, parseCatalog } from 'a2a-schema-contract/core';
 import { createValidationSession } from 'a2a-schema-contract/operations';
+import { createContractResolver } from 'a2a-schema-contract/resolver';
 
 const id = 'urn:benchmark:1';
 const schema = {

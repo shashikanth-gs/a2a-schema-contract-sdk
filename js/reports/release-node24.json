@@ -2,13 +2,13 @@
   "result": "PASS",
   "runtime": "v24.21.0",
   "packageName": "a2a-schema-contract",
-  "version": "0.1.0-rc.0",
-  "artifact": "a2a-schema-contract-0.1.0-rc.0.tgz",
-  "sha256": "0f29b101df8af091fc2337cdc5eda6f0e7a234cdd18ac9330bf19d65f270c60e",
-  "packageIntegrity": "sha512-k21TVZfj8vOhkKBsSeLH+Oi1j4MJ4Twk42T/iixV6QuP+iUtZSObgZIU75CPnWlt0/hvwc/781Xd7hHlujYTZA==",
-  "immutableTagPolicy": "js-v0.1.0-rc.0",
+  "version": "0.1.0-rc.1",
+  "artifact": "a2a-schema-contract-0.1.0-rc.1.tgz",
+  "sha256": "6bcc8dcc4d48750c5a9c4c7c2014f62774cceea2c28e00e2e988b5dabe664d50",
+  "packageIntegrity": "sha512-PPm/prZJyWq86cQRcAceStqEZajMy83wbreiKa0n0r8WxwBuqhECuncxVSWG/RttpjGuMxcjbnc1PsTIlbak5w==",
+  "immutableTagPolicy": "js-v0.1.0-rc.1",
   "publication": "Disabled by private=true. No publish, release, tag or registry mutation occurs.",
   "provenance": "Local checksums and pinned input attribution; registry OIDC/provenance requires an authenticated initial package publication and a separately authorized workflow.",
   "reproduciblePacks": 2,
-  "files": 110
+  "files": 114
 }

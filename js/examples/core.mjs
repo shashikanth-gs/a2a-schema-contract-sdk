@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
+
 import {
   ContractError,
+  encodePrimary,
   EXTENSION_URI,
   JSON_SCHEMA_DIALECT,
   parseExtension,
-  encodePrimary,
   validateInvocation,
   validateResult,
 } from 'a2a-schema-contract/core';

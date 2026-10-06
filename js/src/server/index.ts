@@ -1,55 +1,58 @@
 import {
-  createValidationSession,
-  lazyCatalog,
-  type ValidationOptions,
-} from '../operations/index.js';
-import {
   AgentCard,
   Artifact,
   Message,
   Part,
   Role,
+  SendMessageRequest,
   Task,
+  TaskArtifactUpdateEvent,
   TaskState,
   TaskStatusUpdateEvent,
-  TaskArtifactUpdateEvent,
-  SendMessageRequest,
 } from '@a2a-js/sdk';
+import { A2AError, ExtensionSupportRequiredError } from '@a2a-js/sdk/errors';
 import {
+  type A2ARequestHandler,
   AgentEvent,
+  type AgentExecutionEvent,
+  type AgentExecutor,
   DefaultExecutionEventBus,
   DefaultRequestHandler,
-  type AgentExecutor,
-  type AgentExecutionEvent,
-  type A2ARequestHandler,
   type ExecutionEventBus,
   type RequestContext,
   type ServerCallContext,
   type TaskStore,
 } from '@a2a-js/sdk/server';
-import { A2AError, ExtensionSupportRequiredError } from '@a2a-js/sdk/errors';
-import {
-  ContractError,
-  EXTENSION_URI,
-  encodePrimary,
-  parseCatalog,
-  type ContractCatalog,
-  type JsonValue,
-} from '../core/index.js';
-import { preparedCatalog } from '../resolver/prepared.js';
-import { isRecord, snapshot } from '../core/json.js';
+
 import {
   checkEcho,
   cloneArtifact,
   consumeResult,
+  type ContractSelection,
   echo,
   guardContainer,
   guardJsonRpcRequest,
   mapped,
   reject,
   stopStates,
-  type ContractSelection,
 } from '../adapters/a2a-js/boundary.js';
+import {
+  type AdvertisementOptions,
+  type ContractCatalog,
+  ContractError,
+  createContractExtension,
+  encodePrimary,
+  EXTENSION_URI,
+  type JsonValue,
+  parseCatalog,
+} from '../core/index.js';
+import { isRecord, snapshot } from '../core/json.js';
+import {
+  createValidationSession,
+  lazyCatalog,
+  type ValidationOptions,
+} from '../operations/index.js';
+import { preparedCatalog } from '../resolver/prepared.js';
 export { EXTENSION_URI } from '../core/index.js';
 
 export const SERVER_LIMITS = Object.freeze({
@@ -67,6 +70,8 @@ export interface ContractServerOptions {
   readonly taskStore: TaskStore;
   readonly executor: AgentExecutor;
   readonly required?: boolean;
+  /** External delivery uses only a catalog resolved from that external descriptor. */
+  readonly catalogDelivery?: 'inline' | 'external';
   readonly validation?: ValidationOptions;
   /** May lower the hard bound on active application executions. */
   readonly concurrentExecutions?: number;
@@ -89,18 +94,16 @@ export function advertiseContracts(
   card: AgentCard,
   catalog: ContractCatalog,
   required = false,
+  catalogDelivery: AdvertisementOptions['catalogDelivery'] = 'inline',
 ): AgentCard {
   const copy = AgentCard.fromJSON(AgentCard.toJSON(card));
   if (!copy.capabilities) reject();
   copy.capabilities.extensions = copy.capabilities.extensions.filter(
     (e) => e.uri !== EXTENSION_URI,
   );
-  copy.capabilities.extensions.push({
-    uri: EXTENSION_URI,
-    required,
-    description: 'Schema Contract',
-    params: { catalog: { inline: { contracts: catalog.contracts } } },
-  });
+  copy.capabilities.extensions.push(
+    createContractExtension(catalog, { required, catalogDelivery }),
+  );
   return copy;
 }
 /** All three boundaries use public official SDK interfaces and the existing TaskStore. */
@@ -116,9 +119,9 @@ export function createContractServer(options: ContractServerOptions): ContractSe
   )
     throw new TypeError('Invalid execution concurrency.');
   const catalog = preparedCatalog(options.catalog) ?? parseCatalog(options.catalog);
+  const card = advertiseContracts(options.card, catalog, options.required, options.catalogDelivery);
   const validation = createValidationSession(catalog, options.validation);
   const publicCatalog = lazyCatalog(catalog);
-  const card = advertiseContracts(options.card, catalog, options.required);
   const selections = new WeakMap<ServerCallContext, ContractSelection>();
   const executions = new WeakMap<RequestContext, ExecutionContract>();
   const active = new Map<string, AbortController>();

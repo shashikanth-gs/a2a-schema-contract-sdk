@@ -42,3 +42,12 @@ The exact core budgets, regex grammar, ID syntax, carrier profile and public syn
 | Conformance / artifact | 20 pinned structural cases against shipped resources, semantic mutations, strict public consumers                     | rc-package-node*.json; boundary-invariants.test.ts               |
 | Benchmarks             | Cold/warm synchronous core, fresh isolated workers, cold/cache-warm HTTPS preparation                                 | rc-package-node*.json benchmarkReport                            |
 | Registry publishing    | Disabled; unscoped name observed unpublished, no ownership/provenance claim                                           | node-release.md; release rehearsal reports                       |
+
+## Shared application APIs (RC1)
+
+The Node implementation adds skill-associated discovery, original prepared-schema
+resources, validated embedded/external advertisement and compact explicit
+invocation. [Developer-experience evidence](developer-experience-report.md) records
+fresh Node 22/24 acceptance and the current hosted/reference gate. Existing RC0
+links above retain historical evidence. Framework adapters and Python parity
+remain separately tracked.

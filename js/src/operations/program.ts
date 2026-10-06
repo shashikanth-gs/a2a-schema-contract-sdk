@@ -1,8 +1,10 @@
 import type { AnySchema, ValidateFunction } from 'ajv/dist/2020.js';
+
 import type { ContractCatalog } from '../core/catalog.js';
-import { compileSchema, schemaValidator } from '../core/schema.js';
-import { fail, type ErrorContext } from '../core/errors.js';
 import type { JsonValue } from '../core/constants.js';
+import { type ErrorContext, fail } from '../core/errors.js';
+import { isRecord } from '../core/json.js';
+import { compileSchema, schemaValidator } from '../core/schema.js';
 
 export interface SchemaProgram {
   readonly entry: string;
@@ -24,6 +26,21 @@ export function compileProgram(program: SchemaProgram, context: ErrorContext): V
   try {
     for (const document of program.documents)
       ajv.addSchema(document.value as AnySchema, document.uri);
+    // Ajv's reference scanner skips a document's root anchors. Register their
+    // native identities explicitly without changing the acquired schema bytes.
+    const anchors = new Set<string>();
+    for (const document of program.documents) {
+      const value = document.value;
+      if (!isRecord(value)) continue;
+      const base = new URL(typeof value.$id === 'string' ? value.$id : document.uri, document.uri);
+      for (const keyword of ['$anchor', '$dynamicAnchor']) {
+        if (typeof value[keyword] !== 'string') continue;
+        const alias = new URL('#' + value[keyword], base).href;
+        if (anchors.has(alias)) continue;
+        ajv.addSchema(value, alias);
+        anchors.add(alias);
+      }
+    }
     return ajv.compile({ $ref: program.entry });
   } catch {
     return fail('SCHEMA_INVALID', context);

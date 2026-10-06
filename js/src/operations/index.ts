@@ -1,11 +1,12 @@
-import { Worker } from 'node:worker_threads';
 import { performance } from 'node:perf_hooks';
-import { ContractError, fail, type DiagnosticCode, type ErrorContext } from '../core/errors.js';
-import { snapshot } from '../core/json.js';
+import { Worker } from 'node:worker_threads';
+
 import type { ContractCatalog, PreparedRepresentation } from '../core/catalog.js';
+import { ContractError, type DiagnosticCode, type ErrorContext, fail } from '../core/errors.js';
+import { snapshot } from '../core/json.js';
 import { media } from '../core/media.js';
-import { catalogProgram, type CatalogProgram } from './program.js';
-import { observe, type DiagnosticHook } from './diagnostics.js';
+import { type DiagnosticHook, observe } from './diagnostics.js';
+import { type CatalogProgram, catalogProgram } from './program.js';
 
 export type { DiagnosticEvent, DiagnosticHook } from './diagnostics.js';
 export const VALIDATION_LIMITS = Object.freeze({ deadlineMs: 2000, concurrent: 4, memoryMb: 64 });
@@ -113,6 +114,8 @@ export function createValidationSession(
 export function lazyCatalog(catalog: ContractCatalog): ContractCatalog {
   return Object.freeze({
     contracts: catalog.contracts,
+    ...(catalog.reference ? { reference: catalog.reference } : {}),
+    schema: (...args: Parameters<ContractCatalog['schema']>) => catalog.schema(...args),
     getContract: (...args: Parameters<ContractCatalog['getContract']>) =>
       catalog.getContract(...args),
     capabilities: (...args: Parameters<ContractCatalog['capabilities']>) =>

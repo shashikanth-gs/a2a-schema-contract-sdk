@@ -2,9 +2,10 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
+
+import { getSchemaResource, SCHEMA_NAMES } from 'a2a-schema-contract/core';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
-import { getSchemaResource, SCHEMA_NAMES } from 'a2a-schema-contract/core';
 
 const fixture = pathToFileURL(process.argv[2] + '/');
 const json = async (name) => JSON.parse(await readFile(new URL(name, fixture), 'utf8'));

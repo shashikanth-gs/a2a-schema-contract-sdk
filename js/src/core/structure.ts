@@ -1,6 +1,7 @@
 import { Ajv2020 } from 'ajv/dist/2020.js';
+
 import type { ExtensionSchemaName, JsonValue } from './constants.js';
-import { fail, type ErrorContext } from './errors.js';
+import { type ErrorContext, fail } from './errors.js';
 import { absoluteUri } from './json.js';
 import { structures } from './structures-data.js';
 

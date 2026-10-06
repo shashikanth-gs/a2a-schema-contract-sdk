@@ -6,6 +6,7 @@ export type DiagnosticCode =
   | 'VERSION_MISMATCH'
   | 'DUPLICATE_IDENTIFIER'
   | 'CONTRACT_NOT_FOUND'
+  | 'AMBIGUOUS_SELECTION'
   | 'REPRESENTATION_NOT_SUPPORTED'
   | 'PAYLOAD_PRESENCE_VIOLATION'
   | 'PRIMARY_IDENTITY_MISMATCH'
@@ -74,6 +75,7 @@ export class ContractError extends Error {
               code === 'REFERENCE_CYCLE'
             ? 'SCHEMA_UNAVAILABLE'
             : code === 'REPRESENTATION_NOT_SUPPORTED' ||
+                code === 'AMBIGUOUS_SELECTION' ||
                 code === 'UNSUPPORTED_MEDIA_TYPE' ||
                 code === 'UNSUPPORTED_CARRIER'
               ? 'REPRESENTATION_NOT_SUPPORTED'

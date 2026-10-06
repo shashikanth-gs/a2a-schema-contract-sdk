@@ -1,6 +1,6 @@
 # JavaScript / TypeScript SDK
 
-Release candidate `a2a-schema-contract@0.1.0-rc.0` implements the
+Release candidate `a2a-schema-contract@0.1.0-rc.1` implements the
 inline JSON/text core, official A2A 1.3.0 JSON-RPC/HTTP/SSE adapters and explicit
 secure HTTPS catalog/schema resolution. Async transport boundaries and resolver
 compilation use owned validation workers with enforceable limits. Install the
@@ -37,7 +37,7 @@ Install the tarball and the exact peer into an application. Express is the host'
 choice and is not a runtime dependency of this package:
 
 ```sh
-npm install /absolute/path/to/a2a-schema-contract-0.1.0-rc.0.tgz @a2a-js/sdk@1.3.0 express@5.1.0
+npm install /absolute/path/to/a2a-schema-contract-0.1.0-rc.1.tgz @a2a-js/sdk@1.3.0 express@5.1.0
 node http.mjs
 ```
 
@@ -186,7 +186,7 @@ without the official peer or source checkout. To run it after installing a local
 tarball:
 
 ```sh
-npm install /absolute/path/to/a2a-schema-contract-0.1.0-rc.0.tgz
+npm install /absolute/path/to/a2a-schema-contract-0.1.0-rc.1.tgz
 node core.mjs
 ```
 
@@ -609,3 +609,14 @@ independent of validation worker concurrency. `concurrentExecutions` may lower
 that bound to 1–4. Capacity refusal returns a sanitized failed Task without a
 business call or successful Artifact; cancellation/deadline/shutdown releases
 capacity. The host still owns HTTP ingress limits and TaskStore retention.
+
+## Shared discovery and prepared schema APIs
+
+See [developer experience](../docs/developer-experience.md) for `client.describe()`,
+`catalog.schema()`, `client.invokeContract()` and `createContractExtension()`.
+Run `node examples/developer-experience.mjs` for the offline peer-free example.
+External server advertisement uses `catalogDelivery: 'external'` with a catalog
+acquired through `resolveExtensionParams()`; the HTTPS example demonstrates it
+without post-construction metadata replacement. Binding fixtures and the prepared
+clarification are in [metadata binding](../docs/metadata-binding.md). New clean
+checks retain `reports/dx-*` and `artifacts/dx-node{22,24}` evidence.

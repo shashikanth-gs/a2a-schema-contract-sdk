@@ -1,24 +1,27 @@
-import type { ValidationSession } from '../operations/index.js';
-import { registerProgram, type SchemaProgram } from '../operations/program.js';
-import { observe, type DiagnosticHook } from '../operations/diagnostics.js';
 import { createHash, timingSafeEqual } from 'node:crypto';
+
 import type { ValidateFunction } from 'ajv/dist/2020.js';
+
 import {
-  createCatalog,
-  parseCatalog,
+  type CatalogReference,
   type ContractCatalog,
+  createCatalog,
   type Integrity,
+  parseCatalog,
 } from '../core/catalog.js';
 import { EXTENSION_URI, JSON_SCHEMA_DIALECT, type JsonValue } from '../core/constants.js';
-import { ContractError, fail, type ErrorContext } from '../core/errors.js';
+import { ContractError, type ErrorContext, fail } from '../core/errors.js';
 import { isRecord, snapshot } from '../core/json.js';
 import { checkStructure } from '../core/structure.js';
-import { retrieve, type NetworkPolicy } from './network.js';
+import { type DiagnosticHook, observe } from '../operations/diagnostics.js';
+import type { ValidationSession } from '../operations/index.js';
+import { registerProgram, type SchemaProgram } from '../operations/program.js';
+import { type NetworkPolicy, retrieve } from './network.js';
 import { documentUri, resourceUrl } from './policy.js';
 import { rememberCatalog } from './prepared.js';
 import { prepareSchema, type ResourceDocument } from './registry.js';
 
-export type { NetworkPolicy, Address } from './network.js';
+export type { Address, NetworkPolicy } from './network.js';
 export const RESOLVER_LIMITS = Object.freeze({
   redirects: 3,
   responseBytes: 262144,
@@ -239,6 +242,7 @@ export function createContractResolver(options: ResolverOptions = {}): ContractR
     async function work(): Promise<ContractCatalog> {
       checkpoint();
       let data = snapshot(value, context);
+      let reference: CatalogReference | undefined;
       if (kind === 'extension') {
         if (!isRecord(data) || typeof data.uri !== 'string') fail('INVALID_STRUCTURE', context);
         if (data.uri !== EXTENSION_URI) fail('VERSION_MISMATCH', context);
@@ -249,6 +253,8 @@ export function createContractResolver(options: ResolverOptions = {}): ContractR
       if (kind !== 'catalog') {
         checkStructure('extension-params', data, context);
         const descriptor = (data as { catalog: Record<string, JsonValue> }).catalog;
+        if (!Object.hasOwn(descriptor, 'inline'))
+          reference = descriptor as unknown as CatalogReference;
         data = Object.hasOwn(descriptor, 'inline')
           ? descriptor.inline!
           : (
@@ -295,24 +301,35 @@ export function createContractResolver(options: ResolverOptions = {}): ContractR
               checkpoint,
               signal,
               (program) => {
-                programs[JSON.stringify([contract.id, direction, representation.id])] = program;
+                programs[JSON.stringify([contract.id, direction, representation.id])] =
+                  Object.freeze({
+                    entry: program.entry,
+                    documents: Object.freeze(
+                      program.documents.map((document) => Object.freeze(document)),
+                    ),
+                  });
               },
               (session) => compilations.add(session),
             );
             validators.set(JSON.stringify([contract.id, direction, representation.id]), validate);
           }
         }
-      const catalog = createCatalog(data, context.origin, (descriptor, scoped) => {
-        if (descriptor.bundle) fail('SCHEMA_UNAVAILABLE', scoped);
-        if (descriptor.dialect !== JSON_SCHEMA_DIALECT) fail('UNSUPPORTED_DIALECT', scoped);
-        if (descriptor.mediaType !== 'application/schema+json')
-          fail('UNSUPPORTED_MEDIA_TYPE', scoped);
-        const validate = validators.get(
-          JSON.stringify([scoped.contractId, scoped.direction, scoped.representationId]),
-        );
-        if (!validate) fail('SCHEMA_UNAVAILABLE', scoped);
-        return validate;
-      });
+      const catalog = createCatalog(
+        data,
+        context.origin,
+        (descriptor, scoped) => {
+          if (descriptor.bundle) fail('SCHEMA_UNAVAILABLE', scoped);
+          if (descriptor.dialect !== JSON_SCHEMA_DIALECT) fail('UNSUPPORTED_DIALECT', scoped);
+          if (descriptor.mediaType !== 'application/schema+json')
+            fail('UNSUPPORTED_MEDIA_TYPE', scoped);
+          const validate = validators.get(
+            JSON.stringify([scoped.contractId, scoped.direction, scoped.representationId]),
+          );
+          if (!validate) fail('SCHEMA_UNAVAILABLE', scoped);
+          return validate;
+        },
+        { schemas: Object.freeze(programs), ...(reference ? { reference } : {}) },
+      );
       checkpoint();
       rememberCatalog(catalog);
       registerProgram(catalog, { contracts: catalog.contracts, schemas: programs });
