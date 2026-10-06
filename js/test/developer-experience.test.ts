@@ -395,8 +395,11 @@ test('ordinary HTTP client discovers skills and invokes compactly with zero disp
       await readFile(new URL('../../tests/binding/response.json', import.meta.url), 'utf8'),
     ) as { result: { task: { metadata: unknown } } };
     const independent = await discoverContractClient(url, {
-      fetchImpl: (input, init) =>
-        init?.method === 'POST' ? Promise.resolve(Response.json(response)) : fetch(input, init),
+      fetchImpl: (input, init) => {
+        if (init?.method !== 'POST') return fetch(input, init);
+        const request = JSON.parse(init.body as string) as { id: unknown };
+        return Promise.resolve(Response.json({ ...response, id: request.id }));
+      },
     });
     try {
       expect(
@@ -406,7 +409,21 @@ test('ordinary HTTP client discovers skills and invokes compactly with zero disp
       response.result.task.metadata = {};
       await expect(
         independent.invokeContract({ contractId: id, input: { origin: 'BLR' } }),
-      ).rejects.toThrow();
+      ).rejects.toMatchObject({ code: 'INVALID_METADATA' });
+      const failed = JSON.parse(
+        await readFile(new URL('../../tests/binding/failure.json', import.meta.url), 'utf8'),
+      ) as typeof response;
+      response.result.task = failed.result.task;
+      const failure = await independent.invokeContract({
+        contractId: id,
+        input: { origin: 'BLR' },
+      });
+      expect(failure.payload).toBeUndefined();
+      expect(failure.response).toMatchObject({
+        status: { state: TaskState.TASK_STATE_FAILED },
+        artifacts: [],
+        metadata: { [EXTENSION_URI]: { code: 'OUTPUT_CONTRACT_VIOLATION' } },
+      });
     } finally {
       await independent.close();
     }

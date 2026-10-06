@@ -26,7 +26,9 @@ because their media type matches a primary payload. Skill IDs describe catalog
 associations; wire invocation explicitly selects a versioned contract ID.
 
 Examples: [request](../tests/binding/request.json) and
-[response](../tests/binding/response.json). HTTP requests also carry activation
+[response](../tests/binding/response.json), with a sanitized
+[failed Task](../tests/binding/failure.json) containing no contracted Artifact.
+HTTP requests also carry activation
 and protocol-version headers. These fixtures are intentionally constructed
 independently of SDK serialization and exercised against the actual transport.
 They are a supported binding agreement, not proof that every existing extension
