@@ -4,7 +4,7 @@ import { expect, test } from 'vitest';
 
 test('built public client/server APIs enforce prepared external schemas over HTTP/SSE', async () => {
   const { stdout } = await promisify(execFile)(process.execPath, ['examples/external.mjs'], {
-    timeout: 10000,
+    timeout: 30000,
   });
   const report = JSON.parse(stdout) as {
     result: string;
@@ -16,4 +16,4 @@ test('built public client/server APIs enforce prepared external schemas over HTT
   expect(report.checks).toHaveLength(10);
   expect(report.retrievals).toBe(5);
   expect(report.executions).toBe(4);
-});
+}, 35000);

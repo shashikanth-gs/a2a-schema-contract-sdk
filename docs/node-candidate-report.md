@@ -11,3 +11,13 @@ The new semantic invariant cases use independent expected outcomes and generated
 Release rehearsal verifies dry-run and packed file lists, two identical SHA-256 packs and retained attribution, with publishing disabled. npm name availability was checked on 2026-10-06; an unpublished unscoped name is not owned/reserved by this rehearsal. Dependency metadata is reviewed separately from vulnerability audits; development-only MPL native tooling is not bundled in the runtime artifact.
 
 Source checkpoints, hosted run links and independent reference pins will be added after their actual gates pass. Python, bundles/XML, other transports, unrestricted schema/media/carrier behavior and package publication remain excluded.
+
+
+The initial candidate hosted run exposed three composite-test harness deadlines:
+SSE lifecycle, seven schemaless carrier round trips, and the ten-assertion external
+quickstart exceeded the historical five-second Vitest test budget on Linux.
+Individual validator deadline and resource tests passed. The harness now allows
+15 seconds for composite integration cases and 35 seconds for the explicitly
+30-second-bounded external child. Production worker budgets remain 2,000 ms and
+all timeout/cleanup assertions remain enforced. The failed run is retained for
+comparison; it is not acceptance evidence.

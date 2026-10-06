@@ -3,7 +3,8 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     include: ['test/**/*.test.ts'],
-    testTimeout: 5000,
+    // Integration cases contain several independently bounded cold-worker round trips.
+    testTimeout: 15000,
     hookTimeout: 10000,
     maxWorkers: 1,
     coverage: {

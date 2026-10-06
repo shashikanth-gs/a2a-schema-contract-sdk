@@ -1,5 +1,7 @@
 name: Node release candidate rehearsal
 on:
+  push:
+    branches: ["codex/m3-node-release-candidate"]
   workflow_dispatch:
 permissions:
   contents: read
