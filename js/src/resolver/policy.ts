@@ -1,5 +1,6 @@
 import { isIP } from 'node:net';
-import { fail, type ErrorContext } from '../core/errors.js';
+
+import { type ErrorContext, fail } from '../core/errors.js';
 
 /** Conservative address policy: reject special-use IPv4 and non-global/special IPv6. */
 export function publicAddress(address: string): boolean {

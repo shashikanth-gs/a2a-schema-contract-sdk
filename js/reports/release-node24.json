@@ -1,0 +1,14 @@
+{
+  "result": "PASS",
+  "runtime": "v24.21.0",
+  "packageName": "a2a-schema-contract",
+  "version": "0.1.0-rc.1",
+  "artifact": "a2a-schema-contract-0.1.0-rc.1.tgz",
+  "sha256": "09c0146a2d9d1ba110fd6d888374ce0233f8effc1df77dc42f6a167bd4717677",
+  "packageIntegrity": "sha512-qPnRfEHqLJjQrhIzGvbsFrYzj60zp0uDB5kWrgWMLcgGil3JlXLr1oJq0AUWFu28kCiFHVjJTf3vV/E40/7zrw==",
+  "immutableTagPolicy": "js-v0.1.0-rc.1",
+  "publication": "Disabled by private=true. No publish, release, tag or registry mutation occurs.",
+  "provenance": "Local checksums and pinned input attribution; registry OIDC/provenance requires an authenticated initial package publication and a separately authorized workflow.",
+  "reproduciblePacks": 2,
+  "files": 114
+}

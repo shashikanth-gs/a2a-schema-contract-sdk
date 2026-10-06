@@ -1,0 +1,241 @@
+{
+  "profile": "Node first release candidate",
+  "packageName": "a2a-schema-contract",
+  "version": "0.1.0-rc.0",
+  "date": "2026-10-06",
+  "result": "PASS",
+  "sourceState": "Accepted runtime source checkpoint; subsequent documentation/evidence commits do not alter package bytes",
+  "runtimes": {
+    "22": {
+      "runtime": "v22.23.3",
+      "platform": "darwin/arm64",
+      "tests": 381,
+      "coverage": {
+        "lines": {
+          "total": 1287,
+          "covered": 1258,
+          "skipped": 0,
+          "pct": 97.74
+        },
+        "statements": {
+          "total": 1503,
+          "covered": 1439,
+          "skipped": 0,
+          "pct": 95.74
+        },
+        "functions": {
+          "total": 194,
+          "covered": 190,
+          "skipped": 0,
+          "pct": 97.93
+        },
+        "branches": {
+          "total": 1420,
+          "covered": 1326,
+          "skipped": 0,
+          "pct": 93.38
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "artifactSha256": "0f29b101df8af091fc2337cdc5eda6f0e7a234cdd18ac9330bf19d65f270c60e",
+      "installedChecks": 26,
+      "structuralCases": 20,
+      "operationalChecks": [
+        "hostile-schema-deadline",
+        "valid-core-worker-without-peer",
+        "abort-termination",
+        "zero-active-workers",
+        "diagnostic-redaction"
+      ],
+      "benchmarks": {
+        "result": "PASS",
+        "node": "v22.23.3",
+        "platform": "darwin/arm64",
+        "workload": "Object with one bounded integer; 10 cold core compilations, 10 x 1000 warm validations, five fresh workers and five cold/cache-warm pinned HTTPS preparations.",
+        "coreCold": {
+          "samples": 10,
+          "medianMs": 4.197666999999996,
+          "maxMs": 8.207332999999998
+        },
+        "coreWarm": {
+          "samples": 10,
+          "medianMs": 0.6397500000000065,
+          "maxMs": 0.8737920000000088,
+          "validationsPerSample": 1000
+        },
+        "isolated": {
+          "samples": 5,
+          "medianMs": 64.241792,
+          "maxMs": 89.27895800000005
+        },
+        "resolverCold": {
+          "samples": 5,
+          "medianMs": 48.29379200000005,
+          "maxMs": 55.22233299999999
+        },
+        "resolverWarm": {
+          "samples": 5,
+          "medianMs": 44.674125000000004,
+          "maxMs": 48.740249999999946
+        },
+        "regression": {
+          "absoluteWorkerAndResolverCeilingMs": 2000,
+          "investigateSameEnvironmentMedianMultiplier": 3
+        },
+        "workerReuse": "Each isolated call starts a new worker; warm refers to compiled synchronous core or resolver representation-byte cache."
+      },
+      "runtimeAudit": "zero vulnerabilities; isolated installed audit is a required check"
+    },
+    "24": {
+      "runtime": "v24.21.0",
+      "platform": "darwin/arm64",
+      "tests": 381,
+      "coverage": {
+        "lines": {
+          "total": 1287,
+          "covered": 1258,
+          "skipped": 0,
+          "pct": 97.74
+        },
+        "statements": {
+          "total": 1503,
+          "covered": 1439,
+          "skipped": 0,
+          "pct": 95.74
+        },
+        "functions": {
+          "total": 194,
+          "covered": 190,
+          "skipped": 0,
+          "pct": 97.93
+        },
+        "branches": {
+          "total": 1420,
+          "covered": 1326,
+          "skipped": 0,
+          "pct": 93.38
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "artifactSha256": "0f29b101df8af091fc2337cdc5eda6f0e7a234cdd18ac9330bf19d65f270c60e",
+      "installedChecks": 26,
+      "structuralCases": 20,
+      "operationalChecks": [
+        "hostile-schema-deadline",
+        "valid-core-worker-without-peer",
+        "abort-termination",
+        "zero-active-workers",
+        "diagnostic-redaction"
+      ],
+      "benchmarks": {
+        "result": "PASS",
+        "node": "v24.21.0",
+        "platform": "darwin/arm64",
+        "workload": "Object with one bounded integer; 10 cold core compilations, 10 x 1000 warm validations, five fresh workers and five cold/cache-warm pinned HTTPS preparations.",
+        "coreCold": {
+          "samples": 10,
+          "medianMs": 6.633749999999992,
+          "maxMs": 10.095665999999994
+        },
+        "coreWarm": {
+          "samples": 10,
+          "medianMs": 0.48474999999999113,
+          "maxMs": 0.9007080000000087,
+          "validationsPerSample": 1000
+        },
+        "isolated": {
+          "samples": 5,
+          "medianMs": 58.12312499999996,
+          "maxMs": 65.65312499999999
+        },
+        "resolverCold": {
+          "samples": 5,
+          "medianMs": 44.785708,
+          "maxMs": 49.06466700000004
+        },
+        "resolverWarm": {
+          "samples": 5,
+          "medianMs": 54.557500000000005,
+          "maxMs": 72.32995800000003
+        },
+        "regression": {
+          "absoluteWorkerAndResolverCeilingMs": 2000,
+          "investigateSameEnvironmentMedianMultiplier": 3
+        },
+        "workerReuse": "Each isolated call starts a new worker; warm refers to compiled synchronous core or resolver representation-byte cache."
+      },
+      "runtimeAudit": "zero vulnerabilities; isolated installed audit is a required check"
+    }
+  },
+  "excluded": [
+    "Python and cross-language pairings",
+    "Bundles/XML/XSD",
+    "Other transports and peer/runtime versions",
+    "Unrestricted JSON Schema dialect, regex/numeric/media/carrier support",
+    "Registry publication and registry OIDC provenance"
+  ],
+  "requirements": {
+    "advertiser": [
+      "D04-01",
+      "D04-02",
+      "D05-01"
+    ],
+    "client": [
+      "D07-01",
+      "D07-05",
+      "D11-01"
+    ],
+    "server": [
+      "D09-01",
+      "D09-02",
+      "D09-03",
+      "D10-01",
+      "D12-01"
+    ],
+    "resolver": [
+      "D08-03",
+      "D13-01",
+      "D13-02"
+    ],
+    "operations": [
+      "D14-01"
+    ],
+    "fullMapping": "docs/requirements.md; existing structural/core/integration/resolver reports; new operations.test.ts and boundary-invariants.test.ts plus independent reference report"
+  },
+  "supersededHostedRun": "https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37504226397",
+  "sdkSourceCommit": "7481b002f55a0961ea4ee21e36da446f2a3b9ea8",
+  "hostedSdkReport": "hosted-sdk-node-candidate.json",
+  "supersededHostedRuns": [
+    "https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37504226397",
+    "https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37507608435"
+  ],
+  "tasks": [
+    "SDK-007",
+    "SDK-008"
+  ],
+  "reference": {
+    "sourceCommit": "0a428afdf81bfee952d351763507db598f3512b5",
+    "run": "https://github.com/shashikanth-gs/a2a-schema-contract-reference/actions/runs/37510461774",
+    "tests": 48,
+    "inlineScenarios": 37,
+    "securityScenarios": 43,
+    "skipped": 0,
+    "matrix": [
+      "Linux Node 22.23.3",
+      "Linux Node 24.21.0",
+      "macOS Node 24.21.0",
+      "Windows Node 24.21.0"
+    ],
+    "report": "https://github.com/shashikanth-gs/a2a-schema-contract-reference/blob/codex/m3-node-release-candidate/js/reports/node-candidate-summary.json"
+  }
+}

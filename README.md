@@ -11,10 +11,10 @@ validates input before business execution and validates complete output before
 publishing a successful contracted result. The client also validates the peer's
 response.
 
-**Development preview:** the Node implementation supports the community draft
+**Node SDK:** the Node implementation supports the community draft
 `v0.1.0-draft.1`. Python support is planned. npm and PyPI packages have not been
 published; use the source checkout or a locally built npm tarball. Worker
-isolation and broader operational validation are still in progress. See the
+isolation and operational validation pass the supported hosted matrix. See the
 [support matrix](docs/support-matrix.md) for the precise supported profile.
 
 ## What you can build
@@ -29,12 +29,23 @@ The SDK preserves caller data: validation does not insert defaults, coerce value
 or remove properties. Dynamic discovery returns runtime-validated JSON; it does
 not invent a statically known domain type.
 
+## Shared application APIs
+
+The Node SDK adds skill-associated discovery, immutable prepared-schema resource
+views, compact explicit invocation and validated embedded/external advertisement.
+These APIs belong in the shared SDK; future framework adapters consume them.
+See [developer experience](docs/developer-experience.md) and
+[metadata binding](docs/metadata-binding.md). Python parity remains planned.
+The current private Node candidate is `0.1.0-rc.1`; the earlier hosted `rc.0` evidence
+does not establish hosted acceptance of these additions.
+
 ## Get started
 
 Use Node **22 >=22.23.3** or **24 >=24.21.0**, npm and ESM.
 
 ```sh
 git clone https://github.com/shashikanth-gs/a2a-schema-contract-sdk.git
+git -C a2a-schema-contract-sdk checkout codex/m3-node-release-candidate
 cd a2a-schema-contract-sdk/js
 npm ci
 npm run build
@@ -94,10 +105,10 @@ npm run check:clean
 
 `check` builds and runs formatting, lint, strict TypeScript, behavioral tests and
 isolated installed-package checks. `check:clean` repeats the gates in a temporary
-source copy. The SDK-006 checkpoint passed **359 tests and 21 installed-consumer
-checks** on Node 22.23.3 and 24.21.0 on macOS arm64. The
-[resolver report](docs/resolver-report.md) records exact artifact hashes, evidence
-and limitations. Hosted CI results are available in the repository's
+source copy. The Node candidate passes **381 tests, 26 installed-consumer checks
+and 20 pinned structural cases** on Node 22.23.3 and 24.21.0. The
+[candidate report](docs/node-candidate-report.md) records exact artifact hashes,
+hosted Linux/macOS/Windows evidence and limitations. CI results are available in the repository's
 [Actions](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions) tab;
 local reports retain their original validation context.
 
@@ -120,3 +131,12 @@ for usage questions.
 | `research/` | Published A2A SDK compatibility probes |
 
 Licensed under [Apache-2.0](LICENSE).
+
+
+The candidate uses the unscoped **`a2a-schema-contract`** name. Async transport
+validation and resolver compilation run in owned workers with bounded deadlines,
+heap limits, concurrency and physical cleanup. Optional diagnostics omit payloads
+and credentials. See the [operations guide](docs/node-operations.md),
+[release policy](docs/node-release.md) and [changelog](CHANGELOG.md).
+`npm run release:rehearsal` performs a dry run and two reproducible packs; it never
+publishes or creates a release tag. Candidate CI evidence is tracked in PLAN.md.

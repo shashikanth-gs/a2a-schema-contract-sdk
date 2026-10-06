@@ -1,0 +1,44 @@
+{
+  "task": "SDK-016–019",
+  "runtime": "v24.21.0",
+  "platform": "darwin/arm64",
+  "commands": [
+    "npm ci",
+    "npm run check"
+  ],
+  "result": "PASS",
+  "environment": "Temporary independent source copy with no inputs/, node_modules/, dist/ or previous reports.",
+  "coverage": {
+    "lines": {
+      "total": 1392,
+      "covered": 1360,
+      "skipped": 0,
+      "pct": 97.7
+    },
+    "statements": {
+      "total": 1626,
+      "covered": 1558,
+      "skipped": 0,
+      "pct": 95.81
+    },
+    "functions": {
+      "total": 216,
+      "covered": 211,
+      "skipped": 0,
+      "pct": 97.68
+    },
+    "branches": {
+      "total": 1553,
+      "covered": 1454,
+      "skipped": 0,
+      "pct": 93.62
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "hostedCi": "Local run; hosted CI is tracked separately in the release-candidate report."
+}

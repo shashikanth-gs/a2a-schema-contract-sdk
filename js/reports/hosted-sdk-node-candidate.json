@@ -1,0 +1,788 @@
+{
+  "sourceCommit": "7481b002f55a0961ea4ee21e36da446f2a3b9ea8",
+  "result": "PASS",
+  "run": "https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37509065805",
+  "rehearsal": "https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37509065858",
+  "jobs": [
+    {
+      "jobArtifact": "resolver-macos-latest-24.21.0",
+      "runtime": "v24.21.0",
+      "platform": "darwin/arm64",
+      "artifactSha256": "0f29b101df8af091fc2337cdc5eda6f0e7a234cdd18ac9330bf19d65f270c60e",
+      "installedChecks": 26,
+      "structural": {
+        "result": "PASS",
+        "sourceCommit": "a5c007510faa3fce85190f2e76e402faf0e897ad",
+        "verifiedSourceFiles": 33,
+        "installedStructuralCases": 20,
+        "cases": [
+          {
+            "schema": "catalog",
+            "file": "conformance/valid/minimal-none-to-none.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/valid/boolean-json-schema.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/text-to-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/json-to-text.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/no-input-to-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/json-to-no-output.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/optional-schemaless.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/large-external-schemas.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/none-with-representations.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/required-without-representations.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/relative-contract-id.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/unsafe-bundle-entrypoint.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "extension-params",
+            "file": "examples/extension-params-inline.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "extension-params",
+            "file": "examples/extension-params-external.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "invocation-metadata",
+            "file": "examples/metadata/invocation-text-to-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "invocation-metadata",
+            "file": "examples/metadata/invocation-no-input.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "result-metadata",
+            "file": "examples/metadata/result-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "result-metadata",
+            "file": "examples/metadata/result-no-output.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "part-metadata",
+            "file": "examples/metadata/primary-input-part.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "error-detail",
+            "file": "examples/metadata/error.json",
+            "expected": true,
+            "result": "PASS"
+          }
+        ]
+      },
+      "benchmarks": {
+        "result": "PASS",
+        "node": "v24.21.0",
+        "platform": "darwin/arm64",
+        "workload": "Object with one bounded integer; 10 cold core compilations, 10 x 1000 warm validations, five fresh workers and five cold/cache-warm pinned HTTPS preparations.",
+        "coreCold": {
+          "samples": 10,
+          "medianMs": 11.714833000000027,
+          "maxMs": 16.403417000000005
+        },
+        "coreWarm": {
+          "samples": 10,
+          "medianMs": 1.258291999999983,
+          "maxMs": 3.6899159999999824,
+          "validationsPerSample": 1000
+        },
+        "isolated": {
+          "samples": 5,
+          "medianMs": 153.424083,
+          "maxMs": 164.01370800000007
+        },
+        "resolverCold": {
+          "samples": 5,
+          "medianMs": 112.48387500000013,
+          "maxMs": 159.56133299999988
+        },
+        "resolverWarm": {
+          "samples": 5,
+          "medianMs": 91.301334,
+          "maxMs": 178.67620799999986
+        },
+        "regression": {
+          "absoluteWorkerAndResolverCeilingMs": 2000,
+          "investigateSameEnvironmentMedianMultiplier": 3
+        },
+        "workerReuse": "Each isolated call starts a new worker; warm refers to compiled synchronous core or resolver representation-byte cache."
+      },
+      "operations": {
+        "result": "PASS",
+        "checks": [
+          "hostile-schema-deadline",
+          "valid-core-worker-without-peer",
+          "abort-termination",
+          "zero-active-workers",
+          "diagnostic-redaction"
+        ]
+      },
+      "tests": {
+        "passed": 381,
+        "failed": 0,
+        "skipped": 0
+      },
+      "audit": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      }
+    },
+    {
+      "jobArtifact": "resolver-ubuntu-latest-22.23.3",
+      "runtime": "v22.23.3",
+      "platform": "linux/x64",
+      "artifactSha256": "0f29b101df8af091fc2337cdc5eda6f0e7a234cdd18ac9330bf19d65f270c60e",
+      "installedChecks": 26,
+      "structural": {
+        "result": "PASS",
+        "sourceCommit": "a5c007510faa3fce85190f2e76e402faf0e897ad",
+        "verifiedSourceFiles": 33,
+        "installedStructuralCases": 20,
+        "cases": [
+          {
+            "schema": "catalog",
+            "file": "conformance/valid/minimal-none-to-none.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/valid/boolean-json-schema.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/text-to-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/json-to-text.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/no-input-to-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/json-to-no-output.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/optional-schemaless.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/large-external-schemas.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/none-with-representations.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/required-without-representations.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/relative-contract-id.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/unsafe-bundle-entrypoint.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "extension-params",
+            "file": "examples/extension-params-inline.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "extension-params",
+            "file": "examples/extension-params-external.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "invocation-metadata",
+            "file": "examples/metadata/invocation-text-to-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "invocation-metadata",
+            "file": "examples/metadata/invocation-no-input.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "result-metadata",
+            "file": "examples/metadata/result-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "result-metadata",
+            "file": "examples/metadata/result-no-output.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "part-metadata",
+            "file": "examples/metadata/primary-input-part.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "error-detail",
+            "file": "examples/metadata/error.json",
+            "expected": true,
+            "result": "PASS"
+          }
+        ]
+      },
+      "benchmarks": {
+        "result": "PASS",
+        "node": "v22.23.3",
+        "platform": "linux/x64",
+        "workload": "Object with one bounded integer; 10 cold core compilations, 10 x 1000 warm validations, five fresh workers and five cold/cache-warm pinned HTTPS preparations.",
+        "coreCold": {
+          "samples": 10,
+          "medianMs": 9.72894500000001,
+          "maxMs": 18.432367999999997
+        },
+        "coreWarm": {
+          "samples": 10,
+          "medianMs": 1.609548000000018,
+          "maxMs": 2.6054560000000038,
+          "validationsPerSample": 1000
+        },
+        "isolated": {
+          "samples": 5,
+          "medianMs": 111.48750100000007,
+          "maxMs": 114.68036699999999
+        },
+        "resolverCold": {
+          "samples": 5,
+          "medianMs": 82.58216599999992,
+          "maxMs": 99.156294
+        },
+        "resolverWarm": {
+          "samples": 5,
+          "medianMs": 80.32743600000003,
+          "maxMs": 80.50890000000004
+        },
+        "regression": {
+          "absoluteWorkerAndResolverCeilingMs": 2000,
+          "investigateSameEnvironmentMedianMultiplier": 3
+        },
+        "workerReuse": "Each isolated call starts a new worker; warm refers to compiled synchronous core or resolver representation-byte cache."
+      },
+      "operations": {
+        "result": "PASS",
+        "checks": [
+          "hostile-schema-deadline",
+          "valid-core-worker-without-peer",
+          "abort-termination",
+          "zero-active-workers",
+          "diagnostic-redaction"
+        ]
+      },
+      "tests": {
+        "passed": 381,
+        "failed": 0,
+        "skipped": 0
+      },
+      "audit": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      }
+    },
+    {
+      "jobArtifact": "resolver-ubuntu-latest-24.21.0",
+      "runtime": "v24.21.0",
+      "platform": "linux/x64",
+      "artifactSha256": "0f29b101df8af091fc2337cdc5eda6f0e7a234cdd18ac9330bf19d65f270c60e",
+      "installedChecks": 26,
+      "structural": {
+        "result": "PASS",
+        "sourceCommit": "a5c007510faa3fce85190f2e76e402faf0e897ad",
+        "verifiedSourceFiles": 33,
+        "installedStructuralCases": 20,
+        "cases": [
+          {
+            "schema": "catalog",
+            "file": "conformance/valid/minimal-none-to-none.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/valid/boolean-json-schema.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/text-to-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/json-to-text.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/no-input-to-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/json-to-no-output.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/optional-schemaless.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/large-external-schemas.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/none-with-representations.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/required-without-representations.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/relative-contract-id.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/unsafe-bundle-entrypoint.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "extension-params",
+            "file": "examples/extension-params-inline.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "extension-params",
+            "file": "examples/extension-params-external.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "invocation-metadata",
+            "file": "examples/metadata/invocation-text-to-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "invocation-metadata",
+            "file": "examples/metadata/invocation-no-input.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "result-metadata",
+            "file": "examples/metadata/result-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "result-metadata",
+            "file": "examples/metadata/result-no-output.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "part-metadata",
+            "file": "examples/metadata/primary-input-part.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "error-detail",
+            "file": "examples/metadata/error.json",
+            "expected": true,
+            "result": "PASS"
+          }
+        ]
+      },
+      "benchmarks": {
+        "result": "PASS",
+        "node": "v24.21.0",
+        "platform": "linux/x64",
+        "workload": "Object with one bounded integer; 10 cold core compilations, 10 x 1000 warm validations, five fresh workers and five cold/cache-warm pinned HTTPS preparations.",
+        "coreCold": {
+          "samples": 10,
+          "medianMs": 14.426795000000027,
+          "maxMs": 25.362898
+        },
+        "coreWarm": {
+          "samples": 10,
+          "medianMs": 2.1061050000000137,
+          "maxMs": 2.7945720000000165,
+          "validationsPerSample": 1000
+        },
+        "isolated": {
+          "samples": 5,
+          "medianMs": 169.73227499999996,
+          "maxMs": 184.013755
+        },
+        "resolverCold": {
+          "samples": 5,
+          "medianMs": 119.47296800000004,
+          "maxMs": 138.36537700000008
+        },
+        "resolverWarm": {
+          "samples": 5,
+          "medianMs": 115.54410899999993,
+          "maxMs": 118.84851300000014
+        },
+        "regression": {
+          "absoluteWorkerAndResolverCeilingMs": 2000,
+          "investigateSameEnvironmentMedianMultiplier": 3
+        },
+        "workerReuse": "Each isolated call starts a new worker; warm refers to compiled synchronous core or resolver representation-byte cache."
+      },
+      "operations": {
+        "result": "PASS",
+        "checks": [
+          "hostile-schema-deadline",
+          "valid-core-worker-without-peer",
+          "abort-termination",
+          "zero-active-workers",
+          "diagnostic-redaction"
+        ]
+      },
+      "tests": {
+        "passed": 381,
+        "failed": 0,
+        "skipped": 0
+      },
+      "audit": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      }
+    },
+    {
+      "jobArtifact": "resolver-windows-latest-24.21.0",
+      "runtime": "v24.21.0",
+      "platform": "win32/x64",
+      "artifactSha256": "0f29b101df8af091fc2337cdc5eda6f0e7a234cdd18ac9330bf19d65f270c60e",
+      "installedChecks": 26,
+      "structural": {
+        "result": "PASS",
+        "sourceCommit": "a5c007510faa3fce85190f2e76e402faf0e897ad",
+        "verifiedSourceFiles": 33,
+        "installedStructuralCases": 20,
+        "cases": [
+          {
+            "schema": "catalog",
+            "file": "conformance/valid/minimal-none-to-none.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/valid/boolean-json-schema.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/text-to-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/json-to-text.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/no-input-to-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/json-to-no-output.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/optional-schemaless.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/../examples/catalogs/large-external-schemas.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/none-with-representations.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/required-without-representations.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/relative-contract-id.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "catalog",
+            "file": "conformance/invalid/unsafe-bundle-entrypoint.json",
+            "expected": false,
+            "result": "PASS"
+          },
+          {
+            "schema": "extension-params",
+            "file": "examples/extension-params-inline.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "extension-params",
+            "file": "examples/extension-params-external.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "invocation-metadata",
+            "file": "examples/metadata/invocation-text-to-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "invocation-metadata",
+            "file": "examples/metadata/invocation-no-input.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "result-metadata",
+            "file": "examples/metadata/result-json.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "result-metadata",
+            "file": "examples/metadata/result-no-output.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "part-metadata",
+            "file": "examples/metadata/primary-input-part.json",
+            "expected": true,
+            "result": "PASS"
+          },
+          {
+            "schema": "error-detail",
+            "file": "examples/metadata/error.json",
+            "expected": true,
+            "result": "PASS"
+          }
+        ]
+      },
+      "benchmarks": {
+        "result": "PASS",
+        "node": "v24.21.0",
+        "platform": "win32/x64",
+        "workload": "Object with one bounded integer; 10 cold core compilations, 10 x 1000 warm validations, five fresh workers and five cold/cache-warm pinned HTTPS preparations.",
+        "coreCold": {
+          "samples": 10,
+          "medianMs": 14.958500000000015,
+          "maxMs": 28.836700000000008
+        },
+        "coreWarm": {
+          "samples": 10,
+          "medianMs": 1.8698999999999728,
+          "maxMs": 4.061399999999992,
+          "validationsPerSample": 1000
+        },
+        "isolated": {
+          "samples": 5,
+          "medianMs": 213.69579999999996,
+          "maxMs": 215.67360000000008
+        },
+        "resolverCold": {
+          "samples": 5,
+          "medianMs": 156.54619999999977,
+          "maxMs": 170.79160000000002
+        },
+        "resolverWarm": {
+          "samples": 5,
+          "medianMs": 153.2588999999998,
+          "maxMs": 157.6565999999998
+        },
+        "regression": {
+          "absoluteWorkerAndResolverCeilingMs": 2000,
+          "investigateSameEnvironmentMedianMultiplier": 3
+        },
+        "workerReuse": "Each isolated call starts a new worker; warm refers to compiled synchronous core or resolver representation-byte cache."
+      },
+      "operations": {
+        "result": "PASS",
+        "checks": [
+          "hostile-schema-deadline",
+          "valid-core-worker-without-peer",
+          "abort-termination",
+          "zero-active-workers",
+          "diagnostic-redaction"
+        ]
+      },
+      "tests": {
+        "passed": 381,
+        "failed": 0,
+        "skipped": 0
+      },
+      "audit": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      }
+    }
+  ]
+}

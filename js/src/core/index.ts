@@ -1,16 +1,20 @@
-export * from './constants.js';
-export * from './errors.js';
-export { parseCatalog, parseExtensionParams, parseExtension } from './catalog.js';
 export type {
-  Integrity,
-  SchemaDescriptor,
-  Representation,
-  ContractDirection,
+  CatalogReference,
   Contract,
-  PreparedRepresentation,
-  RepresentationCapability,
   ContractCatalog,
+  ContractDirection,
+  Integrity,
+  PreparedRepresentation,
+  PreparedSchema,
+  Representation,
+  RepresentationCapability,
+  SchemaDescriptor,
+  SchemaResources,
 } from './catalog.js';
-export * from './payload.js';
-export { matchMediaTypes } from './media.js';
+export { parseCatalog, parseExtension, parseExtensionParams } from './catalog.js';
+export * from './constants.js';
+export * from './discovery.js';
+export * from './errors.js';
 export { LIMITS as CORE_LIMITS } from './json.js';
+export { matchMediaTypes } from './media.js';
+export * from './payload.js';

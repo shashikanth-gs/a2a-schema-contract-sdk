@@ -1,10 +1,10 @@
+import type { ContractCatalog, JsonValue } from 'a2a-schema-contract/core';
 import {
-  createContractResolver,
-  type ContractResolver,
-  type ResolverOptions,
   type Address,
-} from '@shashikanth-gs/a2a-schema-contract/resolver';
-import type { ContractCatalog, JsonValue } from '@shashikanth-gs/a2a-schema-contract/core';
+  type ContractResolver,
+  createContractResolver,
+  type ResolverOptions,
+} from 'a2a-schema-contract/resolver';
 
 const options: ResolverOptions = {
   allowedOrigins: ['https://contracts.example.org'],

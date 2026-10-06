@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
+
 import {
   ContractError,
+  encodePrimary,
   EXTENSION_URI,
   JSON_SCHEMA_DIALECT,
   parseExtension,
-  encodePrimary,
   validateInvocation,
   validateResult,
-} from '@shashikanth-gs/a2a-schema-contract/core';
+} from 'a2a-schema-contract/core';
 
 // This example knows no business type at compile time. Discovery is validated data.
 const contractId = 'https://contracts.example.org/unknown-domain/1.0';

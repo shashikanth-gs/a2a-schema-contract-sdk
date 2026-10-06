@@ -194,3 +194,110 @@ a connection. Compiler/validator worker isolation stays SDK-007.
 
 See [resolver security](resolver-security.md), [public API](../js/README.md),
 and [resolver completion evidence](resolver-report.md). No normative source was modified.
+
+
+## ADR-011: Owned worker validation at asynchronous boundaries
+
+Accepted 2026-10-06 for SDK-007. Keep synchronous core/encoding helpers for trusted
+application use and run untrusted async selection, final output validation and
+resolver compilation in owned workers. Use a 2-second operation deadline,
+64 MiB V8 old-generation limit, 4 MiB stack and four operations per owner; allow
+only lower configured budgets. Include startup in the deadline, refuse saturation
+without queue growth, and await physical termination for every outcome. Workers
+receive no application environment/flags, logger/auth callbacks or validator
+network loader. Preserve external document/resource identity across structured
+cloning so redirect-relative refs retain their accepted SDK-006 semantics.
+
+Carry immutable, offline schema programs internally between resolver and binding;
+trusted synchronous helpers compile lazily when explicitly called. Validation
+never coerces/defaults/removes instance fields. Bound errors and use existing
+wire mappings. Retain public TaskStore orchestration and cooperative application
+execution signals. Diagnose with optional allowlisted facts, not payload logs.
+Worker startup has measured overhead; cold/warm installed benchmarks make that
+cost visible. This isolates validator work, not arbitrary business closures or
+native process memory. See node-operations.md and the candidate evidence report.
+
+## ADR-012: Unscoped private Node candidate and deferred registry ownership
+
+Accepted at the maintainer's request on 2026-10-06. The first npm name is
+`a2a-schema-contract`; the scoped placeholder is replaced in imports and locks.
+Use `0.1.0-rc.0` and retain `private=true`. The name returned public-registry E404;
+this is an availability observation, not a reservation or ownership claim. No
+scope exists to verify. Initial npm account/name ownership and registry OIDC
+configuration are publication prerequisites, separately authorized after artifact
+candidate validation. M3 uses tarballs and reproducible rehearsal evidence.
+
+## ADR-013: Shared SDK developer experience before framework adapters
+
+Accepted 2026-10-07 as design and delivery scope; Node APIs are implemented with acceptance tracked
+SDK-016–019. The maintainer requested actionable tracking after the
+[extension ecosystem and API review](developer-experience-review.md).
+SDK-001–008/M3 evidence remains valid for its original bounded candidate scope;
+it does not establish that application integration is finished.
+
+### Ownership
+
+The SDK owns catalog authoring/advertisement helpers, skill-associated discovery,
+supported-representation inspection, prepared schema access, explicit selection,
+wire preparation, validation and publication guarantees. Ordinary applications
+must be able to use these without ADK or LangGraph. Separate framework packages
+own framework tools/events, model configuration and execution/delegation. They
+depend on the matching JS or Python SDK; framework dependencies stay outside this
+repository. Provider schema translation must preserve the boundary contract and
+report unsupported features.
+
+### Skill-associated discovery
+
+Join advertised AgentCard skill IDs with optional contract.skillIds; expose all
+matching contracts and representation capabilities. This association supports
+discovery and candidate selection; invocation still explicitly carries the chosen
+contractId and representation IDs. Application handler registration stays
+host-owned. No skillId invocation field or implicit execution route is introduced.
+
+Support many-to-many associations and unassociated contracts. Do not choose the
+first match when several usable contracts remain. Missing/stale associations are
+discovery diagnostics, not a new mandatory wire rejection. Distinguish a
+structurally valid alternative from one supported by this SDK profile. Final API
+names are implementation choices, not current exports.
+
+### Prepared schema access
+
+Expose an immutable, validator-independent view of the source descriptor, dialect,
+schema entrypoint and required resource documents. Preserve native IDs, bases,
+fragments, aliases and reference semantics rather than flattening the graph
+blindly. Inline and external forms support the same inspection workflow;
+schemaless and unsupported alternatives remain explicit.
+
+Access uses the approved snapshot and performs no retrieval. Credentials, network
+handles, mutable caches and compiled Ajv functions are not part of this public
+view. Caller mutation, cache clearing and worker cleanup must not change a
+prepared snapshot. Resource bounds and disclosure ownership still apply. The view
+supplies information to adapters; it does not guarantee model schema support.
+
+### Advertisement and invocation convenience
+
+Provide validated authoring/advertisement helpers for embedded and external
+catalogs. The public external descriptor and the server's prepared execution
+catalog are distinct inputs that must describe the same intended snapshot.
+Avoid post-construction mutation of AgentExtension.params in examples. Preserve
+other extensions, advertised skills, authentication and host ownership.
+
+Provide a compact discovery-to-invocation path using an explicit contract choice.
+Convenience may choose a representation only when caller constraints leave one
+supported option; report ambiguity before dispatch. Required wire identifiers
+are still emitted. No invented static domain types, hidden retrieval, schema
+weakening, validation bypass or invocation retry is permitted.
+
+### Binding clarity and acceptance
+
+Retain ADR-005's operation-level invocation metadata and Task/standalone Message
+result policy until explicitly revised. Document the binding and address the
+draft/example ambiguity through fixtures and a reviewable clarification proposal.
+Do not modify the pinned normative snapshot or silently accept incompatible
+placements. Upstream posting is separate work.
+
+SDK-016–019 implement Node APIs; SDK-010/011 independently implement Python parity.
+REF-010 proves ordinary Node use from installed artifacts; REF-006 adds all four
+language pairings. Framework packages consume these public APIs after the
+independent application workflow passes. This ADR neither implements helpers nor
+expands current support claims.

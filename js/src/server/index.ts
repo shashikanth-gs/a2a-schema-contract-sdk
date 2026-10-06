@@ -4,51 +4,63 @@ import {
   Message,
   Part,
   Role,
+  SendMessageRequest,
   Task,
+  TaskArtifactUpdateEvent,
   TaskState,
   TaskStatusUpdateEvent,
-  TaskArtifactUpdateEvent,
-  type SendMessageRequest,
 } from '@a2a-js/sdk';
+import { A2AError, ExtensionSupportRequiredError } from '@a2a-js/sdk/errors';
 import {
+  type A2ARequestHandler,
   AgentEvent,
+  type AgentExecutionEvent,
+  type AgentExecutor,
   DefaultExecutionEventBus,
   DefaultRequestHandler,
-  type AgentExecutor,
-  type AgentExecutionEvent,
-  type A2ARequestHandler,
   type ExecutionEventBus,
   type RequestContext,
   type ServerCallContext,
   type TaskStore,
 } from '@a2a-js/sdk/server';
-import { A2AError, ExtensionSupportRequiredError } from '@a2a-js/sdk/errors';
-import {
-  ContractError,
-  EXTENSION_URI,
-  encodePrimary,
-  parseCatalog,
-  type ContractCatalog,
-  type JsonValue,
-} from '../core/index.js';
-import { preparedCatalog } from '../resolver/prepared.js';
-import { isRecord, snapshot } from '../core/json.js';
+
 import {
   checkEcho,
   cloneArtifact,
   consumeResult,
+  type ContractSelection,
   echo,
   guardContainer,
   guardJsonRpcRequest,
   mapped,
   reject,
-  selectRequest,
   stopStates,
-  type ContractSelection,
 } from '../adapters/a2a-js/boundary.js';
+import {
+  type AdvertisementOptions,
+  type ContractCatalog,
+  ContractError,
+  createContractExtension,
+  encodePrimary,
+  EXTENSION_URI,
+  type JsonValue,
+  parseCatalog,
+} from '../core/index.js';
+import { isRecord, snapshot } from '../core/json.js';
+import {
+  createValidationSession,
+  lazyCatalog,
+  type ValidationOptions,
+} from '../operations/index.js';
+import { preparedCatalog } from '../resolver/prepared.js';
 export { EXTENSION_URI } from '../core/index.js';
 
-export const SERVER_LIMITS = Object.freeze({ events: 128, bytes: 262144, deadlineMs: 30000 });
+export const SERVER_LIMITS = Object.freeze({
+  events: 128,
+  bytes: 262144,
+  deadlineMs: 30000,
+  executions: 4,
+});
 export interface ExecutionContract extends ContractSelection {
   readonly signal: AbortSignal;
 }
@@ -58,6 +70,11 @@ export interface ContractServerOptions {
   readonly taskStore: TaskStore;
   readonly executor: AgentExecutor;
   readonly required?: boolean;
+  /** External delivery uses only a catalog resolved from that external descriptor. */
+  readonly catalogDelivery?: 'inline' | 'external';
+  readonly validation?: ValidationOptions;
+  /** May lower the hard bound on active application executions. */
+  readonly concurrentExecutions?: number;
   /** May shorten the fixed maximum execution deadline. */
   readonly deadlineMs?: number;
   /** Application-owned disconnect/abort signal; never implies a CancelTask call. */
@@ -70,24 +87,23 @@ export interface ContractServer {
   /** Mount after JSON parsing and before the official JSON-RPC handler. */
   guard(value: unknown): void;
   execution(context: RequestContext): ExecutionContract;
+  close(): Promise<void>;
 }
 /** Advertise a validated private catalog snapshot without modifying the application card. */
 export function advertiseContracts(
   card: AgentCard,
   catalog: ContractCatalog,
   required = false,
+  catalogDelivery: AdvertisementOptions['catalogDelivery'] = 'inline',
 ): AgentCard {
   const copy = AgentCard.fromJSON(AgentCard.toJSON(card));
   if (!copy.capabilities) reject();
   copy.capabilities.extensions = copy.capabilities.extensions.filter(
     (e) => e.uri !== EXTENSION_URI,
   );
-  copy.capabilities.extensions.push({
-    uri: EXTENSION_URI,
-    required,
-    description: 'Schema Contract',
-    params: { catalog: { inline: { contracts: catalog.contracts } } },
-  });
+  copy.capabilities.extensions.push(
+    createContractExtension(catalog, { required, catalogDelivery }),
+  );
   return copy;
 }
 /** All three boundaries use public official SDK interfaces and the existing TaskStore. */
@@ -95,8 +111,17 @@ export function createContractServer(options: ContractServerOptions): ContractSe
   const deadline = options.deadlineMs ?? SERVER_LIMITS.deadlineMs;
   if (!Number.isSafeInteger(deadline) || deadline < 1 || deadline > SERVER_LIMITS.deadlineMs)
     throw new TypeError('Invalid execution deadline.');
+  const maximumExecutions = options.concurrentExecutions ?? SERVER_LIMITS.executions;
+  if (
+    !Number.isSafeInteger(maximumExecutions) ||
+    maximumExecutions < 1 ||
+    maximumExecutions > SERVER_LIMITS.executions
+  )
+    throw new TypeError('Invalid execution concurrency.');
   const catalog = preparedCatalog(options.catalog) ?? parseCatalog(options.catalog);
-  const card = advertiseContracts(options.card, catalog, options.required);
+  const card = advertiseContracts(options.card, catalog, options.required, options.catalogDelivery);
+  const validation = createValidationSession(catalog, options.validation);
+  const publicCatalog = lazyCatalog(catalog);
   const selections = new WeakMap<ServerCallContext, ContractSelection>();
   const executions = new WeakMap<RequestContext, ExecutionContract>();
   const active = new Map<string, AbortController>();
@@ -123,7 +148,26 @@ export function createContractServer(options: ContractServerOptions): ContractSe
       return;
     }
     try {
-      const selection = selectRequest(catalog, request);
+      const selected = await validation.run<{
+        invocation: ContractSelection['invocation'];
+        input: ContractSelection['input'];
+        outputRepresentationId?: string;
+      }>('request', SendMessageRequest.toJSON(request));
+      const selection: ContractSelection = {
+        invocation: selected.invocation,
+        input: snapshot(selected.input, {
+          origin: 'remote',
+        }) as unknown as ContractSelection['input'],
+        ...(selected.outputRepresentationId
+          ? {
+              output: publicCatalog.select(
+                selected.invocation.contractId,
+                'output',
+                selected.outputRepresentationId,
+              ),
+            }
+          : {}),
+      };
       if (request.message?.taskId) {
         const task = await delegate.getTask(
           { id: request.message.taskId, tenant: request.tenant },
@@ -193,7 +237,7 @@ export function createContractServer(options: ContractServerOptions): ContractSe
       selections.delete(context.context);
       const controller = new AbortController();
       const taskKey = key(context.context, context.taskId);
-      if (active.has(taskKey)) {
+      if (active.has(taskKey) || active.size >= maximumExecutions) {
         failure(context, bus, selection);
         return;
       }
@@ -284,19 +328,36 @@ export function createContractServer(options: ContractServerOptions): ContractSe
       staging.finished = () => {
         open = false;
       };
-      const aborted = new Promise<never>((_, rejectAbort) => {
-        if (signal.aborted) rejectAbort(new Error('Execution aborted.'));
-        else
+      try {
+        signal.throwIfAborted();
+        const aborted = new Promise<never>((_, rejectAbort) => {
           signal.addEventListener('abort', () => rejectAbort(new Error('Execution aborted.')), {
             once: true,
           });
-      });
-      try {
-        signal.throwIfAborted();
-        await Promise.race([options.executor.execute(context, staging), aborted]);
+        });
+        // Install both race handlers before invoking a callback that may throw synchronously.
+        await Promise.race([
+          Promise.resolve().then(() => {
+            signal.throwIfAborted();
+            return options.executor.execute(context, staging);
+          }),
+          aborted,
+        ]);
         open = false;
         if (invalid) reject();
-        validateEvents(context, staged, catalog, selection, started);
+        if (selection) {
+          const normalized = await validation.run<WireEvent[]>(
+            'events',
+            {
+              request: SendMessageRequest.toJSON(context.request),
+              events: encodeEvents(staged),
+              context: { taskId: context.taskId, contextId: context.contextId },
+              started,
+            },
+            { signal },
+          );
+          staged.splice(0, staged.length, ...decodeEvents(normalized));
+        } else validateEvents(context, staged, catalog, selection, started);
         for (const event of staged.slice(started ? 1 : 0)) {
           signal.throwIfAborted();
           bus.publish(event);
@@ -316,7 +377,19 @@ export function createContractServer(options: ContractServerOptions): ContractSe
       // DefaultRequestHandler has already authorized the TaskStore lookup.
       // Cancel controllers are scoped by the handler wrapper below.
       try {
-        await options.executor.cancelTask(taskId, new DefaultExecutionEventBus());
+        const cancellation = new DefaultExecutionEventBus();
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        try {
+          await Promise.race([
+            options.executor.cancelTask(taskId, cancellation),
+            new Promise<void>((resolve) => {
+              timer = setTimeout(resolve, deadline);
+            }),
+          ]);
+        } finally {
+          if (timer) clearTimeout(timer);
+          cancellation.removeAllListeners();
+        }
       } catch {
         /* never disclose business exception text */
       }
@@ -379,6 +452,10 @@ export function createContractServer(options: ContractServerOptions): ContractSe
     card,
     catalog,
     handler,
+    async close() {
+      for (const controller of active.values()) controller.abort();
+      await validation.close();
+    },
     guard(value: unknown) {
       try {
         guardJsonRpcRequest(value);
@@ -423,7 +500,7 @@ export function createContractServer(options: ContractServerOptions): ContractSe
     },
   });
 }
-function validateEvents(
+export function validateEvents(
   context: RequestContext,
   events: AgentExecutionEvent[],
   catalog: ContractCatalog,
@@ -532,3 +609,36 @@ export function outputArtifact(
 }
 export type { JsonValue };
 export type { Direction, Presence } from '../core/index.js';
+
+export interface WireEvent {
+  readonly kind: AgentExecutionEvent['kind'];
+  readonly data: unknown;
+}
+export function encodeEvents(events: readonly AgentExecutionEvent[]): WireEvent[] {
+  return events.map((event) => {
+    switch (event.kind) {
+      case 'task':
+        return { kind: event.kind, data: Task.toJSON(event.data) };
+      case 'message':
+        return { kind: event.kind, data: Message.toJSON(event.data) };
+      case 'statusUpdate':
+        return { kind: event.kind, data: TaskStatusUpdateEvent.toJSON(event.data) };
+      case 'artifactUpdate':
+        return { kind: event.kind, data: TaskArtifactUpdateEvent.toJSON(event.data) };
+    }
+  });
+}
+export function decodeEvents(events: readonly WireEvent[]): AgentExecutionEvent[] {
+  return events.map((event) => {
+    switch (event.kind) {
+      case 'task':
+        return AgentEvent.task(Task.fromJSON(event.data));
+      case 'message':
+        return AgentEvent.message(Message.fromJSON(event.data));
+      case 'statusUpdate':
+        return AgentEvent.statusUpdate(TaskStatusUpdateEvent.fromJSON(event.data));
+      case 'artifactUpdate':
+        return AgentEvent.artifactUpdate(TaskArtifactUpdateEvent.fromJSON(event.data));
+    }
+  });
+}

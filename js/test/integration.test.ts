@@ -1,45 +1,47 @@
 import { once } from 'node:events';
-import express from 'express';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+
 import {
   AgentCard,
   Artifact,
+  CancelTaskRequest,
+  GetTaskRequest,
+  ListTasksRequest,
   Message,
   Part,
   SendMessageRequest,
   Task,
+  TaskArtifactUpdateEvent,
   TaskState,
   TaskStatusUpdateEvent,
-  TaskArtifactUpdateEvent,
-  ListTasksRequest,
-  GetTaskRequest,
-  CancelTaskRequest,
 } from '@a2a-js/sdk';
+import { toJsonRpcError } from '@a2a-js/sdk/errors';
 import {
   AgentEvent,
-  InMemoryTaskStore,
-  ServerCallContext,
   type AgentExecutor,
+  InMemoryTaskStore,
   type RequestContext,
+  ServerCallContext,
 } from '@a2a-js/sdk/server';
 import { agentCardHandler, jsonRpcHandler, UserBuilder } from '@a2a-js/sdk/server/express';
-import { toJsonRpcError } from '@a2a-js/sdk/errors';
-import { ContractError, EXTENSION_URI, type Presence } from '../src/core/index.js';
+import express from 'express';
+import { afterEach, describe, expect, test, vi } from 'vitest';
+
+import { guardJsonRpcRequest } from '../src/adapters/a2a-js/index.js';
 import {
-  createContractServer,
-  outputArtifact,
-  outputPart,
-  type ContractServer,
-} from '../src/server/index.js';
-import {
+  type ContractClient,
   createContractClient,
   discoverContractClient,
   guardResponseFetch,
-  type ContractClient,
   type InvocationOptions,
 } from '../src/client/index.js';
+import { ContractError, EXTENSION_URI, type Presence } from '../src/core/index.js';
 import { createContractResolver } from '../src/resolver/index.js';
-import { guardJsonRpcRequest } from '../src/adapters/a2a-js/index.js';
+import {
+  type ContractServer,
+  createContractServer,
+  outputArtifact,
+  outputPart,
+} from '../src/server/index.js';
 
 const id = 'urn:example:integration:1';
 const json = {
@@ -68,6 +70,9 @@ async function launch(
   representations = [json, text],
   deadlineMs = 30000,
   resolve = false,
+  cancelHangs = false,
+  syncThrows = false,
+  concurrentExecutions = 4,
 ) {
   let calls = 0;
   const contractServerHolder: { value?: ContractServer } = {};
@@ -263,9 +268,14 @@ async function launch(
     },
     cancelTask() {
       cancelCalls++;
+      if (cancelHangs) return new Promise<void>(() => {});
       return Promise.reject(new Error('secret-cancel'));
     },
   };
+  if (syncThrows)
+    executor.execute = () => {
+      throw new Error('secret-synchronous-executor');
+    };
   const app = express();
   const store = new InMemoryTaskStore();
   const card = AgentCard.fromJSON({
@@ -306,9 +316,12 @@ async function launch(
     executor,
     required,
     deadlineMs,
+    concurrentExecutions,
     signal: (context) => {
       if ((context.state.get('headers') as Record<string, unknown>)['x-signal-fail'])
         throw new Error('secret-signal-hook');
+      if ((context.state.get('headers') as Record<string, unknown>)['x-pre-abort'])
+        return AbortSignal.abort();
       return context.state.get('signal') as AbortSignal | undefined;
     },
   });
@@ -661,7 +674,10 @@ describe('real JSON-RPC installed-shape integration', () => {
   test('CancelTask aborts cooperative execution and publishes correlated canceled status', async () => {
     const app = await launch();
     const pending = app.client.invoke({ ...invoke, metadata: { mode: 'wait' } });
-    await vi.waitFor(() => expect(app.contexts).toHaveLength(1));
+    // Observe early failures immediately; awaiting pending below still asserts the result.
+    void pending.catch(() => {});
+    // Client preparation and server validation each have their own bounded worker startup.
+    await vi.waitFor(() => expect(app.contexts).toHaveLength(1), { timeout: 5000 });
     const taskId = app.contexts[0]!.taskId;
     await vi.waitFor(async () =>
       expect(
@@ -746,9 +762,10 @@ describe('real JSON-RPC installed-shape integration', () => {
     const taskId = initial.response.id;
     const pending = app.client.invoke(
       { ...invoke, taskId, metadata: { mode: 'wait' } },
-      { signal: AbortSignal.timeout(2000) },
+      { signal: AbortSignal.timeout(10000) },
     );
-    await vi.waitFor(() => expect(app.calls()).toBe(2));
+    void pending.catch(() => {});
+    await vi.waitFor(() => expect(app.calls()).toBe(2), { timeout: 5000 });
     const before = await app.client.client.getTask(GetTaskRequest.fromJSON({ id: taskId }));
     const rejected = await raw(
       app.url,
@@ -1060,3 +1077,95 @@ test('explicit resolver discovery and prepared server catalog use the same valid
   });
   expect(result.payload?.present).toBe(true);
 });
+
+test('a noncooperating cancellation callback cannot hold the protocol response open', async () => {
+  const app = await launch('required', 'required', false, [json, text], 200, false, true);
+  const iterator = app.client.stream({ ...invoke, metadata: { mode: 'wait' } });
+  const first = await iterator.next();
+  if (first.done || first.value.kind !== 'companion' || first.value.event.payload?.$case !== 'task')
+    throw new Error('Expected initial Task.');
+  const taskId = first.value.event.payload.value.id;
+  const start = performance.now();
+  const canceled = await app.client.client.cancelTask(CancelTaskRequest.fromJSON({ id: taskId }));
+  expect(performance.now() - start).toBeLessThan(1500);
+  expect(canceled.status?.state).toBe(TaskState.TASK_STATE_CANCELED);
+  for await (const event of iterator)
+    if (event.kind === 'result')
+      expect(event.result.response).toMatchObject({
+        status: { state: TaskState.TASK_STATE_CANCELED },
+        artifacts: [],
+      });
+});
+
+test('closing owned client/server validation shuts down safely and refuses subsequent contracted work', async () => {
+  const app = await launch();
+  await app.client.close();
+  await expect(app.client.invoke(invoke)).rejects.toMatchObject({ code: 'RESOURCE_LIMIT' });
+  await app.contractServer.close();
+  const response = await raw(app.url, SendMessageRequest.toJSON(app.client.prepare(invoke)));
+  expect(response.error?.code).toBe(-32602);
+  expect(app.calls()).toBe(0);
+});
+
+test('pre-aborted application signals reject before execution with no orphan rejected promise', async () => {
+  const app = await launch();
+  const result = await app.client.invoke(invoke, { serviceParameters: { 'X-Pre-Abort': 'yes' } });
+  expect(result.response).toMatchObject({
+    status: { state: TaskState.TASK_STATE_FAILED },
+    artifacts: [],
+  });
+  expect(app.calls()).toBe(0);
+});
+
+test('synchronously throwing application executors are sanitized without orphan race rejections', async () => {
+  const app = await launch('required', 'required', false, [json, text], 30000, false, false, true);
+  const result = await app.client.invoke(invoke);
+  expect(result.response).toMatchObject({
+    status: { state: TaskState.TASK_STATE_FAILED },
+    artifacts: [],
+  });
+  expect(JSON.stringify(result)).not.toContain('secret');
+});
+
+test('active application execution capacity is bounded and released after cancellation', async () => {
+  const app = await launch(
+    'required',
+    'required',
+    false,
+    [json, text],
+    30000,
+    false,
+    false,
+    false,
+    1,
+  );
+  const iterator = app.client.stream({ ...invoke, metadata: { mode: 'wait' } });
+  const first = await iterator.next();
+  if (first.done || first.value.kind !== 'companion' || first.value.event.payload?.$case !== 'task')
+    throw new Error('Expected initial Task.');
+  const refused = await app.client.invoke(invoke);
+  expect(refused.response).toMatchObject({
+    status: { state: TaskState.TASK_STATE_FAILED },
+    artifacts: [],
+  });
+  expect(app.calls()).toBe(1);
+  await app.client.client.cancelTask(
+    CancelTaskRequest.fromJSON({ id: first.value.event.payload.value.id }),
+  );
+  for await (const event of iterator)
+    if (event.kind === 'result')
+      expect(event.result.response).toMatchObject({
+        status: { state: TaskState.TASK_STATE_CANCELED },
+      });
+  expect((await app.client.invoke(invoke)).payload).toMatchObject({ present: true });
+  expect(app.calls()).toBe(2);
+});
+
+test.each([0, 5, 1.5])(
+  'invalid active-execution limit %s is rejected during construction',
+  async (limit) => {
+    await expect(
+      launch('required', 'required', false, [json, text], 30000, false, false, false, limit),
+    ).rejects.toThrow(TypeError);
+  },
+);

@@ -1,24 +1,26 @@
 import { isDeepStrictEqual } from 'node:util';
+
 import {
   Artifact,
   Message,
   Part,
   Role,
+  type SendMessageRequest,
   Task,
   TaskState,
-  type SendMessageRequest,
 } from '@a2a-js/sdk';
 import { ContentTypeNotSupportedError, RequestMalformedError } from '@a2a-js/sdk/errors';
+
 import {
+  type ContractCatalog,
   ContractError,
   EXTENSION_URI,
-  matchMediaTypes,
-  validateInvocation,
-  validateResult,
-  type ContractCatalog,
   type InvocationSelection,
+  matchMediaTypes,
   type Payload,
   type PreparedRepresentation,
+  validateInvocation,
+  validateResult,
 } from '../../core/index.js';
 import { snapshot } from '../../core/json.js';
 

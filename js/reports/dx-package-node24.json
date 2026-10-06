@@ -1,0 +1,381 @@
+{
+  "task": "SDK-016–019",
+  "runtime": "v24.21.0",
+  "platform": "darwin/arm64",
+  "artifact": "a2a-schema-contract-0.1.0-rc.1.tgz",
+  "version": "0.1.0-rc.1",
+  "artifactSha256": "09c0146a2d9d1ba110fd6d888374ce0233f8effc1df77dc42f6a167bd4717677",
+  "integrity": "sha512-qPnRfEHqLJjQrhIzGvbsFrYzj60zp0uDB5kWrgWMLcgGil3JlXLr1oJq0AUWFu28kCiFHVjJTf3vV/E40/7zrw==",
+  "sourceCommit": "a5c007510faa3fce85190f2e76e402faf0e897ad",
+  "files": [
+    "LICENSE",
+    "NOTICE",
+    "README.md",
+    "dist/adapters/a2a-js/boundary.d.ts",
+    "dist/adapters/a2a-js/boundary.d.ts.map",
+    "dist/adapters/a2a-js/boundary.js",
+    "dist/adapters/a2a-js/boundary.js.map",
+    "dist/adapters/a2a-js/index.d.ts",
+    "dist/adapters/a2a-js/index.d.ts.map",
+    "dist/adapters/a2a-js/index.js",
+    "dist/adapters/a2a-js/index.js.map",
+    "dist/client/index.d.ts",
+    "dist/client/index.d.ts.map",
+    "dist/client/index.js",
+    "dist/client/index.js.map",
+    "dist/core/catalog.d.ts",
+    "dist/core/catalog.d.ts.map",
+    "dist/core/catalog.js",
+    "dist/core/catalog.js.map",
+    "dist/core/constants.d.ts",
+    "dist/core/constants.d.ts.map",
+    "dist/core/constants.js",
+    "dist/core/constants.js.map",
+    "dist/core/discovery.d.ts",
+    "dist/core/discovery.d.ts.map",
+    "dist/core/discovery.js",
+    "dist/core/discovery.js.map",
+    "dist/core/errors.d.ts",
+    "dist/core/errors.d.ts.map",
+    "dist/core/errors.js",
+    "dist/core/errors.js.map",
+    "dist/core/index.d.ts",
+    "dist/core/index.d.ts.map",
+    "dist/core/index.js",
+    "dist/core/index.js.map",
+    "dist/core/json.d.ts",
+    "dist/core/json.d.ts.map",
+    "dist/core/json.js",
+    "dist/core/json.js.map",
+    "dist/core/media.d.ts",
+    "dist/core/media.d.ts.map",
+    "dist/core/media.js",
+    "dist/core/media.js.map",
+    "dist/core/payload.d.ts",
+    "dist/core/payload.d.ts.map",
+    "dist/core/payload.js",
+    "dist/core/payload.js.map",
+    "dist/core/schema.d.ts",
+    "dist/core/schema.d.ts.map",
+    "dist/core/schema.js",
+    "dist/core/schema.js.map",
+    "dist/core/structure.d.ts",
+    "dist/core/structure.d.ts.map",
+    "dist/core/structure.js",
+    "dist/core/structure.js.map",
+    "dist/core/structures-data.d.ts",
+    "dist/core/structures-data.d.ts.map",
+    "dist/core/structures-data.js",
+    "dist/core/structures-data.js.map",
+    "dist/index.d.ts",
+    "dist/index.d.ts.map",
+    "dist/index.js",
+    "dist/index.js.map",
+    "dist/operations/diagnostics.d.ts",
+    "dist/operations/diagnostics.d.ts.map",
+    "dist/operations/diagnostics.js",
+    "dist/operations/diagnostics.js.map",
+    "dist/operations/index.d.ts",
+    "dist/operations/index.d.ts.map",
+    "dist/operations/index.js",
+    "dist/operations/index.js.map",
+    "dist/operations/program.d.ts",
+    "dist/operations/program.d.ts.map",
+    "dist/operations/program.js",
+    "dist/operations/program.js.map",
+    "dist/operations/worker.d.ts",
+    "dist/operations/worker.d.ts.map",
+    "dist/operations/worker.js",
+    "dist/operations/worker.js.map",
+    "dist/resolver/index.d.ts",
+    "dist/resolver/index.d.ts.map",
+    "dist/resolver/index.js",
+    "dist/resolver/index.js.map",
+    "dist/resolver/network.d.ts",
+    "dist/resolver/network.d.ts.map",
+    "dist/resolver/network.js",
+    "dist/resolver/network.js.map",
+    "dist/resolver/policy.d.ts",
+    "dist/resolver/policy.d.ts.map",
+    "dist/resolver/policy.js",
+    "dist/resolver/policy.js.map",
+    "dist/resolver/prepared.d.ts",
+    "dist/resolver/prepared.d.ts.map",
+    "dist/resolver/prepared.js",
+    "dist/resolver/prepared.js.map",
+    "dist/resolver/registry.d.ts",
+    "dist/resolver/registry.d.ts.map",
+    "dist/resolver/registry.js",
+    "dist/resolver/registry.js.map",
+    "dist/resources/LICENSE",
+    "dist/resources/manifest.json",
+    "dist/resources/NOTICE",
+    "dist/resources/schema/catalog.schema.json",
+    "dist/resources/schema/common.schema.json",
+    "dist/resources/schema/error-detail.schema.json",
+    "dist/resources/schema/extension-params.schema.json",
+    "dist/resources/schema/invocation-metadata.schema.json",
+    "dist/resources/schema/part-metadata.schema.json",
+    "dist/resources/schema/result-metadata.schema.json",
+    "dist/server/index.d.ts",
+    "dist/server/index.d.ts.map",
+    "dist/server/index.js",
+    "dist/server/index.js.map",
+    "package.json"
+  ],
+  "checks": [
+    "plain-JS-core-imports-without-peer",
+    "all-adapter-imports-with-peer",
+    "installed-real-HTTP-and-SSE-quickstart",
+    "strict-installed-client-server-quickstart-types",
+    "seven-installed-resources-with-original-hashes",
+    "license-and-notice",
+    "no-source-or-dev-files",
+    "core-install-without-optional-peer",
+    "documented-resource-example",
+    "installed-offline-core-example-and-rejection",
+    "installed-ajv-reserved-schema-map-refusal",
+    "documented-discovery-snippet",
+    "dynamic-schema-types-do-not-invent-domain-types",
+    "strict-core-types-without-peer",
+    "strict-adapter-types-with-exact-peer",
+    "private-paths-rejected",
+    "runtime-audit-zero",
+    "resolver-import-and-preparation-without-peer",
+    "strict-resolver-types-without-peer",
+    "installed-HTTPS-external-catalog-schema-and-HTTP-SSE-quickstart",
+    "private-resolver-branding-seam-rejected",
+    "installed-isolated-core-without-optional-peer",
+    "installed-hostile-schema-timeout-abort-and-worker-cleanup",
+    "strict-installed-operational-types",
+    "20-pinned-structural-cases-against-shipped-schemas",
+    "repeatable-installed-cold-warm-core-worker-and-HTTPS-benchmarks",
+    "installed-skill-discovery-schema-resources-and-selection-without-peer",
+    "strict-immutable-discovery-types-without-peer"
+  ],
+  "operationsReport": {
+    "result": "PASS",
+    "checks": [
+      "hostile-schema-deadline",
+      "valid-core-worker-without-peer",
+      "abort-termination",
+      "zero-active-workers",
+      "diagnostic-redaction"
+    ]
+  },
+  "discoveryReport": {
+    "result": "PASS",
+    "checks": [
+      "skill-contract-discovery",
+      "immutable-schema-resources",
+      "explicit-compact-selection",
+      "invalid-input-refusal",
+      "portable-advertisement"
+    ]
+  },
+  "conformanceReport": {
+    "result": "PASS",
+    "sourceCommit": "a5c007510faa3fce85190f2e76e402faf0e897ad",
+    "verifiedSourceFiles": 33,
+    "installedStructuralCases": 20,
+    "cases": [
+      {
+        "schema": "catalog",
+        "file": "conformance/valid/minimal-none-to-none.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "catalog",
+        "file": "conformance/valid/boolean-json-schema.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "catalog",
+        "file": "conformance/../examples/catalogs/text-to-json.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "catalog",
+        "file": "conformance/../examples/catalogs/json-to-text.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "catalog",
+        "file": "conformance/../examples/catalogs/no-input-to-json.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "catalog",
+        "file": "conformance/../examples/catalogs/json-to-no-output.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "catalog",
+        "file": "conformance/../examples/catalogs/optional-schemaless.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "catalog",
+        "file": "conformance/../examples/catalogs/large-external-schemas.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "catalog",
+        "file": "conformance/invalid/none-with-representations.json",
+        "expected": false,
+        "result": "PASS"
+      },
+      {
+        "schema": "catalog",
+        "file": "conformance/invalid/required-without-representations.json",
+        "expected": false,
+        "result": "PASS"
+      },
+      {
+        "schema": "catalog",
+        "file": "conformance/invalid/relative-contract-id.json",
+        "expected": false,
+        "result": "PASS"
+      },
+      {
+        "schema": "catalog",
+        "file": "conformance/invalid/unsafe-bundle-entrypoint.json",
+        "expected": false,
+        "result": "PASS"
+      },
+      {
+        "schema": "extension-params",
+        "file": "examples/extension-params-inline.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "extension-params",
+        "file": "examples/extension-params-external.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "invocation-metadata",
+        "file": "examples/metadata/invocation-text-to-json.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "invocation-metadata",
+        "file": "examples/metadata/invocation-no-input.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "result-metadata",
+        "file": "examples/metadata/result-json.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "result-metadata",
+        "file": "examples/metadata/result-no-output.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "part-metadata",
+        "file": "examples/metadata/primary-input-part.json",
+        "expected": true,
+        "result": "PASS"
+      },
+      {
+        "schema": "error-detail",
+        "file": "examples/metadata/error.json",
+        "expected": true,
+        "result": "PASS"
+      }
+    ]
+  },
+  "benchmarkReport": {
+    "result": "PASS",
+    "node": "v24.21.0",
+    "platform": "darwin/arm64",
+    "workload": "Object with one bounded integer; 10 cold core compilations, 10 x 1000 warm validations, five fresh workers and five cold/cache-warm pinned HTTPS preparations.",
+    "coreCold": {
+      "samples": 10,
+      "medianMs": 4.107832999999999,
+      "maxMs": 7.829000000000001
+    },
+    "coreWarm": {
+      "samples": 10,
+      "medianMs": 0.4644580000000076,
+      "maxMs": 0.8153329999999954,
+      "validationsPerSample": 1000
+    },
+    "isolated": {
+      "samples": 5,
+      "medianMs": 56.92154199999999,
+      "maxMs": 108.383667
+    },
+    "resolverCold": {
+      "samples": 5,
+      "medianMs": 40.573000000000036,
+      "maxMs": 58.07041700000002
+    },
+    "resolverWarm": {
+      "samples": 5,
+      "medianMs": 38.378167000000076,
+      "maxMs": 39.36191599999995
+    },
+    "regression": {
+      "absoluteWorkerAndResolverCeilingMs": 2000,
+      "investigateSameEnvironmentMedianMultiplier": 3
+    },
+    "workerReuse": "Each isolated call starts a new worker; warm refers to compiled synchronous core or resolver representation-byte cache."
+  },
+  "transportReport": {
+    "result": "PASS",
+    "transport": "A2A 1.0 JSON-RPC/HTTP + SSE",
+    "checks": [
+      "discovery-and-schema-exposure",
+      "validated-roundtrip",
+      "local-no-dispatch",
+      "wire-zero-execution",
+      "invalid-output-no-artifact",
+      "atomic-SSE-result"
+    ],
+    "executions": 3
+  },
+  "externalReport": {
+    "result": "PASS",
+    "retrievals": 6,
+    "executions": 4,
+    "checks": [
+      "pinned-external-catalog",
+      "pinned-root-and-transitive-schema",
+      "prepared-server-and-discovered-client",
+      "validated-HTTP-roundtrip",
+      "invalid-input-zero-execution",
+      "invalid-output-no-artifact",
+      "atomic-SSE-result",
+      "no-request-time-retrieval",
+      "independent-client-peer-refusal",
+      "external-opt-in-required"
+    ]
+  },
+  "peerBounds": {
+    "minimum": "1.3.0",
+    "maximum": "1.3.0",
+    "policy": "Exact peer range; one artifact tests both bounds."
+  },
+  "consumerLockSha256": "714aa1e303e8f42344a777bf6ad2dfbbde942689403be68ae4538e633b3019a2",
+  "limits": [
+    "Bounded Node JSON/text and HTTPS profile; Python, bundles/XML and other transports remain excluded.",
+    "This report records its own runtime; hosted runs retain independent reports."
+  ]
+}

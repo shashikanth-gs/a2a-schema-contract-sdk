@@ -1,6 +1,7 @@
-import type { JsonValue } from './constants.js';
 import { types } from 'node:util';
-import { fail, type ErrorContext } from './errors.js';
+
+import type { JsonValue } from './constants.js';
+import { type ErrorContext, fail } from './errors.js';
 
 export const LIMITS = Object.freeze({
   depth: 32,

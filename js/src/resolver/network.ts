@@ -1,8 +1,9 @@
 import { lookup } from 'node:dns/promises';
-import { request, Agent } from 'node:https';
+import { Agent, request } from 'node:https';
 import { isIP } from 'node:net';
 import { checkServerIdentity } from 'node:tls';
-import { ContractError, fail, type ErrorContext } from '../core/errors.js';
+
+import { ContractError, type ErrorContext, fail } from '../core/errors.js';
 import { publicAddress } from './policy.js';
 
 export interface Address {

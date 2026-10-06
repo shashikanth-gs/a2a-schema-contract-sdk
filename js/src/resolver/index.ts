@@ -1,21 +1,27 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
+
 import type { ValidateFunction } from 'ajv/dist/2020.js';
+
 import {
-  createCatalog,
-  parseCatalog,
+  type CatalogReference,
   type ContractCatalog,
+  createCatalog,
   type Integrity,
+  parseCatalog,
 } from '../core/catalog.js';
 import { EXTENSION_URI, JSON_SCHEMA_DIALECT, type JsonValue } from '../core/constants.js';
-import { ContractError, fail, type ErrorContext } from '../core/errors.js';
+import { ContractError, type ErrorContext, fail } from '../core/errors.js';
 import { isRecord, snapshot } from '../core/json.js';
 import { checkStructure } from '../core/structure.js';
-import { retrieve, type NetworkPolicy } from './network.js';
+import { type DiagnosticHook, observe } from '../operations/diagnostics.js';
+import type { ValidationSession } from '../operations/index.js';
+import { registerProgram, type SchemaProgram } from '../operations/program.js';
+import { type NetworkPolicy, retrieve } from './network.js';
 import { documentUri, resourceUrl } from './policy.js';
 import { rememberCatalog } from './prepared.js';
 import { prepareSchema, type ResourceDocument } from './registry.js';
 
-export type { NetworkPolicy, Address } from './network.js';
+export type { Address, NetworkPolicy } from './network.js';
 export const RESOLVER_LIMITS = Object.freeze({
   redirects: 3,
   responseBytes: 262144,
@@ -31,6 +37,7 @@ export const RESOLVER_LIMITS = Object.freeze({
 });
 export type ResolverLimits = typeof RESOLVER_LIMITS;
 export interface ResolverOptions extends NetworkPolicy {
+  readonly diagnostics?: DiagnosticHook;
   /** Exact document URIs whose immutability the administrator guarantees. ETags are not proof. */
   readonly immutableResources?: readonly string[];
   /** Independent pins for native transitive dependencies; a root digest does not pin them. */
@@ -101,6 +108,7 @@ export function createContractResolver(options: ResolverOptions = {}): ContractR
       timeout.signal,
       ...(resolution.signal ? [resolution.signal] : []),
     ]);
+    const compilations = new Set<ValidationSession>();
     let totalBytes = 0;
     let fetched = 0;
     // One coherent resource snapshot per preparation, including uncacheable mutable documents.
@@ -234,6 +242,7 @@ export function createContractResolver(options: ResolverOptions = {}): ContractR
     async function work(): Promise<ContractCatalog> {
       checkpoint();
       let data = snapshot(value, context);
+      let reference: CatalogReference | undefined;
       if (kind === 'extension') {
         if (!isRecord(data) || typeof data.uri !== 'string') fail('INVALID_STRUCTURE', context);
         if (data.uri !== EXTENSION_URI) fail('VERSION_MISMATCH', context);
@@ -244,6 +253,8 @@ export function createContractResolver(options: ResolverOptions = {}): ContractR
       if (kind !== 'catalog') {
         checkStructure('extension-params', data, context);
         const descriptor = (data as { catalog: Record<string, JsonValue> }).catalog;
+        if (!Object.hasOwn(descriptor, 'inline'))
+          reference = descriptor as unknown as CatalogReference;
         data = Object.hasOwn(descriptor, 'inline')
           ? descriptor.inline!
           : (
@@ -257,6 +268,7 @@ export function createContractResolver(options: ResolverOptions = {}): ContractR
       }
       const structural = parseCatalog(data, context.origin);
       const validators = new Map<string, ValidateFunction>();
+      const programs: Record<string, SchemaProgram> = {};
       for (const contract of structural.contracts)
         for (const direction of ['input', 'output'] as const) {
           for (const representation of contract[direction].representations ?? []) {
@@ -287,23 +299,40 @@ export function createContractResolver(options: ResolverOptions = {}): ContractR
               limits,
               scoped,
               checkpoint,
+              signal,
+              (program) => {
+                programs[JSON.stringify([contract.id, direction, representation.id])] =
+                  Object.freeze({
+                    entry: program.entry,
+                    documents: Object.freeze(
+                      program.documents.map((document) => Object.freeze(document)),
+                    ),
+                  });
+              },
+              (session) => compilations.add(session),
             );
             validators.set(JSON.stringify([contract.id, direction, representation.id]), validate);
           }
         }
-      const catalog = createCatalog(data, context.origin, (descriptor, scoped) => {
-        if (descriptor.bundle) fail('SCHEMA_UNAVAILABLE', scoped);
-        if (descriptor.dialect !== JSON_SCHEMA_DIALECT) fail('UNSUPPORTED_DIALECT', scoped);
-        if (descriptor.mediaType !== 'application/schema+json')
-          fail('UNSUPPORTED_MEDIA_TYPE', scoped);
-        const validate = validators.get(
-          JSON.stringify([scoped.contractId, scoped.direction, scoped.representationId]),
-        );
-        if (!validate) fail('SCHEMA_UNAVAILABLE', scoped);
-        return validate;
-      });
+      const catalog = createCatalog(
+        data,
+        context.origin,
+        (descriptor, scoped) => {
+          if (descriptor.bundle) fail('SCHEMA_UNAVAILABLE', scoped);
+          if (descriptor.dialect !== JSON_SCHEMA_DIALECT) fail('UNSUPPORTED_DIALECT', scoped);
+          if (descriptor.mediaType !== 'application/schema+json')
+            fail('UNSUPPORTED_MEDIA_TYPE', scoped);
+          const validate = validators.get(
+            JSON.stringify([scoped.contractId, scoped.direction, scoped.representationId]),
+          );
+          if (!validate) fail('SCHEMA_UNAVAILABLE', scoped);
+          return validate;
+        },
+        { schemas: Object.freeze(programs), ...(reference ? { reference } : {}) },
+      );
       checkpoint();
       rememberCatalog(catalog);
+      registerProgram(catalog, { contracts: catalog.contracts, schemas: programs });
       return catalog;
     }
     let onAbort: (() => void) | undefined;
@@ -328,16 +357,17 @@ export function createContractResolver(options: ResolverOptions = {}): ContractR
       clearTimeout(timer);
       if (onAbort) signal.removeEventListener('abort', onAbort);
       timeout.abort();
+      await Promise.all([...compilations].map((session) => session.close()));
       active--;
     }
   }
   return Object.freeze({
     resolveCatalog: (value: unknown, resolution?: ResolutionOptions) =>
-      run(value, 'catalog', resolution),
+      observe('resolution', options.diagnostics, () => run(value, 'catalog', resolution)),
     resolveExtensionParams: (value: unknown, resolution?: ResolutionOptions) =>
-      run(value, 'params', resolution),
+      observe('resolution', options.diagnostics, () => run(value, 'params', resolution)),
     resolveExtension: (value: unknown, resolution?: ResolutionOptions) =>
-      run(value, 'extension', resolution),
+      observe('resolution', options.diagnostics, () => run(value, 'extension', resolution)),
     clearCache() {
       cache.clear();
       cacheBytes = 0;

@@ -1,15 +1,18 @@
 import { createHash } from 'node:crypto';
 import { once } from 'node:events';
 import { readFile } from 'node:fs/promises';
-import { createServer, type ServerResponse, type IncomingMessage } from 'node:http';
+import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { createServer as createHttpsServer } from 'node:https';
+
 import { afterEach, describe, expect, test, vi } from 'vitest';
+
 import {
   ContractError,
+  createContractExtension,
   EXTENSION_URI,
+  type Integrity,
   JSON_SCHEMA_DIALECT,
   parseCatalog,
-  type Integrity,
 } from '../src/core/index.js';
 import {
   createContractResolver,
@@ -113,6 +116,41 @@ function selected(
 ) {
   return value.select(contractId, 'input', 'json');
 }
+
+test('public prepared resources preserve redirects, fragments and offline advertisement identity', async () => {
+  const f = await fixture();
+  f.routes.set('/root', (_req, res) => {
+    res.writeHead(302, { Location: '/schemas/root' });
+    res.end();
+  });
+  const root = f.json('/schemas/root', { $defs: { selected: { $ref: 'child#value' } } });
+  f.json('/schemas/child', { $anchor: 'value', type: 'integer', minimum: 0 });
+  const data = catalog(f.origin + '/root#/$defs/selected');
+  const bytes = f.json('/catalog', data, 'application/json');
+  const resolver = f.resolver({ resourceIntegrity: { [f.origin + '/root']: pin(root) } });
+  const params = external(f.origin + '/catalog', pin(bytes));
+  const prepared = await resolver.resolveExtensionParams(params);
+  const schema = prepared.schema(contractId, 'input', 'json')!;
+  expect(schema.entry).toBe(f.origin + '/root#/$defs/selected');
+  expect(schema.documents.map((d) => d.uri)).toEqual([
+    f.origin + '/schemas/root',
+    f.origin + '/root',
+    f.origin + '/schemas/child',
+  ]);
+  expect(schema.documents[0]!.value).toEqual({ $defs: { selected: { $ref: 'child#value' } } });
+  expect(Object.isFrozen(schema.documents)).toBe(true);
+  expect(Object.isFrozen(schema.documents[0])).toBe(true);
+  expect(Object.isFrozen(schema.documents[0]!.value)).toBe(true);
+  expect(
+    createContractExtension(prepared, { required: true, catalogDelivery: 'external' }).params,
+  ).toEqual(params);
+  expect(prepared.reference).toEqual(params.catalog);
+  const before = f.calls.length;
+  resolver.clearCache();
+  expect(prepared.schema(contractId, 'input', 'json')).toEqual(schema);
+  expect(selected(prepared).validate(3)).toBe(3);
+  expect(f.calls).toHaveLength(before);
+});
 
 describe('explicit external catalog/schema preparation', () => {
   test.each(['sha-256', 'sha-512'] as const)(

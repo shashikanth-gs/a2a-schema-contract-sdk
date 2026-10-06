@@ -1,0 +1,31 @@
+{
+  "tasks": [
+    "SDK-016",
+    "SDK-017",
+    "SDK-018",
+    "SDK-019"
+  ],
+  "sdkRuntimeCommit": "07ddd60e339ed0d86f2ace091e263a7aa369a0b9",
+  "packageName": "a2a-schema-contract",
+  "version": "0.1.0-rc.1",
+  "artifactSha256": "09c0146a2d9d1ba110fd6d888374ce0233f8effc1df77dc42f6a167bd4717677",
+  "normativeCommit": "a5c007510faa3fce85190f2e76e402faf0e897ad",
+  "result": "PASS",
+  "sdkTests": 406,
+  "installedPackageChecks": 28,
+  "independentReferenceTests": 49,
+  "independentDiscoveryChecks": 28,
+  "localRuntimes": [
+    "22.23.3",
+    "24.21.0"
+  ],
+  "sdkHostedMatrix": "https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526526282",
+  "hostedRehearsal": "https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526518540",
+  "hostedArtifactHashesVerified": true,
+  "frameworkDependencies": [],
+  "publication": "disabled",
+  "pythonParity": "pending",
+  "referenceHostedMatrix": "https://github.com/shashikanth-gs/a2a-schema-contract-reference/actions/runs/37526845838",
+  "referenceRuntimeCommit": "6c662a312183b5dd189bf941caf86223f1415644",
+  "milestone": "M3a complete"
+}

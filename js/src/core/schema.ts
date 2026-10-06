@@ -1,6 +1,7 @@
-import { Ajv2020, MissingRefError, type AnySchema, type ValidateFunction } from 'ajv/dist/2020.js';
+import { Ajv2020, type AnySchema, MissingRefError, type ValidateFunction } from 'ajv/dist/2020.js';
+
 import { JSON_SCHEMA_DIALECT, type JsonValue } from './constants.js';
-import { fail, type ErrorContext } from './errors.js';
+import { type ErrorContext, fail } from './errors.js';
 import { absoluteUri, isRecord, LIMITS } from './json.js';
 
 const vocabularies = new Set(
