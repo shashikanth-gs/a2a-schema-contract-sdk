@@ -36,7 +36,7 @@ views, compact explicit invocation and validated embedded/external advertisement
 These APIs belong in the shared SDK; future framework adapters consume them.
 See [developer experience](docs/developer-experience.md) and
 [metadata binding](docs/metadata-binding.md). Python parity remains planned.
-The current working candidate is `0.1.0-rc.1`; the earlier hosted `rc.0` evidence
+The current private Node candidate is `0.1.0-rc.1`; the earlier hosted `rc.0` evidence
 does not establish hosted acceptance of these additions.
 
 ## Get started

@@ -40,9 +40,12 @@ Both fresh builds produce SHA-256
 `09c0146a2d9d1ba110fd6d888374ce0233f8effc1df77dc42f6a167bd4717677`.
 `npm run release:rehearsal` verifies reproducible packs; publication stays disabled.
 
-Hosted validation and the independent REF-010 source/artifact pin are pending
-this implementation checkpoint. They must pass for the current candidate before
-M3a closes; earlier RC0 hosted runs do not establish this candidate's acceptance.
+The [hosted SDK matrix](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526526282)
+and [release rehearsal](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526518540)
+pass at source `07ddd60e339ed0d86f2ace091e263a7aa369a0b9`. Linux Node 22/24
+and macOS/Windows Node 24 pass the complete package gate. Independent REF-010
+final hosted acceptance remains pending; its pin uses this exact revision and
+checksum. Earlier RC0 runs remain historical evidence.
 
 ## Consumer and language boundaries
 

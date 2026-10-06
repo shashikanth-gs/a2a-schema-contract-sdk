@@ -1,9 +1,9 @@
 # SDK implementation plan
 
 Updated: 2026-10-07\
-Status: SDK-001–008 complete for the original Node candidate; shared SDK developer-experience work accepted and pending
+Status: SDK-001–008 and SDK-016–019 complete for the Node candidate; Python implementation remains planned
 
-Next task: SDK-016 (Node skill-associated discovery). SDK-017/019 and Python foundation SDK-009 are also READY.
+Next SDK task: SDK-009 (Python engineering/package foundation), READY. Independent REF-010 final hosted acceptance is tracked in the reference plan.
 Companion tracking: [reference roadmap](https://github.com/shashikanth-gs/a2a-schema-contract-reference/blob/main/PLAN.md). Workspace milestone tracking is maintained internally.
 
 This repository builds reusable JS/TypeScript and Python client/server packages. The reference repository installs the resulting artifacts and proves real usage. The specification repository owns the normative contract; its initial revision is pinned in [contract-source.json](contract-source.json).
@@ -29,10 +29,10 @@ Each row is the authoritative status for that task. Dependency references to REF
 | SDK-013 | Joint release rehearsal and maintenance readiness | PLANNED | Unassigned | SDK-008, SDK-012, SDK-016–019, REF-008, REF-010 |
 | SDK-014 | Safe schema-bundle support in both languages | DEFERRED | Unassigned | SDK-013 |
 | SDK-015 | Explicit XML/XSD validation support in both languages | DEFERRED | Unassigned | SDK-014 |
-| SDK-016 | Node skill-associated contract discovery | IN_PROGRESS | Codex | SDK-008 |
-| SDK-017 | Node public prepared-schema resource access | IN_PROGRESS | Codex | SDK-006, SDK-007 |
-| SDK-018 | Node catalog advertisement and invocation convenience | IN_PROGRESS | Codex | SDK-016, SDK-017 |
-| SDK-019 | Explicit metadata binding and interoperability fixtures | IN_PROGRESS | Codex | SDK-008 |
+| SDK-016 | Node skill-associated contract discovery | DONE | Codex | SDK-008 |
+| SDK-017 | Node public prepared-schema resource access | DONE | Codex | SDK-006, SDK-007 |
+| SDK-018 | Node catalog advertisement and invocation convenience | DONE | Codex | SDK-016, SDK-017 |
+| SDK-019 | Explicit metadata binding and interoperability fixtures | DONE | Codex | SDK-008 |
 
 SDK-016–019 add shared application APIs, not framework integrations. Node delivery
 is followed by independent Python parity in SDK-010/011. See ADR-013 and the
@@ -292,7 +292,7 @@ Acceptance criteria:
 - Preserve immutable snapshots and runtime-validated JSON semantics without asserting invented static domain types.
 - Ship plain-JS/strict-TS public examples/tests and shared expected outcomes for SDK-010 and REF-010's installed workflow.
 
-Evidence: Started 2026-10-07 by Codex in the shared SDK implementation batch; acceptance pending.
+Evidence: Started/completed 2026-10-07 by Codex; many-to-many/stale/unassociated skills, capabilities and immutable discovery. [Validation report](docs/developer-experience-report.md), [API guide](docs/developer-experience.md), source `07ddd60e339ed0d86f2ace091e263a7aa369a0b9` and [draft PR #1](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/pull/1). Fresh Node 22.23.3/24.21.0 gates pass 406 tests, 28 installed checks, strict types and zero audits; [hosted matrix](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526526282) and [private rehearsal](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526518540) pass. RC1 SHA-256 `09c0146a2d9d1ba110fd6d888374ce0233f8effc1df77dc42f6a167bd4717677`; independently installed JS/TS flight consumers pass locally on both runtimes. Python parity and framework adapters remain separately tracked.
 
 ## SDK-017: Node public prepared-schema resource access
 
@@ -306,7 +306,7 @@ Acceptance criteria:
 - Prove snapshot isolation, cache clearing, worker cleanup independence and existing bounds; cover redirected bases, fragments, local references and supported recursion with independent expected resource identities.
 - Ship public JS/TS examples, installed-artifact checks and shared resource-view cases for SDK-011. Provider/framework translation remains outside this API.
 
-Evidence: Started 2026-10-07 by Codex; public access and installed acceptance pending.
+Evidence: Started/completed 2026-10-07 by Codex; original inline/external resource identities, Boolean/schemaless views, redirect/fragment/root-anchor semantics and cache/worker independence. [Validation report](docs/developer-experience-report.md), [API guide](docs/developer-experience.md), source `07ddd60e339ed0d86f2ace091e263a7aa369a0b9` and [draft PR #1](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/pull/1). Fresh Node 22.23.3/24.21.0 gates pass 406 tests, 28 installed checks, strict types and zero audits; [hosted matrix](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526526282) and [private rehearsal](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526518540) pass. RC1 SHA-256 `09c0146a2d9d1ba110fd6d888374ce0233f8effc1df77dc42f6a167bd4717677`; independently installed JS/TS flight consumers pass locally on both runtimes. Python parity and framework adapters remain separately tracked.
 
 ## SDK-018: Node catalog advertisement and invocation convenience
 
@@ -320,7 +320,7 @@ Acceptance criteria:
 - Report ambiguity before dispatch; choose a representation only when caller constraints leave one supported option. No hidden routing, weakening, validation bypass, invocation retry or implicit retrieval.
 - Ship plain-JS/strict-TS structured and text-to-JSON recipes with invalid-input/output cases, cleanup and limitations. REF-010 consumes installed artifacts; SDK-010 supplies Python parity.
 
-Evidence: Started 2026-10-07 by Codex with SDK-016/017; acceptance pending.
+Evidence: Started/completed 2026-10-07 by Codex; portable advertisement, acquired external-catalog provenance and compact explicit invocation with zero-dispatch refusal. [Validation report](docs/developer-experience-report.md), [API guide](docs/developer-experience.md), source `07ddd60e339ed0d86f2ace091e263a7aa369a0b9` and [draft PR #1](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/pull/1). Fresh Node 22.23.3/24.21.0 gates pass 406 tests, 28 installed checks, strict types and zero audits; [hosted matrix](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526526282) and [private rehearsal](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526518540) pass. RC1 SHA-256 `09c0146a2d9d1ba110fd6d888374ce0233f8effc1df77dc42f6a167bd4717677`; independently installed JS/TS flight consumers pass locally on both runtimes. Python parity and framework adapters remain separately tracked.
 
 ## SDK-019: Explicit metadata binding and interoperability fixtures
 
@@ -333,7 +333,7 @@ Acceptance criteria:
 - Exercise independent peer fixtures, conflicting duplicates, missing activation/contract-result echo/identity and unrelated-extension coexistence. Distinguish required contract echoes from the binding's optional activation-response header; declare unsupported placements and preserve validation/publication guarantees.
 - Supply shared cases and migration guidance for SDK-010/011 and REF-006. Record tested scope without claiming arbitrary framework compatibility or maintainer endorsement.
 
-Evidence: Started 2026-10-07 by Codex; ADR-005 remains the binding policy; fixtures/clarification pending.
+Evidence: Started/completed 2026-10-07 by Codex; independent correlated request/response/failure fixtures, conflicting placement and required result echo; clarification prepared without upstream posting. [Validation report](docs/developer-experience-report.md), [API guide](docs/developer-experience.md), source `07ddd60e339ed0d86f2ace091e263a7aa369a0b9` and [draft PR #1](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/pull/1). Fresh Node 22.23.3/24.21.0 gates pass 406 tests, 28 installed checks, strict types and zero audits; [hosted matrix](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526526282) and [private rehearsal](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526518540) pass. RC1 SHA-256 `09c0146a2d9d1ba110fd6d888374ce0233f8effc1df77dc42f6a167bd4717677`; independently installed JS/TS flight consumers pass locally on both runtimes. Python parity and framework adapters remain separately tracked.
 
 ## Progress log
 
@@ -365,3 +365,5 @@ adds hosted baseline evidence; SDK-007 and the release milestones remain open.
 
 
 | 2026-10-06 | SDK-007/008 candidate work | Owned workers, sanitized hooks, operational/invariant tests, unscoped 0.1.0-rc.0 metadata, installed structural/worker/benchmark gates and disabled publication rehearsal implemented. Fresh Node 22/24 checks pass; hosted and independent reference acceptance remain open. | docs/node-operations.md; docs/node-release.md; js/reports/rc-* |
+
+| 2026-10-07 | SDK-016–019 | DONE; shared skill/schema/advertisement/invocation APIs and explicit binding fixtures accepted for Node RC1 | docs/developer-experience-report.md; js/reports/developer-experience-summary.json; hosted source 07ddd60 |

@@ -55,7 +55,7 @@ consumers may use skillIds to find candidate contracts, then explicitly select
 the contractId emitted in the request. RC1 implements the shared Node APIs; [current evidence](developer-experience-report.md)
 records their acceptance separately from Python parity.
 
-| Work | Relationship to existing requirements | Pending delivery and acceptance |
+| Work | Relationship to existing requirements | Node evidence and remaining parity |
 | --- | --- | --- |
 | Skill-associated discovery | D04-04 association semantics and D05-01 explicit identity | SDK-016; Python SDK-010; installed REF-010 and four-pairing REF-006 |
 | Public prepared-schema resources | D08-01/03 schema descriptors and native references; D13 resolver/security policy | SDK-017; Python SDK-011; REF-010/006 |

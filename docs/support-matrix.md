@@ -51,3 +51,8 @@ invocation. [Developer-experience evidence](developer-experience-report.md) reco
 fresh Node 22/24 acceptance and the current hosted/reference gate. Existing RC0
 links above retain historical evidence. Framework adapters and Python parity
 remain separately tracked.
+
+RC1 source `07ddd60e339ed0d86f2ace091e263a7aa369a0b9` passes [the current hosted SDK matrix](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37526526282)
+on Linux Node 22/24 and macOS/Windows Node 24, including 406 tests and 28 installed
+checks. Downloaded tarballs on all four jobs and the hosted private rehearsal match
+the accepted SHA-256 in the developer-experience report.
