@@ -20,7 +20,7 @@ smokes are configured but need real CI runs before portability is claimed.
 
 Update owning task status/evidence and downstream support decisions. Store exact
 commands, runtime versions, artifact hashes, sanitized reports and limitations.
-Keep publishing disabled; remote repository setup and publication require a
-separate request. The local package scope remains provisional.
+Keep npm/PyPI publishing disabled until the maintainer separately authorizes a
+package release. The local package scope remains provisional.
 
 Run shared `tests/inline-core-cases.json` expectations independently when adding a language implementation. Preserve 100% core coverage and prior evidence. SDK-003 adds fixed preflight budgets; synchronous validator deadlines/isolation remain SDK-007.

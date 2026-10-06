@@ -4,7 +4,7 @@ Updated: 2026-10-06
 Status: SDK-001–006 complete locally; Node operational validation ready
 
 Next task: SDK-007
-Companion tracking: [workspace plan](../PLAN.md), [reference plan](../a2a-schema-contract-reference/PLAN.md)
+Companion tracking: [reference roadmap](https://github.com/shashikanth-gs/a2a-schema-contract-reference/blob/main/PLAN.md). Workspace milestone tracking is maintained internally.
 
 This repository builds reusable JS/TypeScript and Python client/server packages. The reference repository installs the resulting artifacts and proves real usage. The specification repository owns the normative contract; its initial revision is pinned in [contract-source.json](contract-source.json).
 
@@ -278,3 +278,11 @@ Evidence: Deferred; excluded from first release gates.
 | 2026-10-06 | SDK-004/005 | Combined inline HTTP/SSE batch DONE locally; SDK-006 READY | Integration report and paired clean/installed-artifact evidence |
 
 | 2026-10-06 | SDK-006 | DONE locally; SDK-007 READY | Resolver report: 359 tests and 21 installed-consumer checks on fresh Node 22/24; explicit HTTPS policy, graph/integrity/auth/cache and public transport evidence; worker/operational validation remains next |
+
+## Public repository availability
+
+The maintainer authorized public GitHub repository creation on 2026-10-06.
+The repository front page, description, discovery topics and contributor/security
+guides distinguish the implemented Node preview from planned Python and release
+work. Original task reports retain their validation-time context. Source hosting
+does not publish an npm/PyPI package or close the remaining release gates.

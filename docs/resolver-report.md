@@ -2,8 +2,8 @@
 
 Completed locally on 2026-10-06 by Codex on
 `codex/sdk-006-secure-resolution`. Validation used the local working tree;
-the subsequent local source checkpoint is recorded in workspace
-[CHECKPOINTS.md](../../CHECKPOINTS.md). No remote, PR, push, tag or package
+the validated local source checkpoint is
+[`87c96e7`](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/commit/87c96e756fa8e9b0e5e0caa6b51498260df8f036). No remote, PR, push, tag or package
 publication occurred. Normative inputs/vendor files were not modified.
 
 The public `/resolver` provides explicit HTTPS preparation of inline/external
