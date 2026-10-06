@@ -157,3 +157,40 @@ independent malformed peers and explicit zero-execution/no-publication assertion
 plus separately documented coverage floors. Fresh tarballs exercise the runnable
 JS quickstart and strict TS consumer declarations. External retrieval, independent
 reference scenarios, Python and hosted portability remain separate gates.
+
+
+## ADR-010 — Explicit HTTPS preparation and instance-private resource registry
+
+Accepted 2026-10-06 for SDK-006. `/resolver` prepares a frozen catalog whose
+validators use an offline Ajv registry. Ordinary core parsing remains synchronous
+and offline; client discovery takes an optional resolver and server creation
+accepts only a privately branded prepared catalog or structurally validated raw
+catalog. Required schemas are acquired/compiled before invocation or server startup.
+Descriptors, native `$id` resources and validation inputs are preserved.
+
+Direct HTTPS requests connect to one approved DNS address with original
+Host/SNI/certificate identity and a fresh explicit Agent. Every DNS answer and
+redirect passes the public-address/origin policy. Administrator overrides are
+exact application configuration; TLS trust verification cannot be disabled by
+resolver options. No environment proxy, credential URL, cookie jar or shared
+connection cache is used. The authorization value is exact-origin and permanently
+removed after a cross-origin redirect chain hop.
+
+Integrity covers final identity-encoded response bytes before decoding/parsing.
+Catalogs require a pin or an exact administrator immutability assertion. Independent
+transitive pins are supported; root pins do not imply them. Cache storage is
+owned by one resolver identity, keyed by requested URI/media/pin, bounded by LRU
+entries and byte size. Prepared catalogs retain their private validators after
+cache clearing; no retrieval happens during selection or validation.
+
+The graph tracks schema locations, IDs, active document dependencies and finite
+counts/depth. Native local recursive schemas remain supported; cross-document
+retrieval cycles and refs into non-schema annotations are refused. This interpretation
+of the draft's cycle wording and Ajv's percent-encoded-leading-slash/nonlocal
+`$dynamicRef` restrictions are explicit in the [security model](resolver-security.md).
+Bundles/XML remain deferred. I/O deadlines and cancellation release sockets,
+timers/listeners and caller capacity; system DNS may finish later without opening
+a connection. Compiler/validator worker isolation stays SDK-007.
+
+See [resolver security](resolver-security.md), [public API](../js/README.md),
+and [resolver completion evidence](resolver-report.md). No normative source was modified.

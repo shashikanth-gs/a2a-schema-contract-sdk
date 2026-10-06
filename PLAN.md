@@ -1,8 +1,9 @@
 # SDK implementation plan
 
 Updated: 2026-10-06  
-Status: SDK-001–005 complete locally; secure external resolution ready  
-Next task: SDK-006  
+Status: SDK-001–006 complete locally; Node operational validation ready
+
+Next task: SDK-007
 Companion tracking: [workspace plan](../PLAN.md), [reference plan](../a2a-schema-contract-reference/PLAN.md)
 
 This repository builds reusable JS/TypeScript and Python client/server packages. The reference repository installs the resulting artifacts and proves real usage. The specification repository owns the normative contract; its initial revision is pinned in [contract-source.json](contract-source.json).
@@ -18,8 +19,8 @@ Each row is the authoritative status for that task. Dependency references to REF
 | SDK-003 | Complete JS inline contract/validation core | DONE | Codex | SDK-002 |
 | SDK-004 | JS A2A client/server integration | DONE | Codex | SDK-003 |
 | SDK-005 | Complete Node presence, negotiation and lifecycle profile | DONE | Codex | SDK-004 |
-| SDK-006 | Secure Node external catalog/schema resolution | READY | Unassigned | SDK-005 |
-| SDK-007 | Node conformance, security and operational validation | PLANNED | Unassigned | SDK-006 |
+| SDK-006 | Secure Node external catalog/schema resolution | DONE | Codex | SDK-005 |
+| SDK-007 | Node conformance, security and operational validation | READY | Unassigned | SDK-006 |
 | SDK-008 | Node developer documentation and release candidate | PLANNED | Unassigned | SDK-007, REF-004 |
 | SDK-009 | Python engineering and package foundation | PLANNED | Unassigned | SDK-008 |
 | SDK-010 | Independent Python inline client/server profile | PLANNED | Unassigned | SDK-009 |
@@ -130,7 +131,7 @@ Acceptance criteria:
 - Add deterministic network-policy tests with controlled DNS/redirect/response fixtures; cover address changes, encoded host tricks, integrity mismatch, resource exhaustion and cancellation. Tests must not depend on arbitrary public hosts.
 - Document secure configuration, administrator allowlisting, resolver limits and error behavior. Bundles/XML remain explicitly unsupported until their own tasks pass.
 
-Evidence: Not started.
+Evidence: Started/completed 2026-10-06 by Codex on local branch `codex/sdk-006-secure-resolution`; validation used the local working tree, subsequent checkpoint recorded in workspace CHECKPOINTS.md. [Resolver report](docs/resolver-report.md), [threat model](docs/resolver-security.md), [public API/configuration](js/README.md), ADR-010, support/requirement maps, and `js/reports/resolver-summary.json`. From `js/`: `npm exec --yes --package=node@22.23.3 -- npm run check:clean` and `npm exec --yes --package=node@24.21.0 -- npm run check:clean` each pass fresh install/format/lint/strict-types/build, 359 tests (109 resolver cases plus two integration cases added), 21 isolated installed-package checks, ten external HTTPS/A2A assertions and six retained inline HTTP/SSE assertions. Both final 0.1.0-dev.0 artifacts SHA-256 `d7c6886a7b672d17918f4b25f1896a412c2b9e132cd33581b41d56ebfd6f325d`, retained in `js/artifacts/resolver-node{22,24}/`; paired clean/package reports and logs retained. macOS arm64, exact A2A peer 1.3.0, core 100% coverage; aggregate 94.00/92.39/96.57/97.28 and resolver 97.79/96.20/100/98.43 coverage (statements/branches/functions/lines). Zero development/installed runtime audit findings; no new dependency, normative input modification or publication. I/O deadlines and connection-bound address/redirect policy, instance-private cache/auth, identity-encoded pre-parse integrity, per-preparation mutable snapshot consistency and bounded native graphs implemented. Local recursion allowed; separately retrieved cycles, nonlocal dynamicRef, encoded leading pointer slash, bundles/XML refused. Worker isolation/benchmarks/hosted portability remain SDK-007; independent reference security demonstrations remain REF-003. SDK-007 READY; M3 remains open.
 
 ## SDK-007: Node conformance, security and operational validation
 
@@ -275,3 +276,5 @@ Evidence: Deferred; excluded from first release gates.
 | 2026-10-06 | SDK-002 | DONE; strict ESM package, fresh toolchain/lock, verified resources, configured CI and clean tarball consumers | docs/foundation-report.md; both Node 22/24 clean gates pass; SDK-003 READY |
 | 2026-10-06 | SDK-003 | DONE; offline inline core and public APIs, frozen validation/metadata/codecs/errors, shared vectors and installed examples | docs/inline-core-report.md; 192 tests/100% coverage and 14 consumer checks on fresh Node 22/24; SDK-004 READY |
 | 2026-10-06 | SDK-004/005 | Combined inline HTTP/SSE batch DONE locally; SDK-006 READY | Integration report and paired clean/installed-artifact evidence |
+
+| 2026-10-06 | SDK-006 | DONE locally; SDK-007 READY | Resolver report: 359 tests and 21 installed-consumer checks on fresh Node 22/24; explicit HTTPS policy, graph/integrity/auth/cache and public transport evidence; worker/operational validation remains next |

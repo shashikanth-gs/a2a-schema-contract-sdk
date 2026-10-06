@@ -38,6 +38,7 @@ import {
   type ContractClient,
   type InvocationOptions,
 } from '../src/client/index.js';
+import { createContractResolver } from '../src/resolver/index.js';
 import { guardJsonRpcRequest } from '../src/adapters/a2a-js/index.js';
 
 const id = 'urn:example:integration:1';
@@ -66,6 +67,7 @@ async function launch(
   required = false,
   representations = [json, text],
   deadlineMs = 30000,
+  resolve = false,
 ) {
   let calls = 0;
   const contractServerHolder: { value?: ContractServer } = {};
@@ -278,15 +280,28 @@ async function launch(
   });
   const contractServer = createContractServer({
     card,
-    catalog: {
-      contracts: [
-        {
-          id,
-          input: { presence: input, ...(input === 'none' ? {} : { representations }) },
-          output: { presence: output, ...(output === 'none' ? {} : { representations }) },
+    catalog: resolve
+      ? await createContractResolver().resolveCatalog(
+          {
+            contracts: [
+              {
+                id,
+                input: { presence: input, ...(input === 'none' ? {} : { representations }) },
+                output: { presence: output, ...(output === 'none' ? {} : { representations }) },
+              },
+            ],
+          },
+          { origin: 'local' },
+        )
+      : {
+          contracts: [
+            {
+              id,
+              input: { presence: input, ...(input === 'none' ? {} : { representations }) },
+              output: { presence: output, ...(output === 'none' ? {} : { representations }) },
+            },
+          ],
         },
-      ],
-    },
     taskStore: store,
     executor,
     required,
@@ -1024,4 +1039,18 @@ describe('nonconforming peer raw guards', () => {
     const client: ContractClient = await createContractClient(dishonest);
     await expect(client.invoke(invoke)).rejects.toBeInstanceOf(ContractError);
   });
+});
+
+test('explicit resolver discovery and prepared server catalog use the same validated profile', async () => {
+  const running = await launch('required', 'required', false, [json, text], 30000, true);
+  const client = await discoverContractClient(running.url, {
+    resolver: createContractResolver(),
+    signal: AbortSignal.timeout(5000),
+  });
+  const result = await client.invoke({
+    contractId: id,
+    input: { representationId: 'json', value: { count: 2 } },
+    acceptedOutputRepresentationIds: ['json'],
+  });
+  expect(result.payload?.present).toBe(true);
 });

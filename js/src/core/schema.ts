@@ -14,8 +14,8 @@ const vocabularies = new Set(
     'content',
   ].map((name) => `https://json-schema.org/draft/2020-12/vocab/${name}`),
 );
-const mapSchemas = new Set(['$defs', 'properties', 'patternProperties', 'dependentSchemas']);
-const oneSchema = new Set([
+export const mapSchemas = new Set(['$defs', 'properties', 'patternProperties', 'dependentSchemas']);
+export const oneSchema = new Set([
   'additionalProperties',
   'unevaluatedProperties',
   'propertyNames',
@@ -28,7 +28,7 @@ const oneSchema = new Set([
   'else',
   'contentSchema',
 ]);
-const arraySchemas = new Set(['allOf', 'anyOf', 'oneOf', 'prefixItems']);
+export const arraySchemas = new Set(['allOf', 'anyOf', 'oneOf', 'prefixItems']);
 const keywords = new Set([
   '$schema',
   '$id',
@@ -127,7 +127,7 @@ function checkPattern(pattern: string, context: ErrorContext): void {
 }
 
 /** Compile a private schema snapshot with no external loader or mutating options. */
-export function compileSchema(schema: JsonValue, context: ErrorContext): ValidateFunction {
+export function inspectSchema(schema: JsonValue, context: ErrorContext): void {
   let count = 0;
   let refs = 0;
   function visit(node: JsonValue): void {
@@ -190,8 +190,12 @@ export function compileSchema(schema: JsonValue, context: ErrorContext): Validat
     }
   }
   visit(schema);
+}
+
+/** Shared non-mutating validator configuration. No loadSchema callback. */
+export function schemaValidator(): Ajv2020 {
   // strictTypes/strictTuples are authoring lint, not JSON Schema validity requirements.
-  const ajv = new Ajv2020({
+  return new Ajv2020({
     strictSchema: false,
     strictTypes: false,
     strictTuples: false,
@@ -207,6 +211,11 @@ export function compileSchema(schema: JsonValue, context: ErrorContext): Validat
     loopRequired: 32,
     loopEnum: 32,
   });
+}
+
+export function compileSchema(schema: JsonValue, context: ErrorContext): ValidateFunction {
+  inspectSchema(schema, context);
+  const ajv = schemaValidator();
   try {
     return ajv.compile(schema as AnySchema);
   } catch (error) {

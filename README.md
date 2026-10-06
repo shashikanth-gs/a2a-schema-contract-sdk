@@ -2,7 +2,7 @@
 
 Reusable client and server libraries for the A2A Schema Contract extension.
 
-**Status: SDK-001–005 complete locally.** The installed Node package implements offline validation plus official A2A 1.3.0 HTTP/SSE client/server integration, activation, negotiation, atomic output and continuation/cancellation. External resolution is next; Python remains a scaffold. Package ownership is provisional and publishing is disabled.
+**Status: SDK-001–006 complete locally.** The installed Node package implements offline validation plus official A2A 1.3.0 HTTP/SSE client/server integration, activation, negotiation, atomic output and continuation/cancellation. Explicit HTTPS external catalog/schema resolution is available; SDK-007 operational validation is next; Python remains a scaffold. Package ownership is provisional and publishing is disabled.
 
 ## Layout
 
@@ -40,6 +40,7 @@ In `js/`, use Node 22 >=22.23.3 or 24 >=24.21.0 and run `npm ci` then `npm run c
 CI is configured, with actual hosted execution still pending remote setup.
 
 See the [research report](docs/research-report.md), [foundation report](docs/foundation-report.md), [inline core report](docs/inline-core-report.md), [integration report](docs/integration-report.md),
+[resolver report](docs/resolver-report.md), [resolver threat model](docs/resolver-security.md),
 [support matrix](docs/support-matrix.md) and [Node package README](js/README.md).
 
 See [PLAN.md](PLAN.md) for the tracked implementation tasks, acceptance criteria and release gates.

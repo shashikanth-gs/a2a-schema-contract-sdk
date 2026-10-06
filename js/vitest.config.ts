@@ -16,6 +16,7 @@ export default defineConfig({
         functions: 95,
         lines: 95,
         'src/core/**': { statements: 100, branches: 100, functions: 100, lines: 100 },
+        'src/resolver/**': { statements: 95, branches: 90, functions: 100, lines: 95 },
         'src/{client,server,adapters}/**': {
           statements: 80,
           branches: 80,

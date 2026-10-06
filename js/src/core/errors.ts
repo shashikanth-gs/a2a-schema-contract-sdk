@@ -20,6 +20,11 @@ export type DiagnosticCode =
   | 'UNSUPPORTED_KEYWORD'
   | 'UNSUPPORTED_REGEX'
   | 'UNSUPPORTED_NUMBER'
+  | 'RESOLUTION_POLICY'
+  | 'INTEGRITY_MISMATCH'
+  | 'RESOLUTION_ABORTED'
+  | 'RESOLUTION_TIMEOUT'
+  | 'REFERENCE_CYCLE'
   | 'SCHEMA_UNAVAILABLE'
   | 'SCHEMA_INVALID'
   | 'INSTANCE_INVALID';
@@ -60,18 +65,24 @@ export class ContractError extends Error {
         code === 'PAYLOAD_PRESENCE_VIOLATION' ||
         code === 'INSTANCE_INVALID'
           ? code
-          : code === 'REPRESENTATION_NOT_SUPPORTED' ||
-              code === 'UNSUPPORTED_MEDIA_TYPE' ||
-              code === 'UNSUPPORTED_CARRIER'
-            ? 'REPRESENTATION_NOT_SUPPORTED'
-            : code === 'SCHEMA_INVALID' ||
-                code === 'UNSUPPORTED_DIALECT' ||
-                code === 'UNSUPPORTED_VOCABULARY' ||
-                code === 'UNSUPPORTED_KEYWORD' ||
-                code === 'UNSUPPORTED_REGEX' ||
-                code === 'UNSUPPORTED_NUMBER'
-              ? 'SCHEMA_INVALID'
-              : 'INSTANCE_INVALID';
+          : code === 'RESOLUTION_POLICY' ||
+              code === 'INTEGRITY_MISMATCH' ||
+              code === 'RESOLUTION_ABORTED' ||
+              code === 'RESOLUTION_TIMEOUT' ||
+              code === 'REFERENCE_CYCLE'
+            ? 'SCHEMA_UNAVAILABLE'
+            : code === 'REPRESENTATION_NOT_SUPPORTED' ||
+                code === 'UNSUPPORTED_MEDIA_TYPE' ||
+                code === 'UNSUPPORTED_CARRIER'
+              ? 'REPRESENTATION_NOT_SUPPORTED'
+              : code === 'SCHEMA_INVALID' ||
+                  code === 'UNSUPPORTED_DIALECT' ||
+                  code === 'UNSUPPORTED_VOCABULARY' ||
+                  code === 'UNSUPPORTED_KEYWORD' ||
+                  code === 'UNSUPPORTED_REGEX' ||
+                  code === 'UNSUPPORTED_NUMBER'
+                ? 'SCHEMA_INVALID'
+                : 'INSTANCE_INVALID';
       this.detail = Object.freeze({
         code: draftCode,
         contractId: context.contractId,

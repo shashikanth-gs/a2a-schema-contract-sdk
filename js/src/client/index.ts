@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import type { ContractResolver } from '../resolver/index.js';
 import {
   AgentCard,
   Extensions,
@@ -75,12 +76,17 @@ export interface ContractClient {
 export async function createContractClient(
   client: Client,
   discoveryOptions?: RequestOptions,
+  resolver?: ContractResolver,
 ): Promise<ContractClient> {
   if (client.protocolVersion !== '1.0' || client.transport.protocolName !== 'JSONRPC') reject();
   const card = await client.getAgentCard(discoveryOptions);
   const extensions = card.capabilities?.extensions.filter((e) => e.uri === EXTENSION_URI) ?? [];
   if (extensions.length !== 1) reject();
-  const catalog = parseExtension(extensions[0]);
+  const catalog = resolver
+    ? await resolver.resolveExtension(extensions[0], {
+        ...(discoveryOptions?.signal ? { signal: discoveryOptions.signal } : {}),
+      })
+    : parseExtension(extensions[0]);
   function prepare(options: InvocationOptions): SendMessageRequest {
     const contract = catalog.getContract(options.contractId);
     const parts: unknown[] = [];
@@ -272,6 +278,7 @@ export async function createContractClient(
   });
 }
 export interface DiscoveryOptions {
+  readonly resolver?: ContractResolver;
   readonly fetchImpl?: typeof fetch;
   readonly path?: string;
   readonly signal?: AbortSignal;
@@ -296,6 +303,7 @@ export async function discoverContractClient(
   return createContractClient(
     await factory.createFromUrl(url, options.path),
     options.signal ? { signal: options.signal } : undefined,
+    options.resolver,
   );
 }
 function guardEnvelope(value: unknown): void {

@@ -42,6 +42,8 @@ try {
     'README.md',
     'dist/index.js',
     'dist/index.d.ts',
+    'dist/resolver/index.js',
+    'dist/resolver/index.d.ts',
     'dist/resources/manifest.json',
     'dist/resources/LICENSE',
     'dist/resources/NOTICE',
@@ -66,6 +68,10 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import * as root from '@shashikanth-gs/a2a-schema-contract';
 import * as core from '@shashikanth-gs/a2a-schema-contract/core';
+import { createContractResolver } from '@shashikanth-gs/a2a-schema-contract/resolver';
+const prepared = await createContractResolver().resolveCatalog({ contracts: [{ id: 'urn:example:external:1', input: { presence: 'none' }, output: { presence: 'none' } }] });
+assert.equal(prepared.getContract('urn:example:external:1').input.presence, 'none');
+await assert.rejects(import('@shashikanth-gs/a2a-schema-contract/dist/resolver/prepared.js'), { code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });
 for (const api of [root, core]) assert.equal(api.EXTENSION_URI, 'https://w3id.org/a2a-schema-contract/draft/0.1');
 assert.equal(core.SCHEMA_NAMES.length, 7);
 for (const name of core.SCHEMA_NAMES) {
@@ -131,6 +137,13 @@ void [value, presence, direction, resource, EXTENSION_URI, unchecked, domain, en
   await writeFile(path.join(temp, 'consumer.ts'), types);
   const tsc = path.join(temp, 'node_modules/typescript/bin/tsc');
   command(process.execPath, [tsc, '-p', 'tsconfig.json']);
+  await cp(path.join(root, 'examples/resolver-types.ts'), path.join(temp, 'resolver-types.ts'));
+  await writeFile(
+    path.join(temp, 'tsconfig.resolver.json'),
+    JSON.stringify({ ...tsconfig, include: ['resolver-types.ts'] }),
+  );
+  command(process.execPath, [tsc, '-p', 'tsconfig.resolver.json']);
+
   command(npm, [
     'install',
     '--ignore-scripts',
@@ -152,6 +165,16 @@ assert.equal(typeof createContractClient, 'function'); assert.equal(typeof creat
   await cp(path.join(root, 'examples/http.mjs'), path.join(temp, 'http.mjs'));
   const transportReport = JSON.parse(command(process.execPath, ['http.mjs']).trim());
   assert.equal(transportReport.result, 'PASS');
+  await cp(path.join(root, 'examples/external.mjs'), path.join(temp, 'external.mjs'));
+  await cp(path.join(root, 'test/fixtures/tls'), path.join(temp, 'tls-fixture'), {
+    recursive: true,
+  });
+  const externalReport = JSON.parse(
+    command(process.execPath, ['external.mjs', path.join(temp, 'tls-fixture')]).trim(),
+  );
+  assert.equal(externalReport.result, 'PASS');
+  assert.equal(externalReport.checks.length, 10);
+
   await cp(path.join(root, 'examples/http-types.ts'), path.join(temp, 'http-types.ts'));
   await writeFile(
     path.join(temp, 'tsconfig.http.json'),
@@ -190,7 +213,7 @@ void [peerVersion, integration];
   const runtimeAudit = JSON.parse(command(npm, ['audit', '--omit=dev', '--json']));
   assert.equal(runtimeAudit.metadata.vulnerabilities.total, 0);
   const report = {
-    task: 'SDK-004+SDK-005',
+    task: 'SDK-006',
     runtime: process.version,
     platform: `${process.platform}/${process.arch}`,
     artifact: pack.filename,
@@ -219,8 +242,13 @@ void [peerVersion, integration];
       'strict-adapter-types-with-exact-peer',
       'private-paths-rejected',
       'runtime-audit-zero',
+      'resolver-import-and-preparation-without-peer',
+      'strict-resolver-types-without-peer',
+      'installed-HTTPS-external-catalog-schema-and-HTTP-SSE-quickstart',
+      'private-resolver-branding-seam-rejected',
     ],
     transportReport,
+    externalReport,
     peerBounds: {
       minimum: peer.version,
       maximum: peer.version,
@@ -230,12 +258,12 @@ void [peerVersion, integration];
       .update(await readFile(path.join(temp, 'package-lock.json')))
       .digest('hex'),
     limits: [
-      'Bounded atomic inline HTTP/SSE profile; external resolution remains SDK-006.',
+      'Bounded HTTPS JSON Schema profile; bundles/XML, worker isolation and operational conformance remain downstream.',
       'Hosted CI evidence is unavailable until repositories exist remotely.',
     ],
   };
   await writeFile(
-    path.join(reports, `integration-package-node${process.versions.node.split('.')[0]}.json`),
+    path.join(reports, `resolver-package-node${process.versions.node.split('.')[0]}.json`),
     JSON.stringify(report, null, 2) + '\n',
   );
   console.log(

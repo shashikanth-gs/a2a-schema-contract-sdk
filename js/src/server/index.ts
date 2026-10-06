@@ -31,6 +31,7 @@ import {
   type ContractCatalog,
   type JsonValue,
 } from '../core/index.js';
+import { preparedCatalog } from '../resolver/prepared.js';
 import { isRecord, snapshot } from '../core/json.js';
 import {
   checkEcho,
@@ -84,7 +85,7 @@ export function advertiseContracts(
   copy.capabilities.extensions.push({
     uri: EXTENSION_URI,
     required,
-    description: 'Inline Schema Contract',
+    description: 'Schema Contract',
     params: { catalog: { inline: { contracts: catalog.contracts } } },
   });
   return copy;
@@ -94,7 +95,7 @@ export function createContractServer(options: ContractServerOptions): ContractSe
   const deadline = options.deadlineMs ?? SERVER_LIMITS.deadlineMs;
   if (!Number.isSafeInteger(deadline) || deadline < 1 || deadline > SERVER_LIMITS.deadlineMs)
     throw new TypeError('Invalid execution deadline.');
-  const catalog = parseCatalog(options.catalog);
+  const catalog = preparedCatalog(options.catalog) ?? parseCatalog(options.catalog);
   const card = advertiseContracts(options.card, catalog, options.required);
   const selections = new WeakMap<ServerCallContext, ContractSelection>();
   const executions = new WeakMap<RequestContext, ExecutionContract>();

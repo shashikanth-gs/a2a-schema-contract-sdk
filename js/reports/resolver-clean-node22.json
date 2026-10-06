@@ -1,0 +1,44 @@
+{
+  "task": "SDK-006",
+  "runtime": "v22.23.3",
+  "platform": "darwin/arm64",
+  "commands": [
+    "npm ci",
+    "npm run check"
+  ],
+  "result": "PASS",
+  "environment": "Temporary independent source copy with no inputs/, node_modules/, dist/ or previous reports.",
+  "coverage": {
+    "lines": {
+      "total": 1107,
+      "covered": 1077,
+      "skipped": 0,
+      "pct": 97.28
+    },
+    "statements": {
+      "total": 1302,
+      "covered": 1224,
+      "skipped": 0,
+      "pct": 94
+    },
+    "functions": {
+      "total": 146,
+      "covered": 141,
+      "skipped": 0,
+      "pct": 96.57
+    },
+    "branches": {
+      "total": 1289,
+      "covered": 1191,
+      "skipped": 0,
+      "pct": 92.39
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "hostedCi": "Not run; workflows configured locally."
+}

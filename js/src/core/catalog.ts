@@ -77,6 +77,20 @@ export function parseCatalog(
   value: unknown,
   origin: 'local' | 'remote' = 'local',
 ): ContractCatalog {
+  return createCatalog(value, origin, (descriptor, context) => {
+    if (!Object.hasOwn(descriptor, 'inline')) fail('SCHEMA_UNAVAILABLE', context);
+    if (descriptor.dialect !== JSON_SCHEMA_DIALECT) fail('UNSUPPORTED_DIALECT', context);
+    if (descriptor.mediaType !== 'application/schema+json') fail('UNSUPPORTED_MEDIA_TYPE', context);
+    return compileSchema(descriptor.inline!, context);
+  });
+}
+
+/** Internal construction seam; no unchecked compiler is exposed in the public export map. */
+export function createCatalog(
+  value: unknown,
+  origin: 'local' | 'remote',
+  compile: (descriptor: SchemaDescriptor, context: ErrorContext) => ValidateFunction,
+): ContractCatalog {
   const context: ErrorContext = { origin };
   const data = snapshot(value, context);
   checkStructure('catalog', data, context);
@@ -129,12 +143,7 @@ export function parseCatalog(
     const codec = media(representation.mediaType, scoped);
     let validateSchema: ValidateFunction | undefined;
     if (representation.schema !== undefined) {
-      const descriptor = representation.schema;
-      if (!Object.hasOwn(descriptor, 'inline')) fail('SCHEMA_UNAVAILABLE', scoped);
-      if (descriptor.dialect !== JSON_SCHEMA_DIALECT) fail('UNSUPPORTED_DIALECT', scoped);
-      if (descriptor.mediaType !== 'application/schema+json')
-        fail('UNSUPPORTED_MEDIA_TYPE', scoped);
-      validateSchema = compileSchema(descriptor.inline!, scoped);
+      validateSchema = compile(representation.schema, scoped);
     }
     return Object.freeze({
       contractId,

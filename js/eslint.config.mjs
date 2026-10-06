@@ -20,6 +20,7 @@ export default tseslint.config(
         process: 'readonly',
         Buffer: 'readonly',
         URL: 'readonly',
+        Response: 'readonly',
         AbortController: 'readonly',
         AbortSignal: 'readonly',
         fetch: 'readonly',

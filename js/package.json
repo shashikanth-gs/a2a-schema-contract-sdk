@@ -2,7 +2,7 @@
   "name": "@shashikanth-gs/a2a-schema-contract",
   "version": "0.1.0-dev.0",
   "private": true,
-  "description": "Inline A2A Schema Contract core and official JSON-RPC/HTTP client/server adapters",
+  "description": "A2A Schema Contract validation, secure HTTPS resolution and official JSON-RPC/HTTP adapters",
   "type": "module",
   "license": "Apache-2.0",
   "engines": {
@@ -29,7 +29,11 @@
       "types": "./dist/adapters/a2a-js/index.d.ts",
       "import": "./dist/adapters/a2a-js/index.js"
     },
-    "./resources/*": "./dist/resources/*"
+    "./resources/*": "./dist/resources/*",
+    "./resolver": {
+      "types": "./dist/resolver/index.d.ts",
+      "import": "./dist/resolver/index.js"
+    }
   },
   "files": [
     "dist",

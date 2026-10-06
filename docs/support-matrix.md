@@ -1,9 +1,9 @@
 # Support target and actual evidence
 
-As of 2026-10-06, SDK-003–005 implement the offline core and official 1.3.0
+As of 2026-10-06, SDK-003–006 implement the offline core and official 1.3.0
 inline JSON-RPC/HTTP client/server profile. See the [integration report](integration-report.md)
 and [Node API/lifecycle guide](../js/README.md). Independent reference tasks,
-external retrieval, synchronous worker isolation, Python and hosted portability
+synchronous worker isolation, Python and hosted portability
 remain separate delivery gates.
 
 | Feature | Inline target | Current evidence / limitation | Delivery task |
@@ -25,10 +25,10 @@ remain separate delivery gates.
 | Negotiation | IDs ∩ exact media modes; selected once per task | Both accepted-ID and exact-media restrictions enforced; client accepts any admissible peer choice; server retains selection on continuation | SDK-005 |
 | Streaming / continuation / cancellation | Companion streaming, bounded atomic primary, explicit cancellation | Safe initial WORKING Task may stream; remaining events staged (128 / 256 KiB) until complete validation; atomic new-ID non-append updates only; INPUT_REQUIRED continuation, explicit cancel, abort/deadline tested; AUTH_REQUIRED/immediate-return excluded | SDK-005/007 |
 | Errors | Existing A2A errors + sanitized draft details | Existing -32602/-32005/-32008 errors with scoped ErrorInfo; sanitized failed Task/OUTPUT_CONTRACT_VIOLATION and no contracted Artifact; explicit CANCELED state | SDK-004/007 |
-| External catalog/schema/resources | Unsupported inline; explicit secure candidate resolver later | Core catalog/delivery/missing-ref rejection tested; no fetch or network resolver | SDK-006 |
+| External catalog/schema/resources | Explicit HTTPS resolver; offline preparation/validation | Pins/immutable catalogs, connection-bound DNS/IP policy, redirects/auth/cache isolation, fragment/base/native resources, bounded graph and I/O cancellation; deterministic HTTPS fixtures and installed HTTP/SSE demo on Node 22/24. Local recursion supported; cross-document cycles, nonlocal dynamicRef, encoded leading pointer slash refused; worker isolation/hosted operational gates remain | SDK-006/007 |
 | Bundles / XML/XSD | Deferred, unsupported | No conformance claim | SDK-014/015 |
 | Python / four pairings | Planned after Node candidate | No implementation or parity claim | SDK-009–012 / REF-006 |
 
 The adapter must reject unsupported features using local diagnostics plus valid existing binding/draft codes when appropriate. Removing the root-null limitation requires a reviewed upstream fix and re-probing; it does not permit transformation of a caller value. See [architecture](architecture.md) for policies and [requirements](requirements.md) for pending behavioral evidence.
 
-The exact core budgets, regex grammar, ID syntax, carrier profile and public synchronous API are documented in [js/README.md](../js/README.md) and ADR-008. Worker deadlines, performance isolation, secure retrieval and full authenticated/security conformance are not core completion claims. Header/context pass-through and bounded streaming are integration evidence.
+The exact core budgets, regex grammar, ID syntax, carrier profile and public synchronous API are documented in [js/README.md](../js/README.md) and ADR-008. Worker deadlines, performance isolation and full authenticated/security conformance are not core completion claims. Secure retrieval is explicit opt-in; see [resolver evidence](resolver-report.md) and [threat model](resolver-security.md). Header/context pass-through and bounded streaming are integration evidence.

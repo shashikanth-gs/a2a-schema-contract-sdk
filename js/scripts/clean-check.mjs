@@ -32,13 +32,13 @@ try {
   const reportDir = path.join(root, 'js/reports');
   await mkdir(reportDir, { recursive: true });
   await cp(
-    path.join(scratch, `js/reports/integration-package-node${major}.json`),
-    path.join(reportDir, `integration-package-node${major}.json`),
+    path.join(scratch, `js/reports/resolver-package-node${major}.json`),
+    path.join(reportDir, `resolver-package-node${major}.json`),
   );
   const packageReport = JSON.parse(
-    await readFile(path.join(reportDir, `integration-package-node${major}.json`), 'utf8'),
+    await readFile(path.join(reportDir, `resolver-package-node${major}.json`), 'utf8'),
   );
-  const artifactDir = path.join(root, `js/artifacts/integration-node${major}`);
+  const artifactDir = path.join(root, `js/artifacts/resolver-node${major}`);
   await mkdir(artifactDir, { recursive: true });
   await cp(
     path.join(scratch, 'js/artifacts', packageReport.artifact),
@@ -48,10 +48,10 @@ try {
     await readFile(path.join(scratch, 'js/coverage/coverage-summary.json'), 'utf8'),
   ).total;
   await writeFile(
-    path.join(reportDir, `integration-clean-node${major}.json`),
+    path.join(reportDir, `resolver-clean-node${major}.json`),
     JSON.stringify(
       {
-        task: 'SDK-004+SDK-005',
+        task: 'SDK-006',
         runtime: process.version,
         platform: `${process.platform}/${process.arch}`,
         commands: ['npm ci', 'npm run check'],
@@ -65,9 +65,9 @@ try {
       2,
     ) + '\n',
   );
-  await writeFile(path.join(reportDir, `integration-clean-node${major}.log`), output);
+  await writeFile(path.join(reportDir, `resolver-clean-node${major}.log`), output);
   console.log(
-    `PASS fresh npm ci + complete package checks on ${process.version}; reports/integration-clean-node${major}.json`,
+    `PASS fresh npm ci + complete package checks on ${process.version}; reports/resolver-clean-node${major}.json`,
   );
 } catch (error) {
   if (error.stdout) output += error.stdout.toString();

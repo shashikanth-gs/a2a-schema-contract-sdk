@@ -1,4 +1,4 @@
-name: Node inline integration and published SDK compatibility
+name: Node validation, secure resolution and published SDK compatibility
 
 on:
   push:
@@ -37,7 +37,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
-          name: integration-${{ matrix.os }}-${{ matrix.node }}
+          name: resolver-${{ matrix.os }}-${{ matrix.node }}
           path: |
             js/reports/
             js/coverage/

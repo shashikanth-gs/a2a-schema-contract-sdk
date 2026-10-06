@@ -1,9 +1,10 @@
-# JavaScript / TypeScript inline core
+# JavaScript / TypeScript SDK
 
 Local package `@shashikanth-gs/a2a-schema-contract@0.1.0-dev.0` implements the
 offline inline core and official A2A 1.3.0 JSON-RPC/HTTP client/server integration
-(SDK-003–005). Publishing is disabled and package ownership is unverified.
-External resolution remains SDK-006; Python remains a scaffold.
+(SDK-003–006). The explicit HTTPS resolver prepares external catalogs and schema
+resource graphs. Publishing is disabled and package ownership is unverified.
+Python remains a scaffold; worker isolation and operational conformance remain SDK-007.
 
 Use patched Node **22 >=22.23.3** or **24 >=24.21.0**, npm and ESM. CommonJS,
 browsers and other runtime lines are unsupported. The optional official SDK peer
@@ -20,13 +21,14 @@ npm pack
 coverage and an isolated installed tarball consumer. Core thresholds remain 100%
 for statements/branches/functions/lines. Aggregate thresholds are 90% statements,
 90% branches, 95% functions and 95% lines; the integration group additionally has
-80% statements/branches and 90% functions/lines. Integration guarantees are tested
+80% statements/branches and 90% functions/lines. Resolver thresholds are
+95% statements/lines, 90% branches and 100% functions. Integration guarantees are tested
 through actual HTTP/SSE and explicit execution/publication assertions; coverage is
 an additional regression gate, not a substitute for those assertions.
 `check:clean` repeats all gates in a temporary source copy without prior builds,
-installed dependencies or workspace inputs. `reports/integration-*` and
-`artifacts/integration-node{22,24}` record exact runtimes, coverage and hashes.
-Prior `core-*` and foundation evidence is retained. Hosted CI is configured;
+installed dependencies or workspace inputs. `reports/resolver-*` and
+`artifacts/resolver-node{22,24}` record exact runtimes, coverage and hashes.
+Prior `integration-*`, `core-*` and foundation evidence is retained. Hosted CI is configured;
 hosted portability evidence remains pending.
 
 ## HTTP client/server quickstart
@@ -64,10 +66,10 @@ if (result.payload?.present) console.log(result.payload.value);
 void inputSchema;
 ```
 
-Discovery validates the advertised inline catalog. The URL factory chooses only
+Discovery validates inline catalogs by default; pass `resolver` to prepare an external catalog/schema graph. The URL factory chooses only
 A2A 1.0 JSON-RPC and guards raw responses before protobuf normalization. A
 configured official `Client` can instead be passed to `createContractClient(client,
-discoveryOptions?)`, preserving its fetch, authentication, interceptors and call
+discoveryOptions?, resolver?)`, preserving its fetch, authentication, interceptors and call
 context. Its transport must use `guardResponseFetch(applicationFetch)` to protect
 raw JSON and SSE carrier exclusivity/types before the official codec. Discovered
 schemas are runtime data; no generic domain type is inferred.
@@ -385,3 +387,133 @@ node scripts/snapshot-contract.mjs /path/to/specification-checkout
 Full support/evidence: repository [support matrix](../docs/support-matrix.md),
 [architecture](../docs/architecture.md), [core report](../docs/inline-core-report.md)
 and [task plan](../PLAN.md). No full-draft/transport/parity claim is made.
+
+## Explicit secure external resolution
+
+Core parsing never retrieves documents. Import the resolver separately (it also
+installs without the optional A2A peer):
+
+```js
+import { createContractResolver } from '@shashikanth-gs/a2a-schema-contract/resolver';
+import { discoverContractClient } from '@shashikanth-gs/a2a-schema-contract/client';
+const resolver = createContractResolver({
+  allowedOrigins: ['https://contracts.example.org'],
+  limits: { responseBytes: 65536, cacheEntries: 8 },
+  // Private configuration, if needed:
+  // authorization: { 'https://contracts.example.org': 'Bearer application-owned-token' },
+  // resourceIntegrity: { 'https://contracts.example.org/dependency.json': {
+  //   algorithm: 'sha-256', value: '<canonical base64 SHA-256 digest>',
+  // } },
+});
+const client = await discoverContractClient('https://agent.example.org', {
+  resolver,
+  signal: AbortSignal.timeout(5000),
+});
+void client;
+```
+
+`resolver.resolveCatalog(rawCatalog, {origin: 'local', signal})` returns an
+immutable `ContractCatalog`. `resolveExtensionParams(params, options)` handles
+inline/external `params.catalog`; `resolveExtension(extension, options)` also
+checks the exact extension URI. Origin defaults to `remote`. Preparation validates
+structures and compiles every supported JSON Schema representation, including
+its transitive dependencies. Unsupported bundle/dialect/media alternatives stay
+visible through capability diagnostics; a failing supported schema prevents
+preparation from returning a partially trusted catalog.
+
+Pass a resolved catalog directly as `createContractServer({catalog: prepared,
+...serverOptions})`; the server preserves descriptors and validates against its
+private compiled graph. Resolution is an application startup step. The server
+and client select and validate synchronously thereafter without retrieval. To
+advertise an external catalog, set the extension's `params.catalog` on the
+returned server card to the structurally valid descriptor
+`{uri, mediaType: 'application/json', integrity: {algorithm, value}}` whose
+published bytes contain the same contracts. Every external catalog needs a
+SHA-256/SHA-512 pin or an exact administrator `immutableResources` promise.
+Server schema authentication is independent of the A2A client's authentication;
+provide private `authorization` for each resolver identity as needed.
+
+HTTPS is mandatory. URL userinfo, trailing-dot hosts, backslashes/control bytes,
+invalid escapes and `/latest` convenience identifiers are refused. Every DNS
+answer must pass the conservative public-address classification. Optional
+`allowedOrigins` is an exact list including ports; it does not override address
+policy. An administrator can explicitly allow an internal endpoint with
+`allowAddress(address, hostname)`; use both an exact origin list and narrow
+address/hostname checks. `lookup(hostname, signal)` is a trusted custom DNS hook;
+its approved address is used directly in the actual TLS connection. `ca` replaces
+the default trust roots; certificate trust and original hostname checks are always
+required. No `fetchImpl`, insecure TLS switch or automatic cookie/credential
+forwarding is provided by the resolver.
+
+`authorization` supports only exact-origin Authorization values. Same-origin
+redirects may retain them; a cross-origin redirect removes Authorization for the
+rest of that redirect chain, including a bounce back. Explicit transitive
+resource requests use their own exact-origin configuration. Never share a
+resolver across authentication identities. Options' arrays, maps, pins and CA
+buffers are privately copied; recreate the resolver to rotate identity/policy.
+Trusted callbacks remain application-owned.
+
+| Maximum/default                       | Value           | Scope                                                               |
+| ------------------------------------- | --------------- | ------------------------------------------------------------------- |
+| Redirects                             | 3               | Each retrieval                                                      |
+| Response bytes / aggregate bytes      | 256 KiB / 1 MiB | Document / one preparation, including cache reads                   |
+| Elapsed time                          | 10 s            | One preparation's asynchronous I/O                                  |
+| Documents / references / schema nodes | 32 / 128 / 256  | Preparation retrievals / individual representation graph refs/nodes |
+| Reference depth                       | 8               | Individual representation document graph                            |
+| Concurrent preparations               | 4               | Resolver instance; excess refused                                   |
+| Cache entries / bytes                 | 32 / 1 MiB      | Resolver instance, LRU                                              |
+
+`limits` may lower maxima only; zero disables redirects or cache entries/bytes.
+Existing `CORE_LIMITS` also bound JSON depth (32), nodes (4096), strings (8192)
+and schema inspection. `RESOLVER_LIMITS`, `ResolverOptions`, `ResolutionOptions`,
+`NetworkPolicy`, `Address` and `ContractResolver` are exported from `/resolver`.
+`resolver.cache` reports counts only; `clearCache()` discards representation bytes,
+while prepared catalogs remain usable offline.
+
+Digest canonical base64 is checked against final response body bytes after HTTP
+transfer framing, before decoding/parsing. Compressed responses are refused;
+identity encoding and UTF-8 JSON only. Catalog/schema response types must match
+`application/json` / `application/schema+json` with an optional UTF-8 charset.
+Cache keys contain the fragmentless canonical requested URI, expected document
+media type and pin. Cache storage is scoped to one instance, never global or
+shared across identities. Only pinned/promised documents are reused; unpinned
+schema documents are acquired afresh for each preparation. Shared documents use
+one coherent snapshot within that preparation; document/aggregate byte limits
+count distinct URI/media/pin snapshots, including global cache reads. ETags and versioned
+URLs do not prove immutability. A root digest does not pin native dependencies;
+use `resourceIntegrity` keyed by their exact document URIs.
+
+Root fragments, anchors, escaped JSON Pointers, `$id` bases/embedded resources,
+relative dependencies and bounded local recursion retain native semantics.
+Redirected documents use the final location as base and the original URI as an
+alias. Inline schemas use a private URN base; relative network references require
+an absolute `$id`. References into annotation/instance-data objects are refused.
+Separate-document dependency cycles, ambiguous duplicate identities and missing
+targets are refused. Non-fragment `$dynamicRef` and pointers with a percent-encoded
+leading slash remain unsupported; use a literal `#/` prefix. Bundles/XML/XSD
+remain unsupported. Synchronous compiler/validator worker deadlines and wider
+operational guarantees remain SDK-007.
+
+Resolver failures are sanitized `ContractError`s. Local diagnostics
+`RESOLUTION_POLICY`, `INTEGRITY_MISMATCH`, `RESOLUTION_ABORTED`,
+`RESOLUTION_TIMEOUT`, and `REFERENCE_CYCLE` map to existing draft
+`SCHEMA_UNAVAILABLE` when contract/direction context exists; they are not new wire
+error codes. Byte/graph/concurrency exhaustion uses `RESOURCE_LIMIT`. Invalid
+schemas use the existing schema/profile diagnostics. No raw URL, response,
+credential, DNS/TLS/parser cause or signal reason is included. Client preparation
+failures occur before invocation; server preparation fails before serving requests.
+
+Run the complete local HTTPS + A2A HTTP/SSE demonstration from this checkout:
+
+```sh
+npm run build
+node examples/external.mjs
+```
+
+It uses the public **test-only** certificate/key in `test/fixtures/tls/`, explicitly
+allowlists a dynamic local HTTPS origin/address, verifies catalog/root/dependency
+pins, proves input/output/peer refusal and confirms invocation causes no retrieval.
+The installed-consumer gate copies those public fixtures separately from the
+package and runs the same script. [Strict resolver declarations](examples/resolver-types.ts)
+compile before installing the optional peer. The full threat model and native
+reference restrictions are in [resolver-security.md](../docs/resolver-security.md).

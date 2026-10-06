@@ -1,0 +1,137 @@
+{
+  "task": "SDK-006",
+  "date": "2026-10-06",
+  "result": "PASS",
+  "owner": "Codex",
+  "branch": "codex/sdk-006-secure-resolution",
+  "sourceState": "Local working tree at validation; subsequent local checkpoint recorded in workspace CHECKPOINTS.md.",
+  "contractCommit": "a5c007510faa3fce85190f2e76e402faf0e897ad",
+  "officialPeer": "1.3.0",
+  "artifactVersion": "0.1.0-dev.0",
+  "artifactSha256": "d7c6886a7b672d17918f4b25f1896a412c2b9e132cd33581b41d56ebfd6f325d",
+  "runtimes": {
+    "22": {
+      "runtime": "v22.23.3",
+      "platform": "darwin/arm64",
+      "tests": 359,
+      "skippedTests": 0,
+      "newResolverCases": 109,
+      "installedConsumerChecks": 21,
+      "externalIntegrationAssertions": 10,
+      "coverage": {
+        "lines": {
+          "total": 1107,
+          "covered": 1077,
+          "skipped": 0,
+          "pct": 97.28
+        },
+        "statements": {
+          "total": 1302,
+          "covered": 1224,
+          "skipped": 0,
+          "pct": 94
+        },
+        "functions": {
+          "total": 146,
+          "covered": 141,
+          "skipped": 0,
+          "pct": 96.57
+        },
+        "branches": {
+          "total": 1289,
+          "covered": 1191,
+          "skipped": 0,
+          "pct": 92.39
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "coreCoverage": "100% statements/branches/functions/lines",
+      "resolverCoverage": {
+        "statements": 97.79,
+        "branches": 96.2,
+        "functions": 100,
+        "lines": 98.43
+      },
+      "cleanReport": "resolver-clean-node22.json",
+      "packageReport": "resolver-package-node22.json",
+      "runtimeAuditTotal": 0
+    },
+    "24": {
+      "runtime": "v24.21.0",
+      "platform": "darwin/arm64",
+      "tests": 359,
+      "skippedTests": 0,
+      "newResolverCases": 109,
+      "installedConsumerChecks": 21,
+      "externalIntegrationAssertions": 10,
+      "coverage": {
+        "lines": {
+          "total": 1107,
+          "covered": 1077,
+          "skipped": 0,
+          "pct": 97.28
+        },
+        "statements": {
+          "total": 1302,
+          "covered": 1224,
+          "skipped": 0,
+          "pct": 94
+        },
+        "functions": {
+          "total": 146,
+          "covered": 141,
+          "skipped": 0,
+          "pct": 96.57
+        },
+        "branches": {
+          "total": 1289,
+          "covered": 1191,
+          "skipped": 0,
+          "pct": 92.39
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "coreCoverage": "100% statements/branches/functions/lines",
+      "resolverCoverage": {
+        "statements": 97.79,
+        "branches": 96.2,
+        "functions": 100,
+        "lines": 98.43
+      },
+      "cleanReport": "resolver-clean-node24.json",
+      "packageReport": "resolver-package-node24.json",
+      "runtimeAuditTotal": 0
+    }
+  },
+  "requirements": [
+    "D04-02",
+    "D08-01",
+    "D08-03",
+    "D08-04",
+    "D09-02",
+    "D13-01",
+    "D13-02",
+    "D13-03",
+    "D13-06",
+    "D14-01"
+  ],
+  "developmentAuditTotal": 0,
+  "residualLimits": [
+    "No bundles/XML/XSD or Python implementation.",
+    "Local recursive schemas supported; separately retrieved dependency cycles refused.",
+    "Non-fragment dynamicRef and percent-encoded leading pointer slash refused.",
+    "Synchronous compiler/validator isolation and wider operational validation remain SDK-007.",
+    "macOS arm64 tested; hosted portability CI configured but unrun.",
+    "No remote repository, push or publication."
+  ]
+}
