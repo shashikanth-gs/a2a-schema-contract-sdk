@@ -26,8 +26,8 @@ for statements/branches/functions/lines. Aggregate thresholds are 90% statements
 through actual HTTP/SSE and explicit execution/publication assertions; coverage is
 an additional regression gate, not a substitute for those assertions.
 `check:clean` repeats all gates in a temporary source copy without prior builds,
-installed dependencies or workspace inputs. `reports/rc-*` and
-`artifacts/rc-node{22,24}` record exact runtimes, coverage and hashes.
+installed dependencies or workspace inputs. `reports/dx-*` and
+`artifacts/dx-node{22,24}` record exact runtimes, coverage and hashes.
 Prior resolver, integration, core and foundation evidence is retained.
 Candidate hosted evidence is recorded separately in the repository release report.
 
@@ -54,11 +54,11 @@ const client = await discoverContractClient('http://localhost:8080', {
   signal: AbortSignal.timeout(5000),
 });
 const contract = client.catalog.getContract('https://contracts.example.org/double/1.0');
-const inputSchema = contract.input.representations[0].schema.inline;
-const result = await client.invoke(
+const inputSchema = client.catalog.schema(contract.id, 'input', 'json');
+const result = await client.invokeContract(
   {
     contractId: contract.id,
-    input: { representationId: 'json', value: { count: 4 } },
+    input: { count: 4 },
   },
   { signal: AbortSignal.timeout(5000) },
 );

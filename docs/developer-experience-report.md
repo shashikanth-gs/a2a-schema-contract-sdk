@@ -37,7 +37,7 @@ the existing 100% gate; aggregate coverage is 95.81% statements, 93.62% branches
 Reports: `js/reports/dx-clean-node{22,24}.json`, their logs,
 `dx-package-node{22,24}.json` and `rc-dependencies-node{22,24}.json`.
 Both fresh builds produce SHA-256
-`6bcc8dcc4d48750c5a9c4c7c2014f62774cceea2c28e00e2e988b5dabe664d50`.
+`09c0146a2d9d1ba110fd6d888374ce0233f8effc1df77dc42f6a167bd4717677`.
 `npm run release:rehearsal` verifies reproducible packs; publication stays disabled.
 
 Hosted validation and the independent REF-010 source/artifact pin are pending

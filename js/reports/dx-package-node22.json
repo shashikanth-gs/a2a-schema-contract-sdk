@@ -4,8 +4,8 @@
   "platform": "darwin/arm64",
   "artifact": "a2a-schema-contract-0.1.0-rc.1.tgz",
   "version": "0.1.0-rc.1",
-  "artifactSha256": "6bcc8dcc4d48750c5a9c4c7c2014f62774cceea2c28e00e2e988b5dabe664d50",
-  "integrity": "sha512-PPm/prZJyWq86cQRcAceStqEZajMy83wbreiKa0n0r8WxwBuqhECuncxVSWG/RttpjGuMxcjbnc1PsTIlbak5w==",
+  "artifactSha256": "09c0146a2d9d1ba110fd6d888374ce0233f8effc1df77dc42f6a167bd4717677",
+  "integrity": "sha512-qPnRfEHqLJjQrhIzGvbsFrYzj60zp0uDB5kWrgWMLcgGil3JlXLr1oJq0AUWFu28kCiFHVjJTf3vV/E40/7zrw==",
   "sourceCommit": "a5c007510faa3fce85190f2e76e402faf0e897ad",
   "files": [
     "LICENSE",
@@ -308,29 +308,29 @@
     "workload": "Object with one bounded integer; 10 cold core compilations, 10 x 1000 warm validations, five fresh workers and five cold/cache-warm pinned HTTPS preparations.",
     "coreCold": {
       "samples": 10,
-      "medianMs": 5.352457999999999,
-      "maxMs": 8.838000000000001
+      "medianMs": 5.20066700000001,
+      "maxMs": 11.259332999999998
     },
     "coreWarm": {
       "samples": 10,
-      "medianMs": 0.7265000000000015,
-      "maxMs": 0.9946670000000069,
+      "medianMs": 0.8374159999999904,
+      "maxMs": 1.0352080000000115,
       "validationsPerSample": 1000
     },
     "isolated": {
       "samples": 5,
-      "medianMs": 64.76641699999999,
-      "maxMs": 68.44475000000001
+      "medianMs": 60.77408299999996,
+      "maxMs": 68.023458
     },
     "resolverCold": {
       "samples": 5,
-      "medianMs": 49.167416,
-      "maxMs": 55.05212499999999
+      "medianMs": 45.53954200000004,
+      "maxMs": 56.918292000000065
     },
     "resolverWarm": {
       "samples": 5,
-      "medianMs": 46.41283299999998,
-      "maxMs": 49.709499999999935
+      "medianMs": 46.069665999999984,
+      "maxMs": 47.622749999999996
     },
     "regression": {
       "absoluteWorkerAndResolverCeilingMs": 2000,
@@ -373,7 +373,7 @@
     "maximum": "1.3.0",
     "policy": "Exact peer range; one artifact tests both bounds."
   },
-  "consumerLockSha256": "b2aa59ca02b6dd541e622e0e53b978670eb0fbdd8ba0a70b129b1bfa1810ab11",
+  "consumerLockSha256": "4bf570a02c86593c0f030336ad4959dfc2e69a3ae027570dbba03d5911cf448d",
   "limits": [
     "Bounded Node JSON/text and HTTPS profile; Python, bundles/XML and other transports remain excluded.",
     "This report records its own runtime; hosted runs retain independent reports."
