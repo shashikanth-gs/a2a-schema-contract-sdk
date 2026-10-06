@@ -15,8 +15,7 @@ Build artifacts are isolated-consumer tested through public exports. Never make
 an accepted path pass by swallowing errors, changing expected outcomes or adding
 source imports to consumers. Cover side-effect timing and invalid-output
 publication when boundary implementation arrives; keep contract-critical
-coverage thresholds explicit. The hosted Node/Linux matrix and macOS/Windows
-smokes are configured but need real CI runs before portability is claimed.
+coverage thresholds explicit. The [hosted baseline](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37497396103) passes Linux Node 22.23.3/24.21.0 and macOS/Windows Node 24.21.0. Broader runtime/profile or operational claims need their own evidence.
 
 Update owning task status/evidence and downstream support decisions. Store exact
 commands, runtime versions, artifact hashes, sanitized reports and limitations.

@@ -286,3 +286,10 @@ The repository front page, description, discovery topics and contributor/securit
 guides distinguish the implemented Node preview from planned Python and release
 work. Original task reports retain their validation-time context. Source hosting
 does not publish an npm/PyPI package or close the remaining release gates.
+
+The [first successful hosted launch gate](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37497396103) validates source
+`6d51d99e2b7804586bbc222fd650a93bde73d6c0` on Linux Node 22.23.3/24.21.0
+and macOS/Windows Node 24.21.0, including behavioral/installed-package checks,
+compatibility probes and audits. Initial checkout-byte/runtime/test-start issues
+were corrected without changing validator behavior or skipping checks. This
+adds hosted baseline evidence; SDK-007 and the release milestones remain open.

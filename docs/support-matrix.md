@@ -8,7 +8,7 @@ remain separate delivery gates.
 
 | Feature | Inline target | Current evidence / limitation | Delivery task |
 |---|---|---|---|
-| Runtime | Node 22 >=22.23.3 / 24 >=24.21.0; ESM | 30 compatibility probes plus clean package gates per runtime on macOS arm64; hosted OS CI pending | SDK-002/007 |
+| Runtime | Node 22 >=22.23.3 / 24 >=24.21.0; ESM | 30 compatibility probes plus clean package gates on macOS arm64; [hosted baseline](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37497396103) passes Linux Node 22.23.3/24.21.0 and macOS/Windows Node 24.21.0 at `6d51d99`; worker/operational gates remain SDK-007 | SDK-002/007 |
 | Official SDK | @a2a-js/sdk exactly 1.3.0 | Published integrity/revision in architecture and probe lock | SDK-001/004 |
 | A2A transport | 1.0 JSON-RPC/HTTP + SSE | Real adapter HTTP/SSE tests and isolated tarball quickstart: discovery, both result shapes, activation, storage and independent peer rejection | SDK-004/005 |
 | Other transports / SDK versions | Unsupported | Reject rather than fallback | SDK-004 |
