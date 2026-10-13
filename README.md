@@ -12,9 +12,11 @@ publishing a successful contracted result. The client also validates the peer's
 response.
 
 **Node SDK:** the Node implementation supports the community draft
-`v0.1.0-draft.1`. The [independent Python inline profile](python/README.md) provides typed catalog/skill
+`v0.1.0-draft.1`. The [independent Python profile](python/README.md) provides typed catalog/skill
 discovery, original schema views and guarded HTTP/SSE client/server execution.
-Python resolver, hard isolation and operational parity remain SDK-011.
+Python now adds explicit secure HTTPS resolution and process isolation at async
+boundaries; [local acceptance](docs/python-resolver-report.md) records its exact
+support and platform limits. Cross-language reference/RC gates remain pending.
 npm and PyPI packages have not been
 published; use a locally built npm tarball or Python wheel. Node worker
 isolation and operational validation pass the supported hosted matrix. See the
@@ -38,8 +40,8 @@ The Node SDK adds skill-associated discovery, immutable prepared-schema resource
 views, compact explicit invocation and validated embedded/external advertisement.
 These APIs belong in the shared SDK; future framework adapters consume them.
 See [developer experience](docs/developer-experience.md) and
-[metadata binding](docs/metadata-binding.md). Python implements their inline
-semantics; secure external resource/operational parity remains separate.
+[metadata binding](docs/metadata-binding.md). Python implements their inline/external
+resource semantics and isolated async boundaries; see its separate acceptance evidence.
 The current private Node candidate is `0.1.0-rc.1`; the earlier hosted `rc.0` evidence
 does not establish hosted acceptance of these additions.
 
@@ -128,7 +130,7 @@ for usage questions.
 | Directory | Contents |
 |---|---|
 | `js/` | TypeScript source, JavaScript package, tests and executable examples |
-| `python/` | Independent typed Python inline SDK, tests and installed examples |
+| `python/` | Independent typed Python SDK, secure resolver/workers, tests and installed examples |
 | `docs/` | Architecture, support/requirement maps and validation evidence |
 | `tests/` | Shared behavioral cases |
 | `vendor/contract/` | Verified, attributed snapshot of the pinned specification resources |

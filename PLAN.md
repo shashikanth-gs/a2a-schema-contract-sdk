@@ -1,12 +1,12 @@
 # SDK implementation plan
 
 Updated: 2026-10-14\
-Status: Node candidate and independent Python inline profile complete locally; Python secure resolution/operations next
+Status: Node candidate and Python runtime/resolver/operations complete locally; independent reference/parity and Python RC gates remain
 
 LangGraph/M3b is accepted locally through the unchanged SDK runtime.
 ADK/M3c is accepted locally through the same unchanged SDK RC1 runtime.
 SDK-009 (Python engineering/package foundation) is DONE locally after both framework
-gates passed. SDK-010 is DONE locally; SDK-011 is IN_PROGRESS. REF-010 and M3a remain complete for their original Node scope.
+gates passed. SDK-010/011 are DONE locally; independent reference and release-candidate gates remain. REF-010 and M3a remain complete for their original Node scope.
 Companion tracking: [reference roadmap](https://github.com/shashikanth-gs/a2a-schema-contract-reference/blob/main/PLAN.md). Workspace milestone tracking is maintained internally.
 
 This repository builds reusable JS/TypeScript and Python client/server packages. The reference repository installs the resulting artifacts and proves real usage. The specification repository owns the normative contract; its initial revision is pinned in [contract-source.json](contract-source.json).
@@ -27,7 +27,7 @@ Each row is the authoritative status for that task. Dependency references to REF
 | SDK-008 | Node developer documentation and release candidate | DONE | Codex | SDK-007, REF-004 |
 | SDK-009 | Python engineering and package foundation | DONE | Codex | SDK-008, SDK-016–019, workspace M3b/M3c |
 | SDK-010 | Independent Python inline client/server profile | DONE | Codex | SDK-009, SDK-016, SDK-018, SDK-019 |
-| SDK-011 | Python secure resolution and operational parity | IN_PROGRESS | Codex | SDK-010, SDK-006, SDK-007, SDK-017 |
+| SDK-011 | Python secure resolution and operational parity | DONE | Codex | SDK-010, SDK-006, SDK-007, SDK-017 |
 | SDK-012 | Python developer documentation and release candidate | PLANNED | Unassigned | SDK-011, REF-006 |
 | SDK-013 | Joint release rehearsal and maintenance readiness | PLANNED | Unassigned | SDK-008, SDK-012, SDK-016–019, REF-008, REF-010 |
 | SDK-014 | Safe schema-bundle support in both languages | DEFERRED | Unassigned | SDK-013 |
@@ -233,7 +233,7 @@ Acceptance criteria:
 - Update the Python support matrix, resolver documentation and threat model. Bundles/XML stay unsupported until later coverage tasks.
 - Implement ADR-013/SDK-017's immutable prepared-schema/resource view with matching entrypoint/base/reference semantics. Inspection performs no retrieval, exposes no validator internals or credentials, and remains usable after cache clearing.
 
-Evidence: Started 2026-10-14 by Codex on `codex/python-sdk`. Implementing bounded HTTPS resolution, offline resource graphs, process isolation and operational evidence against the accepted SDK-010 source. Completion and installed-artifact evidence pending.
+Evidence: Completed locally 2026-10-14 by Codex; source `c1d2ba34af5589413118ed428f811428c2abf6f7` on `codex/python-sdk`. [Resolver/operations report](docs/python-resolver-report.md), [receipt](docs/evidence/python-resolver/receipt.json), [security/limits](docs/python-resolver-security.md) and [Python guide](python/README.md). Fresh locked CPython 3.11.15/3.12.13/3.13.14/3.14.7 macOS arm64: 633 tests without skips each, 100% core / 93.29–93.43% overall coverage, Ruff/strict mypy, identical wheel/sdist and byte-identical sdist rebuilds. Noneditable installed consumers pass real typed/discovered HTTP/SSE agent calls with verified pinned TLS/native refs and matching Node-workload benchmarks (zero cached retrievals). DNS/connection/redirect/auth/integrity/cache/graph policy, sterile bounded workers, physical cleanup/races, diagnostics, resource pooling and immutable offline inspection are independently tested. Audit: 92 dependencies, zero known findings; unpublished self explicitly skipped/source-reviewed. Runtime/resource-memory differences and trusted sync helpers are documented; no portable RSS ceiling or hosted Python CI claim. Node runtime/draft unchanged; no push, tag or publication. REF-005/006 and SDK-012 remain pending; M4 remains IN_PROGRESS.
 
 ## SDK-012: Python developer documentation and release candidate
 

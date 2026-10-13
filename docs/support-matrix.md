@@ -7,15 +7,17 @@ report. SDK hosted gates pass on Linux Node 22/24 and macOS/Windows Node 24.
 Python, other transports, bundles and XML remain separately tracked work.
 See [operation limits](node-operations.md) and [release policy](node-release.md).
 
-Python implements the independent inline profile on CPython 3.11–3.14 with
-`a2a-sdk==1.2.2`: typed catalog/skill discovery, original schema inspection,
-explicit invocation, raw admission, atomic publication, continuation and cancellation.
-See [the Python guide](../python/README.md), [architecture](python-architecture.md)
-and [inline evidence](python-inline-report.md). Python preserves root null, unlike
-the supported Node carrier. External resources, process-isolated validation,
-operational guarantees and four-pairing reference acceptance remain SDK-011/012
-and REF-006. The detailed table below continues to describe the Node runtime;
-its worker/resolver/hosted evidence must not be attributed to Python.
+Python implements the independent inline/external profile on CPython 3.11–3.14
+with `a2a-sdk==1.2.2`: catalog/skill discovery, immutable native schema inspection,
+explicit invocation, raw admission, atomic publication, continuation/cancellation,
+secure HTTPS resolution and disposable validation processes at async boundaries.
+[Python acceptance](python-resolver-report.md) records 633 tests per fresh macOS arm64
+profile, 100% core coverage and identical installed artifacts; hosted Python CI remains
+configured/unrun. [Python limits/threat model](python-resolver-security.md) explicitly
+separates wall/JSON/graph limits from platform memory controls. Python preserves root
+null, unlike the supported Node carrier. Four pairings/reference acceptance and the
+Python RC remain REF-005/006 and SDK-012. The detailed table below describes Node;
+its V8/hosted evidence must not be attributed to Python.
 
 | Feature                                 | Inline target                                                                  | Current evidence / limitation                                                                                                                                                                                                                                                                                                                                                                                                    | Delivery task         |
 | --------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
@@ -38,7 +40,7 @@ its worker/resolver/hosted evidence must not be attributed to Python.
 | Errors                                  | Existing A2A errors + sanitized draft details                                  | Existing -32602/-32005/-32008 errors with scoped ErrorInfo; sanitized failed Task/OUTPUT_CONTRACT_VIOLATION and no contracted Artifact; explicit CANCELED state                                                                                                                                                                                                                                                                  | SDK-004/007           |
 | External catalog/schema/resources       | Explicit HTTPS resolver; offline preparation/validation                        | Pins/immutable catalogs, connection-bound DNS/IP policy, redirects/auth/cache isolation, fragment/base/native resources, bounded graph and I/O cancellation; deterministic HTTPS fixtures and installed HTTP/SSE demo on Node 22/24. Local recursion supported; cross-document cycles, nonlocal dynamicRef, encoded leading pointer slash refused; owned worker compilation/validation; candidate hosted runs tracked separately | SDK-006/007           |
 | Bundles / XML/XSD                       | Deferred, unsupported                                                          | No conformance claim                                                                                                                                                                                                                                                                                                                                                                                                             | SDK-014/015           |
-| Python / four pairings                  | Independent Python inline; reference pairings pending                                                   | Python inline implemented; four-pairing reference acceptance remains pending                                                                                                                                                                                                                                                                                                                                                                                                | SDK-009–012 / REF-006 |
+| Python / four pairings                  | Independent Python inline/external; reference pairings pending                                                   | Python inline/external and isolated async boundaries implemented locally; four-pairing reference acceptance remains pending                                                                                                                                                                                                                                                                                                                                                                                                | SDK-009–012 / REF-006 |
 
 The adapter must reject unsupported features using local diagnostics plus valid existing binding/draft codes when appropriate. Removing the root-null limitation requires a reviewed upstream fix and re-probing; it does not permit transformation of a caller value. See [architecture](architecture.md) for policies and [requirements](requirements.md) for pending behavioral evidence.
 

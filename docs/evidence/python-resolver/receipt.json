@@ -1,0 +1,454 @@
+{
+  "task": "SDK-011",
+  "result": "PASS_LOCAL",
+  "date": "2026-10-14",
+  "sourceCommit": "c1d2ba34af5589413118ed428f811428c2abf6f7",
+  "branch": "codex/python-sdk",
+  "draftCommit": "a5c007510faa3fce85190f2e76e402faf0e897ad",
+  "extensionUri": "https://w3id.org/a2a-schema-contract/draft/0.1",
+  "nodeRuntimeBaseline": "07ddd60e339ed0d86f2ace091e263a7aa369a0b9",
+  "package": {
+    "result": "PASS",
+    "python": "3.14.7",
+    "wheel": {
+      "name": "a2a_schema_contract-0.1.0.dev0-py3-none-any.whl",
+      "sha256": "98bfa08660e814215c8e343fc67d05e91c62e96607d01854bfe9ecacce1a2f22"
+    },
+    "sdist": {
+      "name": "a2a_schema_contract-0.1.0.dev0.tar.gz",
+      "sha256": "0a2ea55060ede33d4cd2607dfeda8e242744a4ca518c045eef6843b437bd0ee4"
+    },
+    "checks": [
+      "artifact-resources-license-types",
+      "sdist-wheel-reproducibility",
+      "strict-metadata",
+      "isolated-core-no-a2a-or-dev",
+      "isolated-server-extra",
+      "installed-readme-examples",
+      "installed-strict-public-types",
+      "installed-core-catalog-discovery-without-a2a",
+      "installed-real-http-sse-typed-discovery-demo",
+      "installed-verified-pinned-https-native-resource-demo",
+      "installed-worker-and-https-performance-baseline"
+    ]
+  },
+  "profiles": [
+    {
+      "python": "3.11.15",
+      "platform": "macOS-27.2-arm64-arm-64bit",
+      "quality": "PASS",
+      "tests": 633,
+      "skips": 0,
+      "coverageOverall": 93.43,
+      "coverageCore": 100,
+      "installedArtifact": "PASS",
+      "wheelFromSdistIdentical": true,
+      "logSha256": "aa342a39c928442206e686901c5855d266877429dba26e90a85c4d3031985084"
+    },
+    {
+      "python": "3.12.13",
+      "platform": "macOS-27.2-arm64-arm-64bit",
+      "quality": "PASS",
+      "tests": 633,
+      "skips": 0,
+      "coverageOverall": 93.43,
+      "coverageCore": 100,
+      "installedArtifact": "PASS",
+      "wheelFromSdistIdentical": true,
+      "logSha256": "e4e92a86ab3fcc8710a3e6cbb5d90bd422ef1ba5863f6815bd6d7ca66d86d1a5"
+    },
+    {
+      "python": "3.13.14",
+      "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+      "quality": "PASS",
+      "tests": 633,
+      "skips": 0,
+      "coverageOverall": 93.43,
+      "coverageCore": 100,
+      "installedArtifact": "PASS",
+      "wheelFromSdistIdentical": true,
+      "logSha256": "11ad49ea5ca24f14274e92806a97c592f7dcf89698f6a3d672590eb596ab7ecb"
+    },
+    {
+      "python": "3.14.7",
+      "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+      "quality": "PASS",
+      "tests": 633,
+      "skips": 0,
+      "coverageOverall": 93.29,
+      "coverageCore": 100,
+      "installedArtifact": "PASS",
+      "wheelFromSdistIdentical": true,
+      "logSha256": "2a40ae4f6adf445641180dc2713ab0cfac5ff85951ab200bda90eb77e88d4689"
+    }
+  ],
+  "performance": [
+    {
+      "python": "3.11.15",
+      "platform": "macOS-27.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "workload": "Node-matched count integer 0..100; 10 cold/10x1000 warm/5 fresh/5+5 HTTPS",
+      "cold_compile": {
+        "count": 10,
+        "median_ms": 0.7672710053157061,
+        "max_ms": 1.417542007402517,
+        "samples_ms": [
+          1.417542007402517,
+          0.8456659998046234,
+          0.8225419878726825,
+          0.7809590024407953,
+          0.7542499952251092,
+          0.7469590054824948,
+          0.779333000537008,
+          0.7552090100944042,
+          0.7345420017372817,
+          0.7315419934457168
+        ]
+      },
+      "warm_1000_validations": {
+        "count": 10,
+        "median_ms": 10.771021006803494,
+        "max_ms": 12.331958991126157,
+        "samples_ms": [
+          11.066500010201707,
+          10.880000001634471,
+          12.331958991126157,
+          10.847958008525893,
+          10.805042009451427,
+          10.727291999501176,
+          10.690082999644801,
+          10.721083002863452,
+          10.712541989050806,
+          10.737000004155561
+        ]
+      },
+      "fresh_process_compile": {
+        "count": 5,
+        "median_ms": 54.68904200824909,
+        "max_ms": 55.97533400577959,
+        "samples_ms": [
+          54.87483399338089,
+          54.64991700137034,
+          55.97533400577959,
+          54.68904200824909,
+          54.23262499971315
+        ]
+      },
+      "cold_pinned_https_prepare": {
+        "count": 5,
+        "median_ms": 110.62587499327492,
+        "max_ms": 111.92929199023638,
+        "samples_ms": [
+          110.91133300215006,
+          110.62587499327492,
+          110.10070799966343,
+          111.92929199023638,
+          110.26504100300372
+        ]
+      },
+      "cached_pinned_https_prepare": {
+        "count": 5,
+        "median_ms": 108.85041700385045,
+        "max_ms": 110.42179098876659,
+        "samples_ms": [
+          108.85041700385045,
+          110.42179098876659,
+          109.51379200560041,
+          108.64512500120327,
+          107.91737500403542
+        ]
+      },
+      "retrievals": 5,
+      "cached_retrievals": 0,
+      "result": "PASS"
+    },
+    {
+      "python": "3.12.13",
+      "platform": "macOS-27.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "workload": "Node-matched count integer 0..100; 10 cold/10x1000 warm/5 fresh/5+5 HTTPS",
+      "cold_compile": {
+        "count": 10,
+        "median_ms": 0.79431249469053,
+        "max_ms": 1.388417003909126,
+        "samples_ms": [
+          1.388417003909126,
+          0.8910830074455589,
+          0.8026669966056943,
+          0.7859579927753657,
+          0.8199999865610152,
+          0.7662090065423399,
+          0.7685419986955822,
+          0.7666669989703223,
+          1.0677089885575697,
+          0.7659590046387166
+        ]
+      },
+      "warm_1000_validations": {
+        "count": 10,
+        "median_ms": 11.038625001674518,
+        "max_ms": 12.894459010567516,
+        "samples_ms": [
+          11.071208995417692,
+          11.055291004595347,
+          12.894459010567516,
+          10.974791992339306,
+          11.070499997003935,
+          11.006415996234864,
+          11.056792005547322,
+          11.00879099976737,
+          10.951290998491459,
+          11.02195899875369
+        ]
+      },
+      "fresh_process_compile": {
+        "count": 5,
+        "median_ms": 57.65354199684225,
+        "max_ms": 58.80645799334161,
+        "samples_ms": [
+          58.80645799334161,
+          57.452832988929,
+          57.65354199684225,
+          56.88237500726245,
+          57.85287500475533
+        ]
+      },
+      "cold_pinned_https_prepare": {
+        "count": 5,
+        "median_ms": 117.6207499956945,
+        "max_ms": 118.25083300936967,
+        "samples_ms": [
+          116.98920799244661,
+          116.49554199539125,
+          117.6207499956945,
+          117.68016699352302,
+          118.25083300936967
+        ]
+      },
+      "cached_pinned_https_prepare": {
+        "count": 5,
+        "median_ms": 115.56720899534412,
+        "max_ms": 119.83645799045917,
+        "samples_ms": [
+          114.9475839920342,
+          116.03637499501929,
+          119.83645799045917,
+          115.42854200524744,
+          115.56720899534412
+        ]
+      },
+      "retrievals": 5,
+      "cached_retrievals": 0,
+      "result": "PASS"
+    },
+    {
+      "python": "3.13.14",
+      "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+      "machine": "arm64",
+      "workload": "Node-matched count integer 0..100; 10 cold/10x1000 warm/5 fresh/5+5 HTTPS",
+      "cold_compile": {
+        "count": 10,
+        "median_ms": 0.8328955009346828,
+        "max_ms": 1.673125007073395,
+        "samples_ms": [
+          1.5526659990428016,
+          0.8535410015610978,
+          0.9381249983562157,
+          0.8687910012667999,
+          0.8122500003082678,
+          0.7784159970469773,
+          0.7634590001543984,
+          0.7594999915454537,
+          0.7514580065617338,
+          1.673125007073395
+        ]
+      },
+      "warm_1000_validations": {
+        "count": 10,
+        "median_ms": 11.153791499964427,
+        "max_ms": 11.27387500309851,
+        "samples_ms": [
+          11.056374991312623,
+          11.22383400797844,
+          11.18654099991545,
+          11.27387500309851,
+          10.925832990324125,
+          11.12358299724292,
+          10.98824999644421,
+          11.184000002685934,
+          11.186167001142167,
+          10.921791996224783
+        ]
+      },
+      "fresh_process_compile": {
+        "count": 5,
+        "median_ms": 60.13487500604242,
+        "max_ms": 60.92479100334458,
+        "samples_ms": [
+          60.59441600518767,
+          60.92479100334458,
+          59.70508299651556,
+          60.13487500604242,
+          59.65041600575205
+        ]
+      },
+      "cold_pinned_https_prepare": {
+        "count": 5,
+        "median_ms": 121.35791699984111,
+        "max_ms": 121.87145800271537,
+        "samples_ms": [
+          121.15991699101869,
+          121.35791699984111,
+          121.09570899337996,
+          121.87145800271537,
+          121.41266699472908
+        ]
+      },
+      "cached_pinned_https_prepare": {
+        "count": 5,
+        "median_ms": 119.53316700237337,
+        "max_ms": 124.43945900304243,
+        "samples_ms": [
+          119.34612499317154,
+          119.28762499883305,
+          124.43945900304243,
+          119.53316700237337,
+          119.67474999255501
+        ]
+      },
+      "retrievals": 5,
+      "cached_retrievals": 0,
+      "result": "PASS"
+    },
+    {
+      "python": "3.14.7",
+      "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+      "machine": "arm64",
+      "workload": "Node-matched count integer 0..100; 10 cold/10x1000 warm/5 fresh/5+5 HTTPS",
+      "cold_compile": {
+        "count": 10,
+        "median_ms": 0.8408744979533367,
+        "max_ms": 1.845500009949319,
+        "samples_ms": [
+          1.4132499927654862,
+          0.8881249959813431,
+          0.8427080028923228,
+          0.8455000061076134,
+          0.8180409931810573,
+          1.845500009949319,
+          0.8377500053029507,
+          0.8298750035464764,
+          0.8377500053029507,
+          0.8390409930143505
+        ]
+      },
+      "warm_1000_validations": {
+        "count": 10,
+        "median_ms": 12.826187507016584,
+        "max_ms": 14.730540991877206,
+        "samples_ms": [
+          13.01858299120795,
+          12.833250002586283,
+          12.942667002789676,
+          12.762832993757911,
+          12.768375003361143,
+          12.810208005248569,
+          12.898083004984073,
+          12.764125000103377,
+          14.730540991877206,
+          12.819125011446886
+        ]
+      },
+      "fresh_process_compile": {
+        "count": 5,
+        "median_ms": 77.31391600100324,
+        "max_ms": 77.50299999315757,
+        "samples_ms": [
+          77.21629200386815,
+          77.33416699920781,
+          77.50299999315757,
+          77.31391600100324,
+          76.20674998906907
+        ]
+      },
+      "cold_pinned_https_prepare": {
+        "count": 5,
+        "median_ms": 155.5628339992836,
+        "max_ms": 156.6020829923218,
+        "samples_ms": [
+          155.78833300969563,
+          156.6020829923218,
+          152.86445801029913,
+          154.59441700659227,
+          155.5628339992836
+        ]
+      },
+      "cached_pinned_https_prepare": {
+        "count": 5,
+        "median_ms": 153.10808300273493,
+        "max_ms": 153.90683300211094,
+        "samples_ms": [
+          153.90683300211094,
+          153.10808300273493,
+          152.48391700151842,
+          152.66970799711999,
+          153.22670800378546
+        ]
+      },
+      "retrievals": 5,
+      "cached_retrievals": 0,
+      "result": "PASS"
+    }
+  ],
+  "resourceSha256": {
+    "catalog.schema.json": "48bb6448d342c388f1b29a7aa816d52468e923655edad5fdc2dbfc3ef71e1b5f",
+    "common.schema.json": "9bf47d877a26af3d1dec12c3a5ae4e291d8cf84e02d279bbf96c45d5719aa959",
+    "error-detail.schema.json": "b24ab56cb49a3f9df100b1cd591af1583a92c0187b10c9d515970f3560345be8",
+    "extension-params.schema.json": "adf976f4c6937f60825f2fc8883bf937a80feb03b017a09e576ab92d0e8e7225",
+    "invocation-metadata.schema.json": "c7c962b5eae24b137d01fcf2f87320b27611dbd8944d7026f0cd3dae5ead5162",
+    "part-metadata.schema.json": "628d1a47f0fbba0378de9b5b20a00a7e0a2ccbcd43a05e0afd90e9ea84624f34",
+    "result-metadata.schema.json": "03531b05c584b3d324b83d833b8230f38c2ce524ef1f53472a125659db6992a5"
+  },
+  "dependencies": {
+    "a2a-sdk": "1.2.2",
+    "jsonschema": "4.26.0",
+    "referencing": "0.37.0",
+    "h11": "0.16.0",
+    "httpx": "0.28.1",
+    "protobuf": "7.36.2",
+    "starlette": "1.8.0",
+    "uvicorn": "0.42.0"
+  },
+  "audit": {
+    "dependenciesInReport": 93,
+    "audited": 92,
+    "vulnerabilities": 0,
+    "skipped": [
+      {
+        "name": "a2a-schema-contract",
+        "reason": "Dependency not found on PyPI and could not be audited: a2a-schema-contract (0.1.0.dev0)"
+      }
+    ],
+    "unpublishedSelfSourceReviewed": true
+  },
+  "commands": [
+    "rtk proxy .venv/bin/python scripts/check_matrix.py",
+    "rtk proxy .venv/bin/pip-audit --format json --output reports/sdk011-audit.json"
+  ],
+  "scope": {
+    "secureExternalCatalogSchemaResolver": true,
+    "dnsConnectionBinding": true,
+    "nativeOfflineResourceGraphs": true,
+    "immutablePreparedInspection": true,
+    "hardValidationWallDeadline": true,
+    "physicalWorkerDnsCleanup": true,
+    "sanitizedDiagnostics": true,
+    "installedRealAgentHttpSseExternalDemo": true,
+    "boundedSharedResourcePrograms": true,
+    "crossLanguageFourPairings": false,
+    "hostedCiExecuted": false,
+    "portableHardRssCeiling": false,
+    "frameworkImports": false,
+    "published": false
+  }
+}

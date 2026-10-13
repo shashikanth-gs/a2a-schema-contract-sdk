@@ -1,5 +1,17 @@
 # Changelog
 
+## Python 0.1.0.dev0 resolver/operations update — 2026-10-14
+
+- Explicit bounded HTTPS catalogs/schema resources with connection-bound DNS, verified TLS, redirect/auth/integrity policy and private caches.
+- Native offline reference graphs and original immutable resource inspection after cache clear/closure.
+- Disposable process validation at async discovery/client/server/resolver boundaries, hard work budgets and physical cleanup.
+- Coherent mixed-pin snapshots, bounded shared-resource IPC, sanitized correlation hooks and documented platform memory limits.
+- Fresh CPython 3.11–3.14: 633 tests each, strict quality/coverage, identical installed artifacts, real TLS/A2A demos and retained Node-matched benchmarks.
+
+[Acceptance](docs/python-resolver-report.md) records exact evidence. Reference four
+pairings, hosted Python execution and the release candidate remain later gates;
+no publication is claimed. Entries below retain their original milestone scope.
+
 ## Python 0.1.0.dev0 inline update — 2026-10-14
 
 - Independent catalog, capabilities, original schema views and skill-associated discovery.

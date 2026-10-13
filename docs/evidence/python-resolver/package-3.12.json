@@ -1,0 +1,104 @@
+{
+  "result": "PASS",
+  "python": "3.12.13",
+  "wheel": {
+    "name": "a2a_schema_contract-0.1.0.dev0-py3-none-any.whl",
+    "sha256": "98bfa08660e814215c8e343fc67d05e91c62e96607d01854bfe9ecacce1a2f22"
+  },
+  "sdist": {
+    "name": "a2a_schema_contract-0.1.0.dev0.tar.gz",
+    "sha256": "0a2ea55060ede33d4cd2607dfeda8e242744a4ca518c045eef6843b437bd0ee4"
+  },
+  "performance": {
+    "python": "3.12.13",
+    "platform": "macOS-27.2-arm64-arm-64bit",
+    "machine": "arm64",
+    "workload": "Node-matched count integer 0..100; 10 cold/10x1000 warm/5 fresh/5+5 HTTPS",
+    "cold_compile": {
+      "count": 10,
+      "median_ms": 0.79431249469053,
+      "max_ms": 1.388417003909126,
+      "samples_ms": [
+        1.388417003909126,
+        0.8910830074455589,
+        0.8026669966056943,
+        0.7859579927753657,
+        0.8199999865610152,
+        0.7662090065423399,
+        0.7685419986955822,
+        0.7666669989703223,
+        1.0677089885575697,
+        0.7659590046387166
+      ]
+    },
+    "warm_1000_validations": {
+      "count": 10,
+      "median_ms": 11.038625001674518,
+      "max_ms": 12.894459010567516,
+      "samples_ms": [
+        11.071208995417692,
+        11.055291004595347,
+        12.894459010567516,
+        10.974791992339306,
+        11.070499997003935,
+        11.006415996234864,
+        11.056792005547322,
+        11.00879099976737,
+        10.951290998491459,
+        11.02195899875369
+      ]
+    },
+    "fresh_process_compile": {
+      "count": 5,
+      "median_ms": 57.65354199684225,
+      "max_ms": 58.80645799334161,
+      "samples_ms": [
+        58.80645799334161,
+        57.452832988929,
+        57.65354199684225,
+        56.88237500726245,
+        57.85287500475533
+      ]
+    },
+    "cold_pinned_https_prepare": {
+      "count": 5,
+      "median_ms": 117.6207499956945,
+      "max_ms": 118.25083300936967,
+      "samples_ms": [
+        116.98920799244661,
+        116.49554199539125,
+        117.6207499956945,
+        117.68016699352302,
+        118.25083300936967
+      ]
+    },
+    "cached_pinned_https_prepare": {
+      "count": 5,
+      "median_ms": 115.56720899534412,
+      "max_ms": 119.83645799045917,
+      "samples_ms": [
+        114.9475839920342,
+        116.03637499501929,
+        119.83645799045917,
+        115.42854200524744,
+        115.56720899534412
+      ]
+    },
+    "retrievals": 5,
+    "cached_retrievals": 0,
+    "result": "PASS"
+  },
+  "checks": [
+    "artifact-resources-license-types",
+    "sdist-wheel-reproducibility",
+    "strict-metadata",
+    "isolated-core-no-a2a-or-dev",
+    "isolated-server-extra",
+    "installed-readme-examples",
+    "installed-strict-public-types",
+    "installed-core-catalog-discovery-without-a2a",
+    "installed-real-http-sse-typed-discovery-demo",
+    "installed-verified-pinned-https-native-resource-demo",
+    "installed-worker-and-https-performance-baseline"
+  ]
+}

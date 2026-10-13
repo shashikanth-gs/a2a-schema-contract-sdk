@@ -97,7 +97,7 @@ open another network path. Bundle/archive and XML representations remain unsuppo
 `catalog.schema(contract_id, direction, representation_id)` returns an immutable
 `PreparedSchema`: `entry`, original `descriptor`, and a tuple of `SchemaResource`
 values (`uri`, original `document`/detached `value`, redirect `aliases`). Inspection
-performs no I/O, compilation or validation and exposes no authentication configuration,
+performs no I/O, compilation or business/schema validation and exposes no authentication configuration,
 HTTP client, vendor registry or private regex projection. It remains usable after
 cache clear/resolver closure. It supplies schema data to framework adapters; it does
 not generate a static Python business type or flatten native reference semantics.
