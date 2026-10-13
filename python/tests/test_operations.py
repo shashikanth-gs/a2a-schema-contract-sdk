@@ -1,12 +1,15 @@
 """Hard deadlines and physical process cleanup on every lifecycle outcome."""
 
 import asyncio
+import json
+import time
 from dataclasses import FrozenInstanceError
 from pathlib import Path
 from typing import cast
 
 import pytest
 
+import a2a_schema_contract.operations as operations
 from a2a_schema_contract.catalog import parse_catalog
 from a2a_schema_contract.core import ContractError, ErrorContext, JsonValue
 from a2a_schema_contract.operations import Diagnostic, ValidationOptions, ValidationSession, process
@@ -278,3 +281,24 @@ async def test_node_benchmark_semantic_decisions(value: JsonValue, accepted: boo
         else:
             with pytest.raises(ContractError, match="INSTANCE_INVALID"):
                 await session.run("validate", arguments)
+
+
+@pytest.mark.asyncio
+async def test_result_processing_is_inside_the_budget(monkeypatch: pytest.MonkeyPatch) -> None:
+    original = json.loads
+
+    def slow(value: bytes) -> JsonValue:
+        result = cast("JsonValue", original(value))
+        stop = time.monotonic() + 0.02
+        while time.monotonic() < stop:
+            pass
+        return result
+
+    async def completed(packet: bytes) -> bytes:
+        return b'{"value":null}'
+
+    monkeypatch.setattr(operations, "exchange", completed)
+    monkeypatch.setattr(json, "loads", slow)
+    async with ValidationSession(options=ValidationOptions(deadline=0.01)) as session:
+        with pytest.raises(ContractError, match="VALIDATION_TIMEOUT"):
+            await session.run("compile", {})

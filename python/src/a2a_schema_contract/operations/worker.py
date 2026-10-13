@@ -19,6 +19,8 @@ def _limits() -> None:
         # Preserve stricter inherited host limits; never raise an existing ceiling.
         def cap(kind: int, maximum: int) -> None:
             soft, hard = resource.getrlimit(kind)
+            if soft != resource.RLIM_INFINITY and soft <= maximum:
+                return
             soft = maximum if soft == resource.RLIM_INFINITY else min(soft, maximum)
             hard = maximum if hard == resource.RLIM_INFINITY else min(hard, maximum)
             resource.setrlimit(kind, (min(soft, hard), hard))

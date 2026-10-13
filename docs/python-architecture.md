@@ -164,6 +164,8 @@ immutable prepared views. Redirect aliases and schema identities are normalized 
 for private registry/regex compilation. Schema-position inspection prevents refs into
 annotations; an explicit offline referencing registry cannot acquire more documents.
 Prepared inspection requires no retrieval/compilation and survives cache clear/closure.
+One acquired/decoded document snapshot is shared across declarations, and worker
+programs pool immutable resources and bound encoded size before materialization.
 Synthetic inline URNs hash structured contract/direction/representation identities,
 avoiding delimiter collisions and expansion beyond URI-string budgets.
 
@@ -175,8 +177,8 @@ is shielded and physical termination awaited on every exit path, including repea
 cancellation while acquiring a child. No timed-out job falls back to the event loop
 or an unkillable executor thread. Sync helpers remain explicit trusted conveniences.
 
-Python OS memory controls differ from Node's V8 limit and from each other. POSIX
-stack bounds and Linux data-segment bounds are documented separately from portable
+Python OS memory controls differ from Node's V8 limit and from each other. Inherited POSIX soft
+stack bounds and Linux soft data-segment bounds are documented separately from portable
 wall/data/schema budgets. macOS/Windows do not claim an OS RSS ceiling. Hosts needing
 strict RSS enforcement own deployment/container/job controls. Frozen allowlisted
 correlation hooks are optional and add no telemetry dependency.

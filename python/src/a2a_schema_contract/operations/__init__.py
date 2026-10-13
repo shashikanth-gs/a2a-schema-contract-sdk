@@ -78,36 +78,39 @@ class ValidationSession:
             admitted = True
             if operation not in _OPERATIONS:
                 raise ContractError("INVALID_STRUCTURE", context)
-            packet: dict[str, JsonValue] = {
-                "operation": operation,
-                "arguments": snapshot(arguments, context, limits=_ARGUMENT_LIMITS),
-                "context": {
-                    "origin": context.origin,
-                    "contractId": context.contract_id,
-                    "direction": context.direction,
-                    "representationId": context.representation_id,
-                },
-            }
-            if self.catalog is not None:
-                packet["catalog"] = catalog_packet(self.catalog)
             async with asyncio.timeout(self.options.deadline):
+                packet: dict[str, JsonValue] = {
+                    "operation": operation,
+                    "arguments": snapshot(arguments, context, limits=_ARGUMENT_LIMITS),
+                    "context": {
+                        "origin": context.origin,
+                        "contractId": context.contract_id,
+                        "direction": context.direction,
+                        "representationId": context.representation_id,
+                    },
+                }
+                if self.catalog is not None:
+                    packet["catalog"] = catalog_packet(self.catalog)
                 raw = await exchange(encode(packet))
-            result = cast("dict[str, JsonValue]", json.loads(raw))
-            if "code" in result:
-                if result["code"] not in get_args(DiagnosticCode):
-                    raise ContractError("SCHEMA_INVALID", context)
-                raise ContractError(
-                    cast("DiagnosticCode", result["code"]),
-                    ErrorContext(
-                        cast("Origin", result.get("origin", context.origin)),
-                        cast("str | None", result.get("contractId", context.contract_id)),
-                        cast("Direction | None", result.get("direction", context.direction)),
-                        cast(
-                            "str | None", result.get("representationId", context.representation_id)
+                result = cast("dict[str, JsonValue]", json.loads(raw))
+                if time.monotonic() - started > self.options.deadline:
+                    raise ContractError("VALIDATION_TIMEOUT", context)
+                if "code" in result:
+                    if result["code"] not in get_args(DiagnosticCode):
+                        raise ContractError("SCHEMA_INVALID", context)
+                    raise ContractError(
+                        cast("DiagnosticCode", result["code"]),
+                        ErrorContext(
+                            cast("Origin", result.get("origin", context.origin)),
+                            cast("str | None", result.get("contractId", context.contract_id)),
+                            cast("Direction | None", result.get("direction", context.direction)),
+                            cast(
+                                "str | None",
+                                result.get("representationId", context.representation_id),
+                            ),
                         ),
-                    ),
-                )
-            return result["value"]
+                    )
+                return result["value"]
         except TimeoutError:
             code, outcome = "VALIDATION_TIMEOUT", "rejected"
             raise ContractError(code, context) from None

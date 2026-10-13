@@ -73,8 +73,9 @@ retrieved JSON. Malformed bytes are never normalized through the official SDK.
 The private LRU admits only pinned/promised bytes. Keys contain requested canonical
 fragmentless URI, expected media type and exact integrity identity; credentials,
 headers and bytes never enter diagnostics. Bounds are 32 entries/1 MiB, with cache
-disablement/lower limits supported. Mutable dependencies are acquired once for each
-preparation and never reused across preparations. Multiple representations in one
+disablement/lower limits supported. Mutable dependencies are acquired/decoded once for each requested URI/media
+in a preparation and never reused across preparations. All declarations verify
+their pins against that coherent snapshot, including different digest algorithms. Multiple representations in one
 preparation share that acquired snapshot. Clearing the cache does not revoke a
 prepared catalog: all required resources remain immutable and usable offline.
 
@@ -114,7 +115,9 @@ not generate a static Python business type or flatten native reference semantics
 | Worker IPC in either direction | 4 MiB, bounded incremental pipe reads |
 | Portable original JSON | 256 KiB / 4,096 nodes / depth 32 / strings 8,192 |
 
-Each async job starts a fresh interpreter with `-I -S -B`, explicit trusted package
+Worker programs share one immutable resource pool across representations and
+check encoded size before materializing documents, preventing amplification of
+shared schemas on the parent loop. Each async job starts a fresh interpreter with `-I -S -B`, explicit trusted package
 paths and a minimal environment (only Windows system-directory variables when needed).
 There is no shell, pickle, user-site/.pth/sitecustomize loading, inherited Python flag
 or application-directory import. Input/output is a fixed JSON protocol with no
@@ -130,9 +133,11 @@ finish after a deadline expires; OS process/transport cleanup latency can extend
 observed return time. No worker or DNS executor thread survives SDK-owned cleanup.
 No retry or synchronous/thread fallback runs a timed-out job on the async loop.
 
-POSIX workers lower stack limits to 8 MiB. Linux also applies a 256 MiB data-segment
-ceiling; this is not a portable hard RSS guarantee. macOS rejects that data limit in
-the executable probe, and Windows lacks `resource`; those hosts enforce wall time,
+POSIX workers require a soft stack bound at most 8 MiB, preserving any stricter
+inherited limit. Linux similarly applies a soft data-segment bound at most 256 MiB; this is not a portable hard RSS guarantee. macOS rejects that data limit in
+the executable probe; CPython 3.14/macOS also refuses stack-limit setters, so its
+already stricter inherited stack bound is preserved. A required lowering that the
+host refuses fails closed. Windows lacks `resource`; those hosts enforce wall time,
 IPC/data/schema budgets and physical process cleanup, but do not claim an OS memory
 ceiling. Hosts requiring a strict resident-memory/process policy must supply it via
 their deployment/container/job controls. Hosted platform checks remain a separate

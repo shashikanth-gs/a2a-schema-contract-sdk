@@ -226,7 +226,8 @@ class ContractResolver:
 
     async def _prepare(self, value: object, kind: str, context: ErrorContext) -> ContractCatalog:
         limits = self.limits
-        acquired: dict[tuple[str, str, str, str], _Cached] = {}
+        acquired: dict[tuple[str, str], _Cached] = {}
+        decoded: dict[tuple[str, str], SchemaResource] = {}
         total_bytes = 0
 
         async def get(
@@ -244,7 +245,8 @@ class ContractResolver:
             if require_immutable and not reusable:
                 raise ContractError("RESOLUTION_POLICY", context)
             key = (requested.document, media_type, pin[0] if pin else "", pin[2] if pin else "")
-            existing = acquired.get(key)
+            namespace = (requested.document, media_type)
+            existing = acquired.get(namespace)
             if existing is None and len(acquired) >= limits.documents:
                 raise ContractError("RESOURCE_LIMIT", context)
             stored = existing or self._cache.get(key)
@@ -303,8 +305,11 @@ class ContractResolver:
                 hashlib.new(pin[0].replace("-", ""), stored.body).digest(), pin[1]
             ):
                 raise ContractError("INTEGRITY_MISMATCH", context)
-            data = loads(stored.body, context)
-            acquired[key] = stored
+            if namespace not in decoded:
+                data = loads(stored.body, context)
+                aliases = (requested.document,) if requested.document != stored.uri else ()
+                decoded[namespace] = SchemaResource(stored.uri, JsonDocument(data), aliases)
+            acquired[namespace] = stored
             if (
                 reusable
                 and key not in self._cache
@@ -319,8 +324,7 @@ class ContractResolver:
                     self._cache_bytes -= len(oldest.body)
                 self._cache[key] = stored
                 self._cache_bytes += len(stored.body)
-            aliases = (requested.document,) if requested.document != stored.uri else ()
-            return SchemaResource(stored.uri, JsonDocument(data), aliases)
+            return decoded[namespace]
 
         data = snapshot(value, context)
         if kind == "extension":

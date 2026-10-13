@@ -5,10 +5,11 @@ import base64
 import hashlib
 import json
 from dataclasses import FrozenInstanceError
+from typing import cast
 
 import pytest
 
-from a2a_schema_contract.core import ContractError
+from a2a_schema_contract.core import ContractError, JsonValue, snapshot
 from a2a_schema_contract.resolver import ContractResolver, ResolverLimits
 
 from .resolver_support import TLSPeer, catalog, lookup, peer, response, trust
@@ -355,3 +356,49 @@ async def test_body_stall_owned_cleanup(action: str) -> None:
             await asyncio.sleep(0.005)
         assert not server.active
         await service.close()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("conflicting", [False, True])
+async def test_same_document_snapshot_shared_across_different_declared_pins(
+    conflicting: bool,
+) -> None:
+    async with peer() as server:
+        uri = server.url("/schema/v1.json")
+        original, changed = b'{"type":"integer"}', b'{"type":"string"}'
+        server.routes["/schema/v1.json"] = response(original)
+        calls = 0
+
+        async def changing(hostname: str) -> tuple[str, ...]:
+            nonlocal calls
+            calls += 1
+            if calls > 1:
+                server.routes["/schema/v1.json"] = response(changed)
+            return ("127.0.0.1",)
+
+        value = cast("dict[str, JsonValue]", snapshot(catalog(uri)))
+        contract = cast("list[dict[str, JsonValue]]", value["contracts"])[0]
+        input = cast("dict[str, JsonValue]", contract["input"])
+        reps = cast("list[dict[str, JsonValue]]", input["representations"])
+        first = cast("dict[str, JsonValue]", reps[0]["schema"])
+        first["integrity"] = snapshot(digest(original))
+        second = cast("dict[str, JsonValue]", snapshot(reps[0]))
+        second["id"] = "other"
+        cast("dict[str, JsonValue]", second["schema"])["integrity"] = snapshot(
+            digest(changed if conflicting else original, "sha-512")
+        )
+        reps.append(second)
+        async with ContractResolver(
+            lookup=changing, tls=trust(), allowed_addresses={"a.example.test": ("127.0.0.1",)}
+        ) as service:
+            if conflicting:
+                with pytest.raises(ContractError, match="INTEGRITY_MISMATCH"):
+                    await service.resolve_catalog(value)
+            else:
+                prepared = await service.resolve_catalog(value)
+                first_view = prepared.schema(ID, "input", "json")
+                second_view = prepared.schema(ID, "input", "other")
+                assert first_view is not None and second_view is not None
+                assert first_view.documents[0] is second_view.documents[0]
+                assert prepared.select(ID, "input", "other").validate(2) == 2
+        assert calls == len(server.requests) == 1
