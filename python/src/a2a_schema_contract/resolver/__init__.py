@@ -142,7 +142,7 @@ class ContractResolver:
             authority = "[" + key + "]" if ":" in key else key
             if resource_url("https://" + authority).hostname != key or type(values) is not tuple:
                 raise ValueError("Invalid exact host/address override.")
-            if not values or any(str(ipaddress.ip_address(v)) != v for v in values):
+            if not values or any("%" in v or str(ipaddress.ip_address(v)) != v for v in values):
                 raise ValueError("Invalid exact host/address override.")
         self._addresses = MappingProxyType(addresses)
 

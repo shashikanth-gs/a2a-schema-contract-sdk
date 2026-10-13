@@ -191,6 +191,7 @@ async def test_response_bytes_without_content_length_and_chunk_limit() -> None:
         async with resolver(server, limits=ResolverLimits(response_bytes=3)) as service:
             with pytest.raises(ContractError, match="RESOURCE_LIMIT"):
                 await service.resolve_catalog(catalog(uri))
+
         server.routes["/root/v1.json"] = (
             b"HTTP/1.1 200 OK\r\nContent-Type: a"
             b"pplication/schema+json\r\nTransfer"
@@ -200,3 +201,24 @@ async def test_response_bytes_without_content_length_and_chunk_limit() -> None:
         async with resolver(server, limits=ResolverLimits(response_bytes=3)) as service:
             with pytest.raises(ContractError, match="RESOURCE_LIMIT"):
                 await service.resolve_catalog(catalog(uri))
+
+
+@pytest.mark.asyncio
+async def test_scoped_dns_address_rejected_before_connection() -> None:
+    async def scoped(hostname: str) -> tuple[str, ...]:
+        return ("2001:4860:4860::8888%fake",)
+
+    async with ContractResolver(lookup=scoped) as service:
+        with pytest.raises(ContractError, match="RESOLUTION_POLICY"):
+            await service.resolve_catalog(catalog("https://a.example.test/v1.json"))
+
+
+@pytest.mark.asyncio
+async def test_dns_failure_uses_callers_remote_context() -> None:
+    async def unavailable(hostname: str) -> tuple[str, ...]:
+        raise ContractError("SCHEMA_UNAVAILABLE")
+
+    async with ContractResolver(lookup=unavailable) as service:
+        with pytest.raises(ContractError) as captured:
+            await service.resolve_catalog(catalog("https://a.example.test/v1.json"))
+    assert captured.value.code == "SCHEMA_UNAVAILABLE" and captured.value.origin == "remote"

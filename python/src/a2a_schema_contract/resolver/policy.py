@@ -11,6 +11,8 @@ from a2a_schema_contract.uri import canonical_path
 
 
 def public_address(value: str) -> bool:
+    if "%" in value:
+        return False
     try:
         address = ipaddress.ip_address(value)
     except ValueError:

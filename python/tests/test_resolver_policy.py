@@ -81,6 +81,7 @@ def test_policy_refuses_ambiguous_urls(value: str) -> None:
         "2002::1",
         "3fff::1",
         "invalid",
+        "2001:4860:4860::8888%fake",
     ],
 )
 def test_special_use_refused(value: str) -> None:

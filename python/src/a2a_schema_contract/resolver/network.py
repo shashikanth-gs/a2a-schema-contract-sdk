@@ -70,13 +70,16 @@ async def retrieve(
     try:
         literal = ipaddress.ip_address(url.hostname)
     except ValueError:
-        addresses = await lookup(url.hostname)
+        try:
+            addresses = await lookup(url.hostname)
+        except ContractError as error:
+            raise ContractError(error.code, context) from None
     else:
         addresses = (str(literal),)
     if type(addresses) is not tuple or not addresses or len(addresses) > 64:
         raise ContractError("RESOLUTION_POLICY", context)
     for address in addresses:
-        if type(address) is not str:
+        if type(address) is not str or "%" in address:
             raise ContractError("RESOLUTION_POLICY", context)
         try:
             canonical = str(ipaddress.ip_address(address))

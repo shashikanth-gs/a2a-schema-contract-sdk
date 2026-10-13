@@ -57,8 +57,8 @@ is refused. Exact-origin Authorization survives same-origin redirects. The first
 cross-origin hop permanently drops authorization for that redirect chain, including
 a bounce back; a different origin's configured credential is not substituted. No
 cookies are collected or sent. Response compression is refused and identity encoding
-requested. Duplicate security headers, conflicting transfer framing, informational
-responses and trailers are refused; declared and actual body sizes are bounded.
+requested. Repeated type/encoding/location headers, conflicting transfer framing, informational
+responses and trailers are refused (h11 safely coalesces identical Content-Length values); declared and actual body sizes are bounded.
 
 Integrity is canonical base64 SHA-256 or SHA-512 over representation bytes after
 HTTP transfer framing and before UTF-8/JSON parsing. Declared/configured root pins
