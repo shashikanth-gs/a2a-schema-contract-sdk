@@ -1,4 +1,4 @@
-"""Repeat inline acceptance in fresh locked environments on supported interpreters."""
+"""Repeat operational acceptance in fresh locked environments on supported interpreters."""
 
 import json
 import os
@@ -33,7 +33,16 @@ def main() -> None:
                     "examples",
                 ],
                 ["uv", "run", "--locked", "mypy"],
-                ["uv", "run", "--locked", "pytest", "-q", "--cov", "--cov-report=term-missing"],
+                [
+                    "uv",
+                    "run",
+                    "--locked",
+                    "pytest",
+                    "-q",
+                    "--cov",
+                    "--cov-report=term-missing",
+                    "--cov-report=json:reports/coverage.json",
+                ],
                 [
                     "uv",
                     "run",
@@ -61,6 +70,10 @@ def main() -> None:
                 if result.returncode:
                     print(result.stdout)
                     raise SystemExit(result.returncode)
+            for name in ("package-check", "core-coverage", "coverage"):
+                (ROOT / "reports" / f"{name}-{version}.json").write_bytes(
+                    (ROOT / "reports" / f"{name}.json").read_bytes()
+                )
             reports.append({"python": version, "result": "PASS"})
             print(
                 f"Python {version}: quality, tests and isolated artifact consumers PASS", flush=True

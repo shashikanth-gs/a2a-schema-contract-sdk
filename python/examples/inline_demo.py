@@ -5,7 +5,13 @@ Only public package imports are used. No workspace resources or credentials.
 """
 
 import asyncio
+import base64
+import hashlib
+import json
 import socket
+import ssl
+import sys
+from pathlib import Path
 from typing import TypedDict
 
 import uvicorn
@@ -17,6 +23,7 @@ from google.protobuf.json_format import ParseDict
 from a2a_schema_contract.client import ContractClient
 from a2a_schema_contract.core import JSON_SCHEMA_DIALECT, JsonValue
 from a2a_schema_contract.http import create_app
+from a2a_schema_contract.resolver import ContractResolver
 from a2a_schema_contract.server import ContractServer, output_artifact
 
 CONTRACT_ID = "urn:example:contract:echo:1"
@@ -97,7 +104,7 @@ class EchoAgent(AgentExecutor):
         return
 
 
-def create_provider(base_url: str) -> ContractServer:
+def create_provider(base_url: str, catalog: object = CATALOG) -> ContractServer:
     card = ParseDict(
         {
             "name": "Echo agent",
@@ -121,16 +128,16 @@ def create_provider(base_url: str) -> ContractServer:
         AgentCard(),
     )
     executor = EchoAgent()
-    boundary = ContractServer(card=card, catalog=CATALOG, executor=executor, required=True)
+    boundary = ContractServer(card=card, catalog=catalog, executor=executor, required=True)
     executor.boundary = boundary
     return boundary
 
 
-async def demo() -> None:
+async def demo(catalog: object = CATALOG, resolver: ContractResolver | None = None) -> None:
     listener = socket.socket()
     listener.bind(("127.0.0.1", 0))
     base_url = f"http://127.0.0.1:{listener.getsockname()[1]}"
-    boundary = create_provider(base_url)
+    boundary = create_provider(base_url, catalog)
     server = uvicorn.Server(uvicorn.Config(create_app(boundary), log_level="error"))
     serving = asyncio.create_task(server.serve(sockets=[listener]))
     try:
@@ -139,7 +146,7 @@ async def demo() -> None:
                 if serving.done():
                     await serving
                 await asyncio.sleep(0.01)
-        async with await ContractClient.discover(base_url) as client:
+        async with await ContractClient.discover(base_url, resolver=resolver) as client:
             # Known contract: use the application's own static request type.
             typed_request: EchoInput = {"text": "Hello from a typed request"}
             result = await client.invoke(client.prepare(CONTRACT_ID, input=typed_request))
@@ -163,5 +170,87 @@ async def demo() -> None:
         await boundary.close()
 
 
+async def secure_demo(cert: Path, key: Path) -> None:
+    """Pinned native resources on verified loopback TLS; fixture CA is test-only."""
+    server_tls = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    server_tls.load_cert_chain(cert, key)
+    client_tls = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    client_tls.load_verify_locations(cafile=str(cert))
+    documents: dict[str, bytes] = {}
+    requests = 0
+
+    async def serve(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+        nonlocal requests
+        try:
+            head = await reader.readuntil(b"\r\n\r\n")
+            path = head.split(b" ")[1].decode("ascii")
+            requests += 1
+            body = documents[path]
+            writer.write(
+                b"HTTP/1.1 200 OK\r\nContent-Type: application/schema+json\r\n"
+                + f"Content-Length: {len(body)}\r\n\r\n".encode()
+                + body
+            )
+            await writer.drain()
+        finally:
+            writer.close()
+            await writer.wait_closed()
+
+    listener = await asyncio.start_server(
+        serve, "127.0.0.1", 0, ssl=server_tls, ssl_shutdown_timeout=0.1
+    )
+    base = f"https://127.0.0.1:{listener.sockets[0].getsockname()[1]}"
+    documents["/v1/root.json"] = json.dumps(
+        {
+            "$defs": {
+                "input": {"$ref": "types.json#/$defs/input"},
+                "output": {"$ref": "types.json#/$defs/output"},
+            }
+        }
+    ).encode()
+    documents["/v1/types.json"] = json.dumps(
+        {
+            "$defs": {
+                "input": schema("text")["inline"],
+                "output": schema("reply")["inline"],
+            }
+        }
+    ).encode()
+    external = json.loads(json.dumps(CATALOG))
+    for side in ("input", "output"):
+        external["contracts"][0][side]["representations"][0]["schema"] = {
+            "dialect": JSON_SCHEMA_DIALECT,
+            "mediaType": "application/schema+json",
+            "uri": base + "/v1/root.json#/$defs/" + side,
+        }
+    pins = {
+        base + path: {
+            "algorithm": "sha-256",
+            "value": base64.b64encode(hashlib.sha256(body).digest()).decode(),
+        }
+        for path, body in documents.items()
+    }
+    try:
+        async with ContractResolver(
+            tls=client_tls,
+            allowed_origins=(base,),
+            allowed_addresses={"127.0.0.1": ("127.0.0.1",)},
+            resource_integrity=pins,
+        ) as resolver:
+            prepared = await resolver.resolve_catalog(external, origin="local")
+            await demo(prepared, resolver)
+            assert requests == 2, "Pinned resource bytes should be reused without retrieval."
+            resolver.clear_cache()
+            assert prepared.schema(CONTRACT_ID, "input", "json") is not None
+            assert prepared.select(CONTRACT_ID, "input", "json").validate({"text": "offline"})
+        print("PASS: verified pinned HTTPS, native refs, cached discovery, offline resources")
+    finally:
+        listener.close()
+        await listener.wait_closed()
+
+
 if __name__ == "__main__":
-    asyncio.run(demo())
+    if len(sys.argv) == 3:
+        asyncio.run(secure_demo(Path(sys.argv[1]), Path(sys.argv[2])))
+    else:
+        asyncio.run(demo())

@@ -1,8 +1,9 @@
 """Catalog application service: validated structures and explicit representation selection."""
 
+import hashlib
+import json
 from dataclasses import dataclass
 from typing import Literal, cast
-from urllib.parse import quote
 
 from .core import (
     EXTENSION_URI,
@@ -52,6 +53,8 @@ class ContractCatalog:
     contracts: tuple[Contract, ...]
     _document: JsonDocument
     _origin: Origin
+    _prepared: tuple[tuple[str, Direction, str, PreparedSchema], ...]
+    _support: tuple[tuple[str, Direction, str, str | None], ...] | None
 
     def __init__(self, value: object, origin: Origin = "local") -> None:
         context = ErrorContext(origin)
@@ -100,6 +103,8 @@ class ContractCatalog:
         object.__setattr__(self, "contracts", tuple(contracts))
         object.__setattr__(self, "_document", JsonDocument(data))
         object.__setattr__(self, "_origin", origin)
+        object.__setattr__(self, "_prepared", ())
+        object.__setattr__(self, "_support", None)
 
     @property
     def value(self) -> JsonValue:
@@ -149,12 +154,15 @@ class ContractCatalog:
             raise ContractError("UNSUPPORTED_DIALECT", context)
         if descriptor["mediaType"] != "application/schema+json":
             raise ContractError("UNSUPPORTED_MEDIA_TYPE", context)
+        for identifier, side, name, prepared in self._prepared:
+            if (identifier, side, name) == (contract_id, direction, representation_id):
+                return prepared
         if "inline" not in descriptor:
             raise ContractError("SCHEMA_UNAVAILABLE", context)
-        entry = "urn:a2a-schema-contract:inline:" + quote(
-            f"{contract_id}/{direction}/{representation_id}",
-            safe="",
-        )
+        identity = json.dumps(
+            [contract_id, direction, representation_id], ensure_ascii=False
+        ).encode()
+        entry = "urn:a2a-schema-contract:inline:" + hashlib.sha256(identity).hexdigest()
         return PreparedSchema(
             entry, rep.schema, (SchemaResource(entry, JsonDocument(descriptor["inline"])),)
         )
@@ -172,9 +180,7 @@ class ContractCatalog:
         codec = media(rep.media_type, context)
         prepared = self.schema(contract_id, direction, representation_id, origin=source)
         validator = (
-            JsonSchemaEngine().compile(prepared.documents[0].value, context)
-            if prepared is not None
-            else None
+            JsonSchemaEngine().compile_prepared(prepared, context) if prepared is not None else None
         )
         return PreparedRepresentation(contract_id, direction, rep, codec, validator)
 
@@ -183,6 +189,18 @@ class ContractCatalog:
             raise ContractError("INVALID_STRUCTURE", ErrorContext(self._origin))
         result: list[Capability] = []
         for rep in self.get_contract(contract_id).direction(direction).representations:
+            if self._support is not None:
+                from .core.errors import DiagnosticCode
+
+                diagnostic = next(
+                    code
+                    for cid, side, rid, code in self._support
+                    if (cid, side, rid) == (contract_id, direction, rep.id)
+                )
+                result.append(
+                    Capability(rep, diagnostic is None, cast("DiagnosticCode", diagnostic))
+                )
+                continue
             try:
                 self.select(contract_id, direction, rep.id)
                 result.append(Capability(rep, True))

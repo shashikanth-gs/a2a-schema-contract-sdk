@@ -58,6 +58,7 @@ class Contract:
 class SchemaResource:
     uri: str
     document: JsonDocument
+    aliases: tuple[str, ...] = ()
 
     @property
     def value(self) -> JsonValue:

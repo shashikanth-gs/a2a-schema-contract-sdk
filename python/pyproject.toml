@@ -16,7 +16,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13", "Programming Language :: Python :: 3.14",
 ]
-dependencies = ["jsonschema==4.26.0", "referencing==0.37.0"]
+dependencies = ["jsonschema==4.26.0", "referencing==0.37.0", "h11==0.16.0"]
 
 [project.optional-dependencies]
 a2a = ["a2a-sdk==1.2.2"]

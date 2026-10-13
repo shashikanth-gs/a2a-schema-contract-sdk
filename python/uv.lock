@@ -11,6 +11,7 @@ name = "a2a-schema-contract"
 version = "0.1.0.dev0"
 source = { editable = "." }
 dependencies = [
+    { name = "h11" },
     { name = "jsonschema" },
     { name = "referencing" },
 ]
@@ -43,6 +44,7 @@ dev = [
 requires-dist = [
     { name = "a2a-sdk", marker = "extra == 'a2a'", specifier = "==1.2.2" },
     { name = "a2a-sdk", extras = ["http-server"], marker = "extra == 'server'", specifier = "==1.2.2" },
+    { name = "h11", specifier = "==0.16.0" },
     { name = "jsonschema", specifier = "==4.26.0" },
     { name = "referencing", specifier = "==0.37.0" },
 ]

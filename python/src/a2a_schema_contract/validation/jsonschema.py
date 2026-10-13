@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from typing import cast
-from urllib.parse import urljoin
+from urllib.parse import urldefrag, urljoin
 
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError, ValidationError
@@ -13,11 +13,12 @@ from referencing.jsonschema import DRAFT202012, Schema
 from a2a_schema_contract.core import ContractError, ErrorContext, JsonValue, snapshot
 from a2a_schema_contract.core.errors import LOCAL_CONTEXT
 from a2a_schema_contract.core.media import media
+from a2a_schema_contract.core.models import PreparedSchema
 from a2a_schema_contract.ports import SchemaValidator
 from a2a_schema_contract.resources import SCHEMA_NAMES, SchemaName, read_schema
 
 from .profile import ARRAY_SCHEMAS, MAP_SCHEMAS, ONE_SCHEMA, inspect_schema
-from .projection import project_patterns
+from .projection import project_patterns, project_resources
 
 
 @dataclass(frozen=True, slots=True)
@@ -38,7 +39,73 @@ class _Validator:
 
 
 class JsonSchemaEngine:
-    """Trusted calling-thread validation; async worker budgets are a separate delivery gate."""
+    """Trusted calling-thread validation; async boundaries use disposable worker budgets."""
+
+    def compile_prepared(
+        self, prepared: PreparedSchema, context: ErrorContext = LOCAL_CONTEXT
+    ) -> SchemaValidator:
+        """Use only explicitly inspected resources; the registry never retrieves."""
+        from .graph import absolute, inspect_graph
+
+        documents = [(item.uri, item.value) for item in prepared.documents]
+        inspect_graph(prepared.documents, prepared.entry, context)
+        registry: Registry[Schema] = Registry()
+        projected = project_resources(
+            documents, {doc.uri: doc.aliases for doc in prepared.documents}
+        )
+        for resource, (uri, value) in zip(prepared.documents, projected, strict=True):
+            try:
+                Draft202012Validator.check_schema(cast("Schema", value))
+            except SchemaError:
+                raise ContractError("SCHEMA_INVALID", context) from None
+            if isinstance(value, dict):
+                value = {
+                    **value,
+                    "$id": urldefrag(absolute(cast("str", value.get("$id", uri)), uri, context))[0],
+                }
+            native = DRAFT202012.create_resource(cast("Schema", value))
+            registry = registry.with_resource(uri, native)
+            for alias in resource.aliases:
+                registry = registry.with_resource(alias, native)
+        registry = registry.crawl()
+        entry_uri, fragment = urldefrag(prepared.entry)
+        for resource in prepared.documents:
+            if entry_uri in (resource.uri, *resource.aliases):
+                original = resource.value
+                entry_uri = absolute(
+                    cast("str", original.get("$id", resource.uri))
+                    if isinstance(original, dict)
+                    else resource.uri,
+                    resource.uri,
+                    context,
+                )
+                break
+        entry = urldefrag(entry_uri)[0] + ("#" + fragment if fragment else "")
+        try:
+            registry.resolver().lookup(entry)
+
+            def check(node: JsonValue, current: str) -> None:
+                if not isinstance(node, dict):
+                    return
+                if isinstance(node.get("$id"), str):
+                    current = absolute(cast("str", node["$id"]), current, context)
+                for key, value in node.items():
+                    if key in ("$ref", "$dynamicRef") and isinstance(value, str):
+                        registry.resolver(current).lookup(value)
+                    if key in MAP_SCHEMAS and isinstance(value, dict):
+                        for child in value.values():
+                            check(child, current)
+                    elif key in ONE_SCHEMA:
+                        check(value, current)
+                    elif key in ARRAY_SCHEMAS and isinstance(value, list):
+                        for child in value:
+                            check(child, current)
+
+            for uri, value in projected:
+                check(value, uri)
+        except Unresolvable:
+            raise ContractError("SCHEMA_INVALID", context) from None
+        return _Validator(Draft202012Validator({"$ref": entry}, registry=registry))
 
     def compile(
         self,

@@ -1,14 +1,14 @@
 # A2A Schema Contract for Python
 
 An independent, typed implementation of the pinned Schema Contract community
-draft. The inline profile supports catalog and skill discovery, original schema
+draft. The inline and prepared external-resource profiles support catalog and skill discovery, original schema
 inspection, explicit invocation, validation at both peers, atomic HTTP/SSE output,
 continuation and cancellation through public `a2a-sdk==1.2.2` hooks.
 Frameworks and models stay in application or independent adapter packages.
 
 `0.1.0.dev0` is a local development artifact, not a release candidate. SDK-011
-owns secure external resolution, validator process isolation and operational
-parity. Cross-language reference acceptance and publication are later gates.
+adds explicit secure HTTPS resolution and disposable validation processes at async
+boundaries. Cross-language reference acceptance and publication are later gates.
 
 ## Install and run
 
@@ -30,7 +30,8 @@ real loopback HTTP/SSE, with typed input and discovered skill/schema invocation.
 It uses installed public imports and needs no model credentials. Artifact checks
 copy and execute it outside the checkout against a noneditable wheel installation.
 
-Runtime uses `jsonschema==4.26.0` and `referencing==0.37.0`. The `a2a` extra
+Runtime uses `jsonschema==4.26.0`, `referencing==0.37.0` and HTTP-framing library
+`h11==0.16.0`. The `a2a` extra
 adds the official SDK; `server` adds its HTTP-server dependencies. The root import
 loads no vendor/framework, changes no environment and performs no network access.
 
@@ -246,3 +247,61 @@ a5c007510faa3fce85190f2e76e402faf0e897ad; installed use needs no checkout.
 See [architecture](../docs/python-architecture.md),
 [metadata binding](../docs/metadata-binding.md),
 [inline acceptance](../docs/python-inline-report.md) and [delivery plan](../PLAN.md).
+
+
+## External resources and operational budgets
+
+Supply a resolver explicitly to discover external catalogs/schema documents. HTTPS,
+verified TLS and public-address admission are defaults. Configure exact origins,
+pins and credentials per authentication identity; catalog URIs require an integrity
+pin or an explicit administrator immutability promise. Inline discovery needs no
+resolver and performs no schema retrieval.
+
+```python
+from a2a_schema_contract.client import ContractClient
+from a2a_schema_contract.resolver import ContractResolver, ResolverLimits
+from a2a_schema_contract.operations import ValidationOptions
+
+async def external_call(base_url: str, contract_id: str) -> None:
+    async with ContractResolver(
+        allowed_origins=("https://contracts.example.org",),
+        immutable_resources=("https://contracts.example.org/catalog/v1.json",),
+        limits=ResolverLimits(deadline=10),
+    ) as resolver:
+        async with await ContractClient.discover(
+            base_url, resolver=resolver, validation=ValidationOptions(deadline=2),
+        ) as client:
+            view = client.catalog.schema(contract_id, "input", "json")
+            if view is not None:
+                documents = tuple((doc.uri, doc.aliases, doc.value) for doc in view.documents)
+                # A framework/model consumes these original native resources.
+                assert documents
+            resolver.clear_cache()  # prepared catalogs remain usable offline
+```
+
+`ContractServer` accepts the same `validation=ValidationOptions(...)` and optional
+`diagnostics=` hook as the client. Discovery compilation and async client/server
+validation run in fresh, owned processes; deadlines include startup and jobs are
+physically reaped on completion or cancellation. Synchronous `prepare`, `select`,
+direct validators and output helpers remain trusted calling-thread conveniences.
+The final async boundary rechecks results before publication. CPU/model work in the
+application executor remains application-owned/cooperative.
+
+Frozen diagnostic hooks expose only operation, UUID correlation, duration, outcome
+and a sanitized code. They add no telemetry service. See the
+[resolver threat model, cache/resource semantics and platform limits](../docs/python-resolver-security.md).
+There is no portable hard RSS limit; tested process/JSON/graph/time budgets and
+platform-specific memory limits are stated there.
+
+The complete demo also accepts the repository's **test-only** TLS fixture:
+
+```sh
+python examples/inline_demo.py tests/fixtures/tls/cert.pem tests/fixtures/tls/key.pem
+```
+
+It prepares pinned HTTPS resources with native cross-document references, then runs
+the same typed/discovered real HTTP/SSE agent calls. The fixture certificate/key is
+solely for deterministic loopback tests; never use it as a production trust identity.
+`check_package.py` executes this and the matching Node-workload performance baseline
+against a noneditable wheel outside the checkout. `check_matrix.py` repeats quality,
+coverage and installed consumers across CPython 3.11–3.14.

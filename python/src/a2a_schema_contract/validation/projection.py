@@ -1,8 +1,11 @@
 """Private ECMA-262-to-Python regex compilation; advertised schemas stay unchanged."""
 
+from collections.abc import Mapping
+from typing import cast
 from urllib.parse import quote, unquote, urldefrag, urljoin
 
 from a2a_schema_contract.core import JsonValue
+from a2a_schema_contract.uri import canonical_http
 
 from .profile import ARRAY_SCHEMAS, MAP_SCHEMAS, ONE_SCHEMA
 
@@ -29,7 +32,9 @@ def portable_pattern(pattern: str) -> str:
 
 def _absolute(reference: str, base: str) -> str:
     # urllib.urljoin does not resolve fragments against opaque URNs.
-    return urldefrag(base)[0] + reference if reference.startswith("#") else urljoin(base, reference)
+    return canonical_http(
+        urldefrag(base)[0] + reference if reference.startswith("#") else urljoin(base, reference)
+    )
 
 
 def _pointer(token: str) -> str:
@@ -37,6 +42,13 @@ def _pointer(token: str) -> str:
 
 
 def project_patterns(schema: JsonValue, entry: str) -> JsonValue:
+    return project_resources([(entry, schema)])[0][1]
+
+
+def project_resources(
+    documents: list[tuple[str, JsonValue]],
+    aliases: Mapping[str, tuple[str, ...]] | None = None,
+) -> list[tuple[str, JsonValue]]:
     """Compile regex keys and rewrite native pointer references to renamed schema locations.
 
     Each nested $id keeps its resource identity. Pointers into embedded resources
@@ -44,6 +56,13 @@ def project_patterns(schema: JsonValue, entry: str) -> JsonValue:
     """
     locations: dict[str, str] = {}
     references: list[tuple[dict[str, JsonValue], str, str, str]] = []
+    identities = {
+        name: urldefrag(_absolute(cast("str", schema["$id"]), uri))[0]
+        if isinstance(schema, dict) and isinstance(schema.get("$id"), str)
+        else uri
+        for uri, schema in documents
+        for name in (uri, *(aliases or {}).get(uri, ()))
+    }
 
     def visit(
         node: JsonValue,
@@ -102,12 +121,18 @@ def project_patterns(schema: JsonValue, entry: str) -> JsonValue:
                 ]
         return result
 
-    compiled = visit(schema, entry, [(entry, "", "")])
+    compiled = [
+        (uri, visit(schema, uri, [(name, "", "") for name in (uri, *(aliases or {}).get(uri, ()))]))
+        for uri, schema in documents
+    ]
     for node, key, reference, base in references:
         absolute = _absolute(reference, base)
         uri, fragment = urldefrag(absolute)
         if fragment.startswith("/"):
             mapped = locations.get(uri + "#" + unquote(fragment))
             if mapped is not None:
-                node[key] = mapped
+                uri, fragment = urldefrag(mapped)
+        if key == "$ref" or fragment.startswith("/"):
+            canonical = identities.get(uri, uri)
+            node[key] = canonical + ("#" + fragment if fragment else "")
     return compiled

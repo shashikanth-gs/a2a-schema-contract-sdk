@@ -8,8 +8,8 @@ import httpx
 from a2a.types import AgentCard, SendMessageResponse, StreamResponse, Task
 
 from ..binding import guard_artifact, guard_container, reject
-from ..catalog import parse_extension
 from ..core import EXTENSION_URI, LIMITS, ContractError, ErrorContext, JsonValue, loads
+from ..validation import validate_structure
 from .wire import admit
 
 
@@ -48,7 +48,7 @@ def _card(raw: bytes) -> None:
     matches = [extension for extension in extensions if extension.get("uri") == EXTENSION_URI]
     if len(matches) != 1:
         reject()
-    parse_extension(matches[0])
+    validate_structure("extension-params", matches[0].get("params"), ErrorContext("remote"))
 
 
 class _GuardStream(httpx.AsyncByteStream):

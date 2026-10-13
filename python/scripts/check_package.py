@@ -96,6 +96,27 @@ assert callable(create_jsonrpc_routes)
         demo = temporary / "inline_demo.py"
         demo.write_bytes((ROOT / "examples/inline_demo.py").read_bytes())
         run([str(python), "-I", str(demo)], cwd=temporary)
+        tls_files = []
+        for name in ("cert.pem", "key.pem"):
+            destination = temporary / name
+            destination.write_bytes((ROOT / "tests/fixtures/tls" / name).read_bytes())
+            tls_files.append(str(destination))
+        run([str(python), "-I", str(demo), *tls_files], cwd=temporary)
+        benchmark = temporary / "benchmark_operations.py"
+        benchmark.write_bytes((ROOT / "scripts/benchmark_operations.py").read_bytes())
+        measured = subprocess.run(
+            [str(python), "-I", str(benchmark), *tls_files],
+            cwd=temporary,
+            check=True,
+            text=True,
+            capture_output=True,
+            timeout=120,
+        )
+        performance = json.loads(measured.stdout)
+        assert performance["result"] == "PASS" and performance["cached_retrievals"] == 0
+        assert performance["fresh_process_compile"]["max_ms"] < 2000
+        assert performance["cold_pinned_https_prepare"]["max_ms"] < 2000
+        assert performance["cached_pinned_https_prepare"]["max_ms"] < 2000
         run(["uv", "pip", "install", "--python", str(python), "mypy==2.4.0"], cwd=temporary)
         consumer = temporary / "typed_consumer.py"
         consumer.write_text("""
@@ -111,6 +132,8 @@ from a2a_schema_contract.client import (
     ContractClient, PreparedInvocation, ContractResponse, ClientEvent,
 )
 from a2a_schema_contract.discovery import ContractDiscovery
+from a2a_schema_contract.resolver import ContractResolver, ResolverLimits, CacheInfo
+from a2a_schema_contract.operations import ValidationSession, ValidationOptions, Diagnostic
 assert_type(MISSING, Missing)
 engine: ValidationEngine = JsonSchemaEngine()
 validator: SchemaValidator = engine.compile({'type': 'integer'})
@@ -118,6 +141,12 @@ assert_type(validator.validate(1), JsonValue)
 assert_type(validate_value(1), JsonValue)
 assert_type(part_to_wire(part_from_wire({'data': 1})), dict[str, JsonValue])
 error = ContractError('INSTANCE_INVALID', ErrorContext(direction='input'))
+async def check_resolver(resolver: ContractResolver, session: ValidationSession) -> None:
+    assert_type(resolver.cache, CacheInfo)
+    assert_type(await resolver.resolve_catalog({"contracts": []}), ContractCatalog)
+    assert_type(
+        await session.run("compile", {"entry": "urn:example:1", "documents": []}), JsonValue
+    )
 async def check_client(client: ContractClient) -> None:
     assert_type(client.catalog, ContractCatalog)
     assert_type(client.describe(), ContractDiscovery)
@@ -138,6 +167,7 @@ async def check_client(client: ContractClient) -> None:
         "python": sys.version.split()[0],
         "wheel": {"name": wheel.name, "sha256": hashlib.sha256(wheel.read_bytes()).hexdigest()},
         "sdist": {"name": sdist.name, "sha256": hashlib.sha256(sdist.read_bytes()).hexdigest()},
+        "performance": performance,
         "checks": [
             "artifact-resources-license-types",
             "sdist-wheel-reproducibility",
@@ -148,6 +178,8 @@ async def check_client(client: ContractClient) -> None:
             "installed-strict-public-types",
             "installed-core-catalog-discovery-without-a2a",
             "installed-real-http-sse-typed-discovery-demo",
+            "installed-verified-pinned-https-native-resource-demo",
+            "installed-worker-and-https-performance-baseline",
         ],
     }
     (ROOT / "reports").mkdir(exist_ok=True)

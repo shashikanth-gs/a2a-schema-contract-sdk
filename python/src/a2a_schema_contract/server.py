@@ -42,11 +42,11 @@ from .binding import (
     guard_container,
     is_primary,
     reject,
-    select_request,
 )
 from .catalog import ContractCatalog, create_contract_extension, parse_catalog
 from .core import EXTENSION_URI, ContractError, ErrorContext, JsonValue, snapshot
-from .events import validate_events
+from .operations import DEFAULT_VALIDATION, DiagnosticHook, ValidationOptions, ValidationSession
+from .operations.program import load_selection, selection_packet
 from .payload import encode_primary
 
 Event = Message | Task | TaskStatusUpdateEvent | TaskArtifactUpdateEvent
@@ -119,6 +119,7 @@ def _scope(context: ServerCallContext) -> tuple[str, str]:
 
 @dataclass(frozen=True, slots=True)
 class ExecutionContract:
+    catalog: ContractCatalog
     selection: ContractSelection
     task_id: str
     context_id: str
@@ -212,6 +213,7 @@ class _BoundaryExecutor(AgentExecutor):
             server._active[key] = current
             if selection is not None:
                 server._executions[id(context)] = ExecutionContract(
+                    server.catalog,
                     selection,
                     context.task_id,
                     context.context_id,
@@ -225,13 +227,19 @@ class _BoundaryExecutor(AgentExecutor):
             queue.open = False
             if queue.invalid:
                 reject()
-            approved = validate_events(
-                server.catalog,
-                selection,
-                queue.events,
-                context.task_id,
-                context.context_id,
-                started=queue.started,
+            approved = cast(
+                "list[dict[str, JsonValue]]",
+                await server._validation.run(
+                    "events",
+                    {
+                        "selection": selection_packet(selection) if selection is not None else {},
+                        "contracted": selection is not None,
+                        "events": cast("JsonValue", queue.events),
+                        "taskId": context.task_id,
+                        "contextId": context.context_id,
+                        "started": queue.started,
+                    },
+                ),
             )
             if key in server._cancel_requests:
                 raise asyncio.CancelledError
@@ -307,7 +315,10 @@ class _Handler(DefaultRequestHandler):
                     raise InvalidParamsError(message="Schema Contract activation required.")
             return
         try:
-            selection = select_request(server.catalog, raw)
+            packet = cast(
+                "dict[str, JsonValue]", await server._validation.run("request", {"request": raw})
+            )
+            selection = load_selection(server.catalog, packet)
             if params.message.task_id:
                 task = await super().on_get_task(GetTaskRequest(id=params.message.task_id), context)
                 if task is None:
@@ -391,6 +402,8 @@ class ContractServer:
         required: bool = False,
         deadline: float = 30.0,
         concurrent_executions: int = 4,
+        validation: ValidationOptions = DEFAULT_VALIDATION,
+        diagnostics: DiagnosticHook | None = None,
     ) -> None:
         if type(deadline) not in (int, float) or not 0 < deadline <= 30:
             raise ValueError("Invalid cooperative execution deadline.")
@@ -411,6 +424,9 @@ class ContractServer:
         self.executor, self.required, self.deadline = executor, required, deadline
         self.concurrent_executions = concurrent_executions
         self._closed = False
+        self._validation = ValidationSession(
+            self.catalog, options=validation, diagnostics=diagnostics
+        )
         self._selections: dict[tuple[str, str, str], ContractSelection] = {}
         self._executions: dict[int, ExecutionContract] = {}
         self._active: dict[tuple[str, str, str], asyncio.Task[object]] = {}
@@ -443,6 +459,7 @@ class ContractServer:
                 task.cancel()
         if publishing:
             await asyncio.gather(*publishing, return_exceptions=True)
+        await self._validation.close()
         await self.handler.aclose()
         self._selections.clear()
 
@@ -465,7 +482,13 @@ def output_part(execution: ExecutionContract, value: object) -> Part:
                 direction="output",
             ),
         )
-    return ParseDict(encode_primary(selected, value), Part())
+    return ParseDict(
+        encode_primary(
+            execution.catalog.select(selected.contract_id, "output", selected.representation.id),
+            value,
+        ),
+        Part(),
+    )
 
 
 def output_artifact(

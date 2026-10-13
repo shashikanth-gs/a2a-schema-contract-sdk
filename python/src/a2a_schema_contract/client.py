@@ -19,7 +19,6 @@ from .adapters.wire import admit
 from .binding import (
     STOP_STATES,
     ContractSelection,
-    consume_result,
     guard_artifact,
     guard_container,
     is_primary,
@@ -27,11 +26,13 @@ from .binding import (
     select_request,
 )
 from .catalog import ContractCatalog, parse_extension
-from .core import EXTENSION_URI, MISSING, ContractError, JsonValue, snapshot
-from .core.media import match_media_types
+from .core import EXTENSION_URI, MISSING, ContractError, Direction, JsonValue, snapshot
 from .core.models import Contract, JsonDocument, Payload
 from .discovery import ContractDiscovery, bind_skill, describe_contracts, select_invocation
+from .operations import DEFAULT_VALIDATION, DiagnosticHook, ValidationOptions, ValidationSession
+from .operations.program import load_payload, load_selection, selection_packet
 from .payload import encode_primary
+from .resolver import ContractResolver
 
 
 @dataclass(frozen=True, slots=True)
@@ -66,6 +67,8 @@ class ContractClient:
         http: httpx.AsyncClient,
         upstream: httpx.AsyncClient,
         owns_upstream: bool,
+        validation: ValidationOptions = DEFAULT_VALIDATION,
+        diagnostics: DiagnosticHook | None = None,
     ) -> None:
         self.catalog = catalog
         self.card = JsonDocument(MessageToDict(card))
@@ -75,6 +78,7 @@ class ContractClient:
         self._streams: set[httpx.AsyncClient] = set()
         self._closed = False
         self._headers: dict[str, str] = {}
+        self._validation = ValidationSession(catalog, options=validation, diagnostics=diagnostics)
 
     @classmethod
     async def discover(
@@ -85,6 +89,9 @@ class ContractClient:
         endpoint: str | None = None,
         card_path: str = "/.well-known/agent-card.json",
         headers: Mapping[str, str] | None = None,
+        resolver: ContractResolver | None = None,
+        validation: ValidationOptions = DEFAULT_VALIDATION,
+        diagnostics: DiagnosticHook | None = None,
     ) -> "ContractClient":
         _origin(base_url)
         upstream = http_client if http_client is not None else httpx.AsyncClient(timeout=30)
@@ -102,7 +109,29 @@ class ContractClient:
             ]
             if len(matches) != 1:
                 reject()
-            catalog = parse_extension(matches[0])
+            if resolver is not None:
+                catalog = await resolver.resolve_extension(matches[0])
+            else:
+                catalog = parse_extension(matches[0])
+                async with ValidationSession(
+                    catalog, options=validation, diagnostics=diagnostics
+                ) as worker:
+                    support = cast(
+                        "list[dict[str, JsonValue]]", await worker.run("capabilities", {})
+                    )
+                object.__setattr__(
+                    catalog,
+                    "_support",
+                    tuple(
+                        (
+                            cast("str", item["contractId"]),
+                            cast("Direction", item["direction"]),
+                            cast("str", item["representationId"]),
+                            cast("str | None", item["code"]),
+                        )
+                        for item in support
+                    ),
+                )
             describe_contracts(catalog, raw.get("skills", []))
             interfaces = [
                 item
@@ -118,7 +147,16 @@ class ContractClient:
             elif not any(item.url == endpoint for item in interfaces):
                 reject()
             _origin(endpoint)
-            client = cls(card, catalog, endpoint, http, upstream, http_client is None)
+            client = cls(
+                card,
+                catalog,
+                endpoint,
+                http,
+                upstream,
+                http_client is None,
+                validation,
+                diagnostics,
+            )
             client._headers = dict(headers or {})
             return client
         except BaseException:
@@ -233,50 +271,25 @@ class ContractClient:
             service_parameters=headers,
         )
 
-    def _checked(
-        self,
-        selection: ContractSelection,
-        response: object,
-        request: dict[str, JsonValue],
+    async def _checked(
+        self, selection: ContractSelection, response: object, request: dict[str, JsonValue]
     ) -> ContractResponse:
         data = guard_container(response)
-        message = cast("dict[str, JsonValue]", request["message"])
-        if (
-            ("contextId" in message and data.get("contextId") != message["contextId"])
-            or ("taskId" in message and data.get("taskId", data.get("id")) != message["taskId"])
-            or not data.get("contextId")
-        ):
-            reject()
-        metadata = cast("dict[str, JsonValue]", data.get("metadata", {})).get(EXTENSION_URI)
-        status = cast("dict[str, JsonValue]", data.get("status", {}))
-        if (
-            isinstance(metadata, dict)
-            and "outputRepresentationId" in metadata
-            and (
-                "parts" in data
-                or status.get("state") in ("TASK_STATE_COMPLETED", "TASK_STATE_INPUT_REQUIRED")
-            )
-        ):
-            identifier = metadata["outputRepresentationId"]
-            accepted = selection.invocation.accepted_output_representation_ids
-            if not isinstance(identifier, str) or (
-                accepted is not None and identifier not in accepted
-            ):
-                reject()
-            output = self.catalog.select(
-                selection.invocation.contract_id, "output", identifier, "remote"
-            )
-            modes = cast("dict[str, JsonValue]", request.get("configuration", {})).get(
-                "acceptedOutputModes", []
-            )
-            if modes and not any(
-                match_media_types(mode, output.representation.media_type)
-                for mode in cast("list[str]", modes)
-            ):
-                reject()
-            selection = ContractSelection(selection.invocation, selection.input, output)
-        payload = consume_result(self.catalog, selection, data)
-        return ContractResponse(JsonDocument(data), payload)
+        payload = await self._validation.run(
+            "result",
+            {
+                "selection": selection_packet(selection),
+                "response": data,
+                "request": request,
+            },
+        )
+        return ContractResponse(JsonDocument(data), load_payload(payload))
+
+    async def _select(self, request: dict[str, JsonValue]) -> ContractSelection:
+        packet = cast(
+            "dict[str, JsonValue]", await self._validation.run("request", {"request": request})
+        )
+        return load_selection(self.catalog, packet)
 
     async def invoke(
         self,
@@ -287,7 +300,7 @@ class ContractClient:
         self._ensure_open()
         request = cast("dict[str, JsonValue]", invocation.request.value)
         admit(request, SendMessageRequest)
-        selection = select_request(self.catalog, request)
+        selection = await self._select(request)
         with remote_errors(selection.invocation.contract_id):
             response = await self._transport.send_message(
                 ParseDict(request, SendMessageRequest()),
@@ -296,7 +309,7 @@ class ContractClient:
         kind = response.WhichOneof("payload")
         if kind not in ("task", "message"):
             reject()
-        return self._checked(selection, MessageToDict(getattr(response, kind)), request)
+        return await self._checked(selection, MessageToDict(getattr(response, kind)), request)
 
     async def stream(
         self,
@@ -312,7 +325,7 @@ class ContractClient:
         self._ensure_open()
         request = cast("dict[str, JsonValue]", invocation.request.value)
         admit(request, SendMessageRequest)
-        selection = select_request(self.catalog, request)
+        selection = await self._select(request)
         task: dict[str, JsonValue] | None = None
         artifacts: dict[str, dict[str, JsonValue]] = {}
         terminal: dict[str, JsonValue] | None = None
@@ -396,7 +409,7 @@ class ContractClient:
                     yield ClientEvent(JsonDocument({"kind": kind, "data": data}))
             if terminal is None:
                 reject()
-            result = self._checked(selection, terminal, request)
+            result = await self._checked(selection, terminal, request)
             state = cast("dict[str, JsonValue]", terminal.get("status", {})).get("state")
             if state in ("TASK_STATE_COMPLETED", "TASK_STATE_INPUT_REQUIRED"):
                 final_echo = cast("dict[str, JsonValue]", terminal.get("metadata", {})).get(
@@ -463,6 +476,7 @@ class ContractClient:
         if self._closed:
             return
         self._closed = True
+        await self._validation.close()
         for stream_http in tuple(self._streams):
             await stream_http.aclose()
         self._streams.clear()

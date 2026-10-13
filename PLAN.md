@@ -6,7 +6,7 @@ Status: Node candidate and independent Python inline profile complete locally; P
 LangGraph/M3b is accepted locally through the unchanged SDK runtime.
 ADK/M3c is accepted locally through the same unchanged SDK RC1 runtime.
 SDK-009 (Python engineering/package foundation) is DONE locally after both framework
-gates passed. SDK-010 is DONE locally; SDK-011 is READY. REF-010 and M3a remain complete for their original Node scope.
+gates passed. SDK-010 is DONE locally; SDK-011 is IN_PROGRESS. REF-010 and M3a remain complete for their original Node scope.
 Companion tracking: [reference roadmap](https://github.com/shashikanth-gs/a2a-schema-contract-reference/blob/main/PLAN.md). Workspace milestone tracking is maintained internally.
 
 This repository builds reusable JS/TypeScript and Python client/server packages. The reference repository installs the resulting artifacts and proves real usage. The specification repository owns the normative contract; its initial revision is pinned in [contract-source.json](contract-source.json).
@@ -27,7 +27,7 @@ Each row is the authoritative status for that task. Dependency references to REF
 | SDK-008 | Node developer documentation and release candidate | DONE | Codex | SDK-007, REF-004 |
 | SDK-009 | Python engineering and package foundation | DONE | Codex | SDK-008, SDK-016–019, workspace M3b/M3c |
 | SDK-010 | Independent Python inline client/server profile | DONE | Codex | SDK-009, SDK-016, SDK-018, SDK-019 |
-| SDK-011 | Python secure resolution and operational parity | READY | Unassigned | SDK-010, SDK-006, SDK-007, SDK-017 |
+| SDK-011 | Python secure resolution and operational parity | IN_PROGRESS | Codex | SDK-010, SDK-006, SDK-007, SDK-017 |
 | SDK-012 | Python developer documentation and release candidate | PLANNED | Unassigned | SDK-011, REF-006 |
 | SDK-013 | Joint release rehearsal and maintenance readiness | PLANNED | Unassigned | SDK-008, SDK-012, SDK-016–019, REF-008, REF-010 |
 | SDK-014 | Safe schema-bundle support in both languages | DEFERRED | Unassigned | SDK-013 |
@@ -233,7 +233,7 @@ Acceptance criteria:
 - Update the Python support matrix, resolver documentation and threat model. Bundles/XML stay unsupported until later coverage tasks.
 - Implement ADR-013/SDK-017's immutable prepared-schema/resource view with matching entrypoint/base/reference semantics. Inspection performs no retrieval, exposes no validator internals or credentials, and remains usable after cache clearing.
 
-Evidence: Not started.
+Evidence: Started 2026-10-14 by Codex on `codex/python-sdk`. Implementing bounded HTTPS resolution, offline resource graphs, process isolation and operational evidence against the accepted SDK-010 source. Completion and installed-artifact evidence pending.
 
 ## SDK-012: Python developer documentation and release candidate
 

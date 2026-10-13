@@ -247,3 +247,43 @@ def consume_result(
         parts,
         selection.output.representation.id if selection.output else None,
     )
+
+
+def check_response(
+    catalog: ContractCatalog, selection: ContractSelection, response: object, request: object
+) -> Payload | None:
+    request = cast("dict[str, JsonValue]", snapshot(request))
+    data = guard_container(response)
+    message = cast("dict[str, JsonValue]", request["message"])
+    if (
+        ("contextId" in message and data.get("contextId") != message["contextId"])
+        or ("taskId" in message and data.get("taskId", data.get("id")) != message["taskId"])
+        or not data.get("contextId")
+    ):
+        reject()
+    metadata = cast("dict[str, JsonValue]", data.get("metadata", {})).get(EXTENSION_URI)
+    status = cast("dict[str, JsonValue]", data.get("status", {}))
+    if (
+        isinstance(metadata, dict)
+        and "outputRepresentationId" in metadata
+        and (
+            "parts" in data
+            or status.get("state") in ("TASK_STATE_COMPLETED", "TASK_STATE_INPUT_REQUIRED")
+        )
+    ):
+        identifier = metadata["outputRepresentationId"]
+        accepted = selection.invocation.accepted_output_representation_ids
+        if not isinstance(identifier, str) or (accepted is not None and identifier not in accepted):
+            reject()
+        output = catalog.select(selection.invocation.contract_id, "output", identifier, "remote")
+        modes = cast("dict[str, JsonValue]", request.get("configuration", {})).get(
+            "acceptedOutputModes", []
+        )
+        if modes and not any(
+            match_media_types(mode, output.representation.media_type)
+            for mode in cast("list[str]", modes)
+        ):
+            reject()
+        selection = ContractSelection(selection.invocation, selection.input, output)
+    payload = consume_result(catalog, selection, data)
+    return payload

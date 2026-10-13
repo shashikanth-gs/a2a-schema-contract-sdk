@@ -1,6 +1,6 @@
 # Python architecture and decisions
 
-Updated: 2026-10-14. Tasks: SDK-009/010. Draft and Node RC1 semantics remain unchanged.
+Updated: 2026-10-14. Tasks: SDK-009/010/011. Draft and Node RC1 semantics remain unchanged.
 
 ## Dependency direction
 
@@ -12,7 +12,7 @@ using jsonschema/referencing and installed offline resources. Optional `adapters
 contain official A2A protobuf conversion; no SDK object enters the domain layer.
 Catalog/discovery/payload/binding/events compose these boundaries in SDK-010.
 Optional client/server/HTTP adapters integrate public vendor hooks;
-resolver/worker infrastructure enters through explicit seams in SDK-011.
+resolver/worker infrastructure supplies explicit bounded acquisition and async isolation in SDK-011.
 
 Architecture tests enforce the core import boundary. The root exposes lightweight
 types/constants and cannot import the validator, transport, official SDK or a
@@ -86,9 +86,9 @@ relative/nested resource IDs, pointer aliases and recursive dynamic anchors.
 Installed canonical schemas retain exact bytes/hash provenance and attribution.
 
 Synchronous validators are trusted calling-thread APIs with bounded data/schema
-preflight. They do not claim a hard execution deadline. Worker process isolation,
-owned cleanup, external resource policy and operational guarantees belong in
-SDK-011; unsafe network/thread convenience fallbacks are forbidden.
+preflight. They do not claim a hard execution deadline. SDK-011 supplies worker process isolation,
+owned cleanup, external resource policy and explicit operational budgets;
+unsafe network/thread convenience fallbacks are forbidden.
 
 ## Primary research sources
 
@@ -135,7 +135,7 @@ conflicting wire claims before execution/read/cancel. Default TaskStore ownershi
 combines tenant and principal. Custom persistence remains host-owned and must retain
 equivalent authorization/global Task-ID uniqueness. No tenant or principal is inferred
 from model input. Execution gates are request-scoped and continuation binds the same
-contract/output selection. Deadlines are cooperative; hard isolation remains SDK-011.
+contract/output selection. Business deadlines are cooperative; schema validation uses disposable SDK-011 processes.
 
 ## ADR-P07: Discovery and immutable public data
 
@@ -147,3 +147,42 @@ require explicit caller selection. Client prepare builds ordinary A2A request me
 and a marked primary Part after validation, with MISSING distinct from present null.
 No dynamic schema manufactures a static business type. LLM/framework selection,
 request generation and framework execution remain outside this SDK.
+
+
+## ADR-P08: Explicit acquisition and disposable validation processes
+
+Use an instance-owned HTTPS resolver rather than borrowing application HTTP clients
+or installing a vendor reference loader. Every DNS answer is admitted, then a fresh
+TLS connection binds the first approved numeric address to verified original-host
+SNI/Host/certificate identity. Public asyncio/SSL APIs own networking and h11 0.16.0
+owns HTTP framing. Exact origin/authentication/pin/immutability configuration and
+bounded private caches isolate security identities. Default DNS uses an owned process;
+custom async lookup is a trusted host seam with cooperative cancellation.
+
+Native schema graphs preserve original document/descriptor/base/ref semantics in
+immutable prepared views. Redirect aliases and schema identities are normalized only
+for private registry/regex compilation. Schema-position inspection prevents refs into
+annotations; an explicit offline referencing registry cannot acquire more documents.
+Prepared inspection requires no retrieval/compilation and survives cache clear/closure.
+Synthetic inline URNs hash structured contract/direction/representation identities,
+avoiding delimiter collisions and expansion beyond URI-string budgets.
+
+Async client/server input/result/publication gates, discovery compilation and resolver
+compilation use fresh `-I -S -B` interpreters. The fixed JSON protocol excludes pickling,
+application callbacks/environment/import paths and arbitrary operations. Default
+2-second deadlines include startup; capacity is refused above four jobs. Acquisition
+is shielded and physical termination awaited on every exit path, including repeated
+cancellation while acquiring a child. No timed-out job falls back to the event loop
+or an unkillable executor thread. Sync helpers remain explicit trusted conveniences.
+
+Python OS memory controls differ from Node's V8 limit and from each other. POSIX
+stack bounds and Linux data-segment bounds are documented separately from portable
+wall/data/schema budgets. macOS/Windows do not claim an OS RSS ceiling. Hosts needing
+strict RSS enforcement own deployment/container/job controls. Frozen allowlisted
+correlation hooks are optional and add no telemetry dependency.
+
+[Resolver/operations threat model](python-resolver-security.md) records exact limits,
+public API ownership, primary references, tests and installed benchmark methodology.
+The benchmark workload matches Node's bounded-count object and records samples per
+interpreter; message wording/performance across unlike hosts is not a parity claim.
+Hosted platform checks and four peer pairings remain distinct acceptance evidence.
