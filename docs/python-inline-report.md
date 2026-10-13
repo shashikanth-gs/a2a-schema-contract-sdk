@@ -1,7 +1,28 @@
 # Independent Python inline acceptance (SDK-010)
 
-Date: 2026-10-14. Final validation is in progress; the owning PLAN row remains
-IN_PROGRESS until the interpreter and installed-artifact receipts are recorded.
+Date: 2026-10-14. SDK-010 is **DONE locally**. Source:
+`b97552d0b6c08635da70c3b1ce241d7d129e2c28` on `codex/python-sdk`.
+[Machine-readable receipt](evidence/python-inline/receipt.json).
+
+Fresh locked CPython 3.11.15, 3.12.13, 3.13.14 and 3.14.7 environments on macOS
+arm64 pass Ruff formatting/lint, strict mypy, **452 tests without skips per
+interpreter**, **100% domain-core coverage** and **93.44–93.60% overall coverage**.
+Each profile independently builds/rebuilds and installs the artifacts, executes
+README examples and the real HTTP/SSE demo outside the checkout, and checks
+public installed types. Audited dependencies: 92, zero known findings; the
+unpublished project itself is explicitly skipped by PyPI audit and source-reviewed.
+
+Artifact: `a2a-schema-contract==0.1.0.dev0`, unpublished.
+
+- Wheel SHA-256: `fc9a7c43fd1b1a17f9c0c4c7b2a2b2b3e20a4fd6d296ab7e05e7c22172a127fa`.
+- Sdist SHA-256: `6a119fe792c1ade6f0611eb59b7d9c432b0eb758d8a20bef9bd4c74028578b28`.
+
+All four profiles produce these same artifacts; rebuilding the wheel from the
+sdist is byte-identical. Commands from `python/`: `rtk proxy .venv/bin/python scripts/check_matrix.py`
+and `rtk proxy .venv/bin/pip-audit --local --format json --output
+reports/dependency-audit.json`. The matrix script defines each constituent
+quality, test/coverage and isolated-artifact command and retains outputs in
+ignored local reports. The Python guide supplies equivalent uv-based developer commands.
 
 The implementation uses CPython 3.11–3.14, public `a2a-sdk==1.2.2` protobuf hooks,
 jsonschema 4.26.0 and referencing 0.37.0. It independently implements the accepted

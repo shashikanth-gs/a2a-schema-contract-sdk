@@ -1,0 +1,124 @@
+{
+  "task": "SDK-010",
+  "result": "PASS_LOCAL",
+  "date": "2026-10-14",
+  "sourceCommit": "b97552d0b6c08635da70c3b1ce241d7d129e2c28",
+  "branch": "codex/python-sdk",
+  "draftCommit": "a5c007510faa3fce85190f2e76e402faf0e897ad",
+  "extensionUri": "https://w3id.org/a2a-schema-contract/draft/0.1",
+  "nodeRuntimeBaseline": "07ddd60e339ed0d86f2ace091e263a7aa369a0b9",
+  "package": {
+    "result": "PASS",
+    "python": "3.14.7",
+    "wheel": {
+      "name": "a2a_schema_contract-0.1.0.dev0-py3-none-any.whl",
+      "sha256": "fc9a7c43fd1b1a17f9c0c4c7b2a2b2b3e20a4fd6d296ab7e05e7c22172a127fa"
+    },
+    "sdist": {
+      "name": "a2a_schema_contract-0.1.0.dev0.tar.gz",
+      "sha256": "6a119fe792c1ade6f0611eb59b7d9c432b0eb758d8a20bef9bd4c74028578b28"
+    },
+    "checks": [
+      "artifact-resources-license-types",
+      "sdist-wheel-reproducibility",
+      "strict-metadata",
+      "isolated-core-no-a2a-or-dev",
+      "isolated-server-extra",
+      "installed-readme-examples",
+      "installed-strict-public-types",
+      "installed-core-catalog-discovery-without-a2a",
+      "installed-real-http-sse-typed-discovery-demo"
+    ]
+  },
+  "profiles": [
+    {
+      "python": "3.11.15",
+      "platform": "macOS arm64",
+      "quality": "PASS",
+      "tests": 452,
+      "skips": 0,
+      "coverageOverall": 93.6,
+      "coverageCore": 100,
+      "installedArtifact": "PASS",
+      "wheelFromSdistIdentical": true,
+      "logSha256": "4656d0eab6c8d7f10c9dff416be7bf71ba5ae464ef7c4327934997053e2b623e"
+    },
+    {
+      "python": "3.12.13",
+      "platform": "macOS arm64",
+      "quality": "PASS",
+      "tests": 452,
+      "skips": 0,
+      "coverageOverall": 93.6,
+      "coverageCore": 100,
+      "installedArtifact": "PASS",
+      "wheelFromSdistIdentical": true,
+      "logSha256": "35d14d25b089088942050885364f91f5d008c965235ae9e307bc69b5024e85cd"
+    },
+    {
+      "python": "3.13.14",
+      "platform": "macOS arm64",
+      "quality": "PASS",
+      "tests": 452,
+      "skips": 0,
+      "coverageOverall": 93.6,
+      "coverageCore": 100,
+      "installedArtifact": "PASS",
+      "wheelFromSdistIdentical": true,
+      "logSha256": "ef8b68ecf70068a3c7a85db6dd1ddef550703d354c4679d1b2658827de5525aa"
+    },
+    {
+      "python": "3.14.7",
+      "platform": "macOS arm64",
+      "quality": "PASS",
+      "tests": 452,
+      "skips": 0,
+      "coverageOverall": 93.44,
+      "coverageCore": 100,
+      "installedArtifact": "PASS",
+      "wheelFromSdistIdentical": true,
+      "logSha256": "66b4b2bb6ca49eae0944a775adca1c869e7712be8a8dc5bb1e96ebc3153a941e"
+    }
+  ],
+  "dependencies": {
+    "a2a-sdk": "1.2.2",
+    "jsonschema": "4.26.0",
+    "referencing": "0.37.0",
+    "httpx": "0.28.1",
+    "protobuf": "7.36.2",
+    "starlette": "1.8.0",
+    "uvicorn": "0.42.0"
+  },
+  "audit": {
+    "dependenciesInReport": 93,
+    "audited": 92,
+    "vulnerabilities": 0,
+    "skipped": [
+      {
+        "name": "a2a-schema-contract",
+        "reason": "Dependency not found on PyPI and could not be audited: a2a-schema-contract (0.1.0.dev0)"
+      }
+    ],
+    "unpublishedSelfSourceReviewed": true
+  },
+  "commands": [
+    "rtk proxy .venv/bin/python scripts/check_matrix.py",
+    "rtk proxy .venv/bin/pip-audit --local --format json --output reports/dependency-audit.json"
+  ],
+  "scope": {
+    "inlineCatalog": true,
+    "skillDiscovery": true,
+    "originalInlineSchemaViews": true,
+    "explicitInvocation": true,
+    "officialHttpSse": true,
+    "rawAdmission": true,
+    "atomicPublication": true,
+    "cooperativeLifecycle": true,
+    "crossLanguageFourPairings": false,
+    "secureExternalResolver": false,
+    "hardValidatorIsolation": false,
+    "operationalParity": false,
+    "hostedCiExecuted": false,
+    "published": false
+  }
+}
