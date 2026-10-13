@@ -79,5 +79,6 @@
     ]
   },
   "hosted_ci": "configured, unrun",
-  "publication": "disabled"
+  "publication": "disabled",
+  "sdk_source": "facd6e156e92bc562502b9c2fd026b944f988625"
 }

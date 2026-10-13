@@ -7,6 +7,13 @@ report. SDK hosted gates pass on Linux Node 22/24 and macOS/Windows Node 24.
 Python, other transports, bundles and XML remain separately tracked work.
 See [operation limits](node-operations.md) and [release policy](node-release.md).
 
+Python SDK-009 is accepted locally on CPython 3.11–3.14 as an engineering
+foundation: typed packaging, strict JSON/media/schema boundaries, installed draft
+resources and optional A2A Part integration. [Evidence](python-foundation-report.md)
+records 189 tests per interpreter, core coverage, artifacts and limits. The table
+below describes the accepted Node runtime; it does not imply complete Python
+client/server, resolver or operational parity. Those remain SDK-010/011 gates.
+
 | Feature                                 | Inline target                                                                  | Current evidence / limitation                                                                                                                                                                                                                                                                                                                                                                                                    | Delivery task         |
 | --------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
 | Runtime                                 | Node 22 >=22.23.3 / 24 >=24.21.0; ESM                                          | 30 compatibility probes plus clean package gates on macOS arm64; [hosted baseline](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37497396103) passes Linux Node 22.23.3/24.21.0 and macOS/Windows Node 24.21.0 at `6d51d99`; [candidate operational matrix](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/37509065805) passes at `7481b00`                                     | SDK-002/007           |

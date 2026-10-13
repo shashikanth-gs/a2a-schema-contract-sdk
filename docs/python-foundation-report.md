@@ -2,6 +2,10 @@
 
 Date: 2026-10-13. SDK-009 complete locally; SDK-010 ready.
 
+Accepted source checkpoint: `facd6e156e92bc562502b9c2fd026b944f988625`
+on local branch `codex/python-sdk`; subsequent evidence-only changes do not alter
+the built Python artifacts.
+
 This accepts an engineering/package foundation, not the complete Python protocol
 implementation. Contract discovery/selection, client/server execution, atomic
 streaming/continuation, secure external resolution, isolated async validation and
