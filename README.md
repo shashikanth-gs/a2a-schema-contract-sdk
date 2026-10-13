@@ -12,7 +12,10 @@ publishing a successful contracted result. The client also validates the peer's
 response.
 
 **Node SDK:** the Node implementation supports the community draft
-`v0.1.0-draft.1`. Python support is planned. npm and PyPI packages have not been
+`v0.1.0-draft.1`. The [Python engineering foundation](python/README.md) is available
+locally with strict validation, typed resources and optional A2A carrier integration;
+complete Python client/server parity is the next implementation milestone.
+npm and PyPI packages have not been
 published; use the source checkout or a locally built npm tarball. Worker
 isolation and operational validation pass the supported hosted matrix. See the
 [support matrix](docs/support-matrix.md) for the precise supported profile.

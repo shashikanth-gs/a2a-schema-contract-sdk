@@ -15,5 +15,8 @@ __pycache__/
 .env.*
 !.env.example
 .DS_Store
+python/.coverage*
+python/htmlcov/
+python/reports/
 
 js/reports/m3-development/

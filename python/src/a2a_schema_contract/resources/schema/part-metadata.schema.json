@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/part-metadata.schema.json",
+  "title": "A2A Schema Contract primary Part metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contractId", "direction", "representationId", "role"],
+  "properties": {
+    "contractId": {
+      "$ref": "https://w3id.org/a2a-schema-contract/schema/draft/0.1/common.schema.json#/$defs/absoluteUri"
+    },
+    "direction": { "enum": ["input", "output"] },
+    "representationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "role": { "const": "primary" }
+  }
+}

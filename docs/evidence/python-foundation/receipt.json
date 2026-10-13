@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-13",
+  "scope": "SDK-009 engineering foundation; not complete Python parity",
+  "contract_source": {
+    "repository": "https://github.com/shashikanth-gs/a2a-schema-contract",
+    "ref": "v0.1.0-draft.1",
+    "commit": "a5c007510faa3fce85190f2e76e402faf0e897ad",
+    "extensionUri": "https://w3id.org/a2a-schema-contract/draft/0.1",
+    "status": "community-draft"
+  },
+  "official_sdk": {
+    "version": "1.2.2",
+    "wheel": {
+      "url": "https://files.pythonhosted.org/packages/25/ce/1f00b7f1cd5691b78045e495d7c46af810557414695cf68b1847e2b5e25d/a2a_sdk-1.2.2-py3-none-any.whl",
+      "hash": "sha256:f2aa9692f3e3034f58ebff501e091d43affa416878c734fd63016ae0b8ea8c66",
+      "size": 275972,
+      "upload-time": "2026-10-05T09:50:42.784Z"
+    }
+  },
+  "profiles": [
+    {
+      "python": "3.11.15",
+      "platform": "macOS arm64",
+      "tests_passed": 189,
+      "core_coverage": 100,
+      "overall_coverage": 95.99
+    },
+    {
+      "python": "3.12.13",
+      "platform": "macOS arm64",
+      "tests_passed": 189,
+      "core_coverage": 100,
+      "overall_coverage": 95.99
+    },
+    {
+      "python": "3.13.14",
+      "platform": "macOS arm64",
+      "tests_passed": 189,
+      "core_coverage": 100,
+      "overall_coverage": 95.99
+    },
+    {
+      "python": "3.14.7",
+      "platform": "macOS arm64",
+      "tests_passed": 189,
+      "core_coverage": 100,
+      "overall_coverage": 95.97
+    }
+  ],
+  "package": {
+    "result": "PASS",
+    "python": "3.14.7",
+    "wheel": {
+      "name": "a2a_schema_contract-0.1.0.dev0-py3-none-any.whl",
+      "sha256": "43aa04858f1bc83f53a1745210d68166f9d031294aba1ed5de588b56eb9a129a"
+    },
+    "sdist": {
+      "name": "a2a_schema_contract-0.1.0.dev0.tar.gz",
+      "sha256": "dd18637dadecd3c921334d7913e90cb250c6971e48000cbfd9e5b0daea541625"
+    },
+    "checks": [
+      "artifact-resources-license-types",
+      "sdist-wheel-reproducibility",
+      "strict-metadata",
+      "isolated-core-no-a2a-or-dev",
+      "isolated-server-extra",
+      "installed-readme-examples",
+      "installed-strict-public-types"
+    ]
+  },
+  "audit": {
+    "audited_dependencies": 92,
+    "known_vulnerabilities": 0,
+    "skipped": [
+      {
+        "name": "a2a-schema-contract",
+        "reason": "unpublished local 0.1.0.dev0; source/tests reviewed independently"
+      }
+    ]
+  },
+  "hosted_ci": "configured, unrun",
+  "publication": "disabled"
+}

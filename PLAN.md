@@ -1,9 +1,12 @@
 # SDK implementation plan
 
-Updated: 2026-10-07\
-Status: SDK-001–008 and SDK-016–019 complete for the Node candidate; Python implementation remains planned
+Updated: 2026-10-13\
+Status: SDK-001–008 and SDK-016–019 complete for the Node candidate; Python foundation complete locally; inline implementation ready
 
-Next SDK task: SDK-009 (Python engineering/package foundation), READY. REF-010 and workspace M3a acceptance are complete; Python parity remains next.
+LangGraph/M3b is accepted locally through the unchanged SDK runtime.
+ADK/M3c is accepted locally through the same unchanged SDK RC1 runtime.
+SDK-009 (Python engineering/package foundation) is DONE locally after both framework
+gates passed. SDK-010 is READY. REF-010 and M3a remain complete for their original Node scope.
 Companion tracking: [reference roadmap](https://github.com/shashikanth-gs/a2a-schema-contract-reference/blob/main/PLAN.md). Workspace milestone tracking is maintained internally.
 
 This repository builds reusable JS/TypeScript and Python client/server packages. The reference repository installs the resulting artifacts and proves real usage. The specification repository owns the normative contract; its initial revision is pinned in [contract-source.json](contract-source.json).
@@ -22,8 +25,8 @@ Each row is the authoritative status for that task. Dependency references to REF
 | SDK-006 | Secure Node external catalog/schema resolution | DONE | Codex | SDK-005 |
 | SDK-007 | Node conformance, security and operational validation | DONE | Codex | SDK-006 |
 | SDK-008 | Node developer documentation and release candidate | DONE | Codex | SDK-007, REF-004 |
-| SDK-009 | Python engineering and package foundation | READY | Unassigned | SDK-008 |
-| SDK-010 | Independent Python inline client/server profile | PLANNED | Unassigned | SDK-009, SDK-016, SDK-018, SDK-019 |
+| SDK-009 | Python engineering and package foundation | DONE | Codex | SDK-008, SDK-016–019, workspace M3b/M3c |
+| SDK-010 | Independent Python inline client/server profile | READY | Unassigned | SDK-009, SDK-016, SDK-018, SDK-019 |
 | SDK-011 | Python secure resolution and operational parity | PLANNED | Unassigned | SDK-010, SDK-006, SDK-007, SDK-017 |
 | SDK-012 | Python developer documentation and release candidate | PLANNED | Unassigned | SDK-011, REF-006 |
 | SDK-013 | Joint release rehearsal and maintenance readiness | PLANNED | Unassigned | SDK-008, SDK-012, SDK-016–019, REF-008, REF-010 |
@@ -35,7 +38,10 @@ Each row is the authoritative status for that task. Dependency references to REF
 | SDK-019 | Explicit metadata binding and interoperability fixtures | DONE | Codex | SDK-008 |
 
 SDK-016–019 add shared application APIs, not framework integrations. Node delivery
-is followed by independent Python parity in SDK-010/011. See ADR-013 and the
+is followed by separate LangGraph and ADK Node adapter acceptance before
+independent Python parity in SDK-010/011. Framework dependencies remain outside
+this package. Shared API gaps found by adapters must be fixed and validated here
+before parity begins. See ADR-013 and the
 [developer-experience review](docs/developer-experience-review.md). Existing DONE
 rows retain their original scope; the earlier candidate and targeted review tests
 do not complete the new work.
@@ -178,6 +184,13 @@ Evidence: Started/completed 2026-10-06 by Codex; accepted SDK runtime source `74
 
 Outcome: an idiomatic typed Python distribution, built after the validated Node candidate.
 
+Start gate (owner decision, 2026-10-13): workspace M3b LangGraph and M3c ADK
+Node real-agent acceptance must pass first. Their reviewed shared SDK API and
+semantic fixtures become the Python baseline. No Python implementation starts
+while that interface is still being validated through frameworks.
+
+Gate passed 2026-10-13: [ADK acceptance](../a2a-schema-contract-adk/docs/acceptance-report.md) and LangGraph/M3b use the same unchanged SDK RC1 artifact; SDK-009 is READY.
+
 Acceptance criteria:
 
 - Review the actual published Python SDK/validator artifacts and pin the development baseline. v1.2.2 is a research candidate, not an unverified support promise. Confirm interpreter/async/carrier compatibility and document Python-specific ADRs.
@@ -187,7 +200,7 @@ Acceptance criteria:
 - Build wheel and sdist, validate their contents, rebuild from the sdist and install the wheel into a clean environment. Public imports/types/resources work without the source checkout or editable installation.
 - Add interpreter-matrix CI and portability smoke tests with documented installation/contribution/check commands. Carry forward shared source pins and requirement maps.
 
-Evidence: Not started.
+Evidence: Started/completed 2026-10-13 by Codex on `codex/python-sdk`. [Foundation report](docs/python-foundation-report.md), [architecture/ADRs](docs/python-architecture.md), [Python guide](python/README.md) and [receipt](docs/evidence/python-foundation/receipt.json). Fresh locked CPython 3.11.15/3.12.13/3.13.14/3.14.7 macOS arm64 profiles pass Ruff, strict mypy, 189 tests, 100% core / ~96% overall coverage, identical rebuilt wheel/sdist, noneditable core/server consumers, installed README examples and public type checks. Optional a2a-sdk 1.2.2 published hooks/carriers/headers/cancellation are probed; no framework/core coupling. Audit: zero known findings across 92 dependencies; unpublished self explicitly skipped and source-reviewed. Hosted Linux/macOS/Windows workflow configured but unrun. Exact artifact hashes/pins/limits in receipt; no release, push, tag or normative/Node runtime change. SDK-010 READY; complete Python transport/resolution/operations and four-pairing acceptance remain separate gates.
 
 ## SDK-010: Independent Python inline client/server profile
 

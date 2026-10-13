@@ -1,5 +1,15 @@
 # Changelog
 
+## Python 0.1.0.dev0 — 2026-10-13
+
+- Standards-based typed src-layout distribution, pinned development lock and optional A2A extras.
+- Strict JSON/presence/errors/media boundaries and offline JSON Schema validation with portable regex compilation.
+- Installed pinned schemas, attribution and explicit protobuf Part guards.
+- Python 3.11–3.14 quality, compatibility, noneditable consumer and reproducible wheel/sdist checks.
+
+This is the Python engineering foundation. Complete client/server, resolution,
+operational and cross-language acceptance remain planned; publication is disabled.
+
 ## 0.1.0-rc.1 — 2026-10-07
 
 - Skill-associated discovery and explicit compact invocation, with local ambiguity refusal.
