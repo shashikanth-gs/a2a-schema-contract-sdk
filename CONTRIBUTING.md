@@ -16,7 +16,10 @@ committed uv lock. Run `uv sync --locked --all-extras`, Ruff formatting/linting,
 strict mypy, pytest, 100% core coverage and the isolated artifact/matrix scripts
 documented in [the Python guide](python/README.md). Keep framework imports outside
 the SDK; core imports standard library/domain modules only. SDK-009 accepts the
-engineering foundation; later tasks own full contract and operational parity.
+engineering foundation; SDK-010 adds inline application/transport services and
+SDK-011 owns resolver/worker/operational parity. The complete installed HTTP/SSE
+example is checked alongside the strict public consumer. Include examples in Ruff
+and mypy checks. Shared Node binding/semantic fixtures retain their original expectations.
 
 Build artifacts are isolated-consumer tested through public exports. Never make
 an accepted path pass by swallowing errors, changing expected outcomes or adding

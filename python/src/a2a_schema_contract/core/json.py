@@ -94,6 +94,8 @@ def loads(value: str | bytes, context: ErrorContext = LOCAL_CONTEXT) -> JsonValu
     if len(value) > LIMITS.bytes:
         raise ContractError("RESOURCE_LIMIT", context)
     try:
+        if isinstance(value, bytes):
+            value = value.decode("utf-8", "strict")
         decoded: object = json.loads(value, object_pairs_hook=pairs)
     except (ValueError, UnicodeError, RecursionError):
         raise ContractError("INVALID_STRUCTURE", context) from None

@@ -1,0 +1,10 @@
+{
+  "source": "https://github.com/shashikanth-gs/a2a-schema-contract-sdk",
+  "nodeRuntime": "07ddd60e339ed0d86f2ace091e263a7aa369a0b9",
+  "binding": "ADR-005/013, A2A 1.0 JSON-RPC",
+  "files": {
+    "binding-request.json": "a529a1be450cf0832a858c8b4a48f4a47518dd124d432982a2d39010a88d7350",
+    "binding-response.json": "dae50cfed756489931437278bdc8dc27fa3cad3983d9dcf1391e9dbff10dfa0a",
+    "binding-failure.json": "9d20be0105a69da22026d30e2496497a4bcdaeea63295bd558862cffe742cb3e"
+  }
+}

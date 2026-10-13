@@ -1,6 +1,6 @@
 # A2A Schema Contract SDK
 
-TypeScript and JavaScript client/server libraries for the **A2A (Agent2Agent)
+TypeScript, JavaScript and Python client/server libraries for the **A2A (Agent2Agent)
 Schema Contract extension**. Discover an agent's input and output contracts,
 validate JSON or text against those contracts, and exchange validated results
 over A2A.
@@ -12,11 +12,11 @@ publishing a successful contracted result. The client also validates the peer's
 response.
 
 **Node SDK:** the Node implementation supports the community draft
-`v0.1.0-draft.1`. The [Python engineering foundation](python/README.md) is available
-locally with strict validation, typed resources and optional A2A carrier integration;
-complete Python client/server parity is the next implementation milestone.
+`v0.1.0-draft.1`. The [independent Python inline profile](python/README.md) provides typed catalog/skill
+discovery, original schema views and guarded HTTP/SSE client/server execution.
+Python resolver, hard isolation and operational parity remain SDK-011.
 npm and PyPI packages have not been
-published; use the source checkout or a locally built npm tarball. Worker
+published; use a locally built npm tarball or Python wheel. Node worker
 isolation and operational validation pass the supported hosted matrix. See the
 [support matrix](docs/support-matrix.md) for the precise supported profile.
 
@@ -38,7 +38,8 @@ The Node SDK adds skill-associated discovery, immutable prepared-schema resource
 views, compact explicit invocation and validated embedded/external advertisement.
 These APIs belong in the shared SDK; future framework adapters consume them.
 See [developer experience](docs/developer-experience.md) and
-[metadata binding](docs/metadata-binding.md). Python parity remains planned.
+[metadata binding](docs/metadata-binding.md). Python implements their inline
+semantics; secure external resource/operational parity remains separate.
 The current private Node candidate is `0.1.0-rc.1`; the earlier hosted `rc.0` evidence
 does not establish hosted acceptance of these additions.
 
@@ -127,7 +128,7 @@ for usage questions.
 | Directory | Contents |
 |---|---|
 | `js/` | TypeScript source, JavaScript package, tests and executable examples |
-| `python/` | Scaffold for the planned independent Python SDK |
+| `python/` | Independent typed Python inline SDK, tests and installed examples |
 | `docs/` | Architecture, support/requirement maps and validation evidence |
 | `tests/` | Shared behavioral cases |
 | `vendor/contract/` | Verified, attributed snapshot of the pinned specification resources |

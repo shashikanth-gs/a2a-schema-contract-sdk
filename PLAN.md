@@ -6,7 +6,7 @@ Status: SDK-001–008 and SDK-016–019 complete for the Node candidate; Python 
 LangGraph/M3b is accepted locally through the unchanged SDK runtime.
 ADK/M3c is accepted locally through the same unchanged SDK RC1 runtime.
 SDK-009 (Python engineering/package foundation) is DONE locally after both framework
-gates passed. SDK-010 is READY. REF-010 and M3a remain complete for their original Node scope.
+gates passed. SDK-010 is IN_PROGRESS. REF-010 and M3a remain complete for their original Node scope.
 Companion tracking: [reference roadmap](https://github.com/shashikanth-gs/a2a-schema-contract-reference/blob/main/PLAN.md). Workspace milestone tracking is maintained internally.
 
 This repository builds reusable JS/TypeScript and Python client/server packages. The reference repository installs the resulting artifacts and proves real usage. The specification repository owns the normative contract; its initial revision is pinned in [contract-source.json](contract-source.json).
@@ -26,7 +26,7 @@ Each row is the authoritative status for that task. Dependency references to REF
 | SDK-007 | Node conformance, security and operational validation | DONE | Codex | SDK-006 |
 | SDK-008 | Node developer documentation and release candidate | DONE | Codex | SDK-007, REF-004 |
 | SDK-009 | Python engineering and package foundation | DONE | Codex | SDK-008, SDK-016–019, workspace M3b/M3c |
-| SDK-010 | Independent Python inline client/server profile | READY | Unassigned | SDK-009, SDK-016, SDK-018, SDK-019 |
+| SDK-010 | Independent Python inline client/server profile | IN_PROGRESS | Codex | SDK-009, SDK-016, SDK-018, SDK-019 |
 | SDK-011 | Python secure resolution and operational parity | PLANNED | Unassigned | SDK-010, SDK-006, SDK-007, SDK-017 |
 | SDK-012 | Python developer documentation and release candidate | PLANNED | Unassigned | SDK-011, REF-006 |
 | SDK-013 | Joint release rehearsal and maintenance readiness | PLANNED | Unassigned | SDK-008, SDK-012, SDK-016–019, REF-008, REF-010 |
@@ -217,7 +217,7 @@ Acceptance criteria:
 - Document Python client/server APIs and quickstarts as part of the task.
 - Independently implement ADR-013's skill-associated discovery, inline schema inspection, validated catalog advertisement and compact explicit invocation APIs. Carry SDK-016/018/019's shared expected outcomes into Python; ambiguous associations never become implicit routing or dispatch.
 
-Evidence: Not started.
+Evidence: Started 2026-10-13 by Codex on `codex/python-sdk`; independent inline application services and official A2A client/server integration in progress. Acceptance is not yet claimed.
 
 ## SDK-011: Python secure resolution and operational parity
 

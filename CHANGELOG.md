@@ -1,5 +1,18 @@
 # Changelog
 
+## Python 0.1.0.dev0 inline update — 2026-10-14
+
+- Independent catalog, capabilities, original schema views and skill-associated discovery.
+- Explicit missing/null semantics, compact invocation and ambiguity refusal.
+- Official A2A 1.0 JSON-RPC/HTTP/SSE integration with raw admission before protobuf parsing.
+- Complete input/result validation, staged atomic output, retained continuation binding and cancellation admission.
+- Immutable snapshots, typed public results and explicit borrowed HTTP client ownership.
+- Real-loopback and malformed-peer tests, unchanged shared fixtures and an installed executable demo.
+
+This extends the local development artifact. External resolution, hard validator
+isolation, operational parity and independent four-pairing acceptance remain later
+gates. No Python release candidate or publication is claimed.
+
 ## Python 0.1.0.dev0 — 2026-10-13
 
 - Standards-based typed src-layout distribution, pinned development lock and optional A2A extras.

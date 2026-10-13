@@ -1,4 +1,4 @@
-"""Repeat the foundation suite in fresh locked environments on supported interpreters."""
+"""Repeat inline acceptance in fresh locked environments on supported interpreters."""
 
 import json
 import os
@@ -19,8 +19,19 @@ def main() -> None:
             for command in (
                 ["uv", "sync", "--locked", "--all-extras", "--python", version],
                 ["uv", "run", "--locked", "python", "--version"],
-                ["uv", "run", "--locked", "ruff", "check", "src", "tests", "scripts"],
-                ["uv", "run", "--locked", "ruff", "format", "--check", "src", "tests", "scripts"],
+                ["uv", "run", "--locked", "ruff", "check", "src", "tests", "scripts", "examples"],
+                [
+                    "uv",
+                    "run",
+                    "--locked",
+                    "ruff",
+                    "format",
+                    "--check",
+                    "src",
+                    "tests",
+                    "scripts",
+                    "examples",
+                ],
                 ["uv", "run", "--locked", "mypy"],
                 ["uv", "run", "--locked", "pytest", "-q", "--cov", "--cov-report=term-missing"],
                 [

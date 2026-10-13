@@ -34,8 +34,8 @@ jobs:
         with:
           version: "0.12.1"
       - run: uv sync --locked --all-extras
-      - run: uv run ruff format --check src tests scripts
-      - run: uv run ruff check src tests scripts
+      - run: uv run ruff format --check src tests scripts examples
+      - run: uv run ruff check src tests scripts examples
       - run: uv run mypy
       - run: uv run pytest --cov --cov-report=term-missing --cov-report=xml:reports/coverage.xml
       - run: uv run coverage json --include='*/core/*' --fail-under=100 -o reports/core-coverage.json

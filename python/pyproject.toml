@@ -46,7 +46,7 @@ dev = [
 packages = ["src/a2a_schema_contract"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/", "tests/", "scripts/", "README.md", "LICENSE", "pyproject.toml", "uv.lock"]
+include = ["src/", "tests/", "scripts/", "examples/", "README.md", "LICENSE", "pyproject.toml", "uv.lock"]
 
 [tool.ruff]
 target-version = "py311"
@@ -58,7 +58,7 @@ select = ["E", "F", "I", "UP", "B", "ASYNC", "SIM", "RUF"]
 [tool.mypy]
 python_version = "3.11"
 strict = true
-files = ["src", "tests", "scripts"]
+files = ["src", "tests", "scripts", "examples"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

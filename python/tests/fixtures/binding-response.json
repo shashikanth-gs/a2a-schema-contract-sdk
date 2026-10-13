@@ -1,0 +1,40 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "task": {
+      "id": "binding-task-1",
+      "contextId": "binding-context-1",
+      "status": {
+        "state": "TASK_STATE_COMPLETED"
+      },
+      "metadata": {
+        "https://w3id.org/a2a-schema-contract/draft/0.1": {
+          "contractId": "urn:example:flight-search:1",
+          "outputRepresentationId": "json"
+        }
+      },
+      "artifacts": [
+        {
+          "artifactId": "binding-output-1",
+          "parts": [
+            {
+              "data": {
+                "origin": "BLR"
+              },
+              "mediaType": "application/json",
+              "metadata": {
+                "https://w3id.org/a2a-schema-contract/draft/0.1": {
+                  "contractId": "urn:example:flight-search:1",
+                  "direction": "output",
+                  "representationId": "json",
+                  "role": "primary"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "task": {
+      "id": "binding-task-1",
+      "contextId": "binding-context-1",
+      "status": { "state": "TASK_STATE_FAILED" },
+      "metadata": {
+        "https://w3id.org/a2a-schema-contract/draft/0.1": {
+          "code": "OUTPUT_CONTRACT_VIOLATION",
+          "contractId": "urn:example:flight-search:1",
+          "direction": "output"
+        }
+      },
+      "artifacts": []
+    }
+  }
+}

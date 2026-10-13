@@ -1,6 +1,6 @@
-# Python architecture and foundation decisions
+# Python architecture and decisions
 
-Date: 2026-10-13. Task: SDK-009. Source draft and Node RC1 semantics remain unchanged.
+Updated: 2026-10-14. Tasks: SDK-009/010. Draft and Node RC1 semantics remain unchanged.
 
 ## Dependency direction
 
@@ -10,7 +10,8 @@ limits and exact media semantics. It imports only the standard library. `ports`
 defines the small typed validator interface. `validation` implements that port
 using jsonschema/referencing and installed offline resources. Optional `adapters`
 contain official A2A protobuf conversion; no SDK object enters the domain layer.
-Client/server application services will compose these boundaries in SDK-010;
+Catalog/discovery/payload/binding/events compose these boundaries in SDK-010.
+Optional client/server/HTTP adapters integrate public vendor hooks;
 resolver/worker infrastructure enters through explicit seams in SDK-011.
 
 Architecture tests enforce the core import boundary. The root exposes lightweight
@@ -42,14 +43,14 @@ The actual `a2a-sdk==1.2.2` wheel implements A2A 1.0 using protobuf messages;
 legacy examples from the 0.3 Pydantic SDK are not its public API. Published
 `ClientFactory`, `ClientCallContext`, `JsonRpcTransport`, `RequestContext`,
 `AgentExecutor`, `EventQueue`, `DefaultRequestHandler`, and public route factories
-are the selected integration hooks. The default route profile will disable 0.3
+are the selected integration hooks. The default route profile disables 0.3
 compatibility. Invocation identity stays in operation metadata, primary identity
 in Part metadata, and result echo in Task/Message/final status metadata.
 
 Original wire JSON must be guarded before protobuf parsing. For example a null
 `filename` can disappear during official parsing, while conflicting oneof fields
-are rejected. This cannot replace original-value validation. An HTTP adapter will
-need raw admission before the official route deserializer; Part helpers alone are
+are rejected. This cannot replace original-value validation. The HTTP adapter supplies
+raw admission before the official route deserializer; Part helpers alone are
 not a complete untrusted server boundary.
 
 Root `data:null`, empty oneof text, scalar/array/object data and nested null survive
@@ -66,8 +67,9 @@ implicitly serialize a Mapping, dataclass, Pydantic object, tuple, or subclass.
 `MISSING` is an Enum singleton, distinct from None and stable across deepcopy and
 pickle; use it for absent input/output. Frozen slotted dataclasses hold configuration
 and error context. Neither generics nor runtime discovery infer business types.
-All vendor errors become sanitized ContractError diagnostics with the existing
-draft mapping; protected data and validator messages are never retained as causes.
+Transport/discovery errors become sanitized ContractError. Official typed A2A
+rejections retain sanitized messages and recognized request-correlated draft
+detail. Protected data and validator messages do not enter public diagnostics.
 
 ## ADR-P04: Validation and resources
 
@@ -98,3 +100,50 @@ SDK-011; unsafe network/thread convenience fallbacks are forbidden.
   and [src-layout guidance](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/).
 
 Published artifacts and executable probes take precedence over unversioned examples.
+
+## ADR-P05: Original-wire admission and public hooks
+
+The optional HTTP boundary admits bounded UTF-8 JSON before official deserialization.
+It uses public protobuf descriptors to check camelCase field names, original scalar
+types, enum names, oneof cardinality, maps, arrays and timestamps. Struct/Value JSON
+remains original JSON; null is valid there but not in unrelated scalar/message
+fields. Business identity, presence, negotiation and schema rules remain in the
+protocol-independent services. The guarded routes restrict dispatch to the claimed
+four JSON-RPC methods; callers cannot bypass tenant admission through another method.
+
+DefaultRequestHandler owns A2A Task aggregation, subscriptions and cancellation;
+a public EventQueue subclass stages candidate execution events. After the complete
+sequence validates, events publish to the official queue. Only a safe initial
+WORKING Task without history/artifacts publishes early. No protocol internals,
+private registries or monkeypatching are used. Failure is a sanitized failed Task
+with no primary artifact; swallowed queue errors poison the complete turn.
+
+## ADR-P06: Ownership and trusted request scope
+
+Clients use the official public JsonRpcTransport and A2ACardResolver through an
+HTTPX transport bridge. The bridge uses public build_request/send hooks to preserve
+application authentication, headers, cookies and event hooks. Incremental response
+admission occurs before protobuf decoding. Each SSE call owns a separate guarded
+scope: upstream iterator closing alone did not immediately close its nested HTTP
+response in the probe. Closing a stream/client deterministically releases owned
+responses while a borrowed client remains open. Local abort never silently issues
+a remote CancelTask request.
+
+The SDK dispatcher replaces context.tenant with caller params. The context-builder
+wrapper captures the host-authenticated tenant first; handlers restore it and reject
+conflicting wire claims before execution/read/cancel. Default TaskStore ownership
+combines tenant and principal. Custom persistence remains host-owned and must retain
+equivalent authorization/global Task-ID uniqueness. No tenant or principal is inferred
+from model input. Execution gates are request-scoped and continuation binds the same
+contract/output selection. Deadlines are cooperative; hard isolation remains SDK-011.
+
+## ADR-P07: Discovery and immutable public data
+
+Frozen domain objects hold private JSON snapshots. Inspection returns new ordinary
+JSON trees. Catalog/schema/resource views preserve source spelling and do not reveal
+private regex projections or vendor validators. Skill IDs are advertised associations;
+unknown/stale associations remain visible, and ambiguous contracts/representations
+require explicit caller selection. Client prepare builds ordinary A2A request metadata
+and a marked primary Part after validation, with MISSING distinct from present null.
+No dynamic schema manufactures a static business type. LLM/framework selection,
+request generation and framework execution remain outside this SDK.
