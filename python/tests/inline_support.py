@@ -173,9 +173,10 @@ async def provider(
         yield base, boundary, actual
     finally:
         http.should_exit = True
+        # Cancel owned application work before waiting for HTTP connections to drain.
+        await boundary.close()
         await asyncio.wait_for(task, 5)
         listener.close()
-        await boundary.close()
 
 
 def as_dict(value: JsonValue) -> dict[str, JsonValue]:

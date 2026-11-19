@@ -14,7 +14,7 @@ ENGINE: ValidationEngine = JsonSchemaEngine()
 CASES = cast(
     "list[dict[str, object]]",
     json.loads(
-        (Path(__file__).parent / "fixtures" / "inline-core-cases.json").read_text(),
+        (Path(__file__).parent / "fixtures" / "inline-core-cases.json").read_text(encoding="utf-8"),
     )["cases"],
 )
 
