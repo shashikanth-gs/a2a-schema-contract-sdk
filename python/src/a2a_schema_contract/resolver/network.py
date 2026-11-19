@@ -43,7 +43,7 @@ def default_tls() -> ssl.SSLContext:
         for store in ("CA", "ROOT"):
             for certificate, encoding, trust in ssl.enum_certificates(store):
                 if encoding == "x509_asn" and (
-                    trust is True or isinstance(trust, set) and "1.3.6.1.5.5.7.3.1" in trust
+                    trust is True or (isinstance(trust, set) and "1.3.6.1.5.5.7.3.1" in trust)
                 ):
                     context.load_verify_locations(cadata=ssl.DER_cert_to_PEM_cert(certificate))
     return context
