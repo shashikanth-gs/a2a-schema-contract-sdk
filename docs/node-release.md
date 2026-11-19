@@ -6,6 +6,10 @@ not available from the npm registry yet. `private: true` keeps publishing disabl
 The public registry returned E404 for the chosen name on 2026-10-06; that result
 does not reserve the name or establish ownership. No existing scope ownership
 applies to this unscoped, unpublished package.
+The public npm registry again returned 404 for the name on 2026-11-19. This is
+an availability observation only; it does not establish account ownership or
+reserve the name. Later dependency updates require a new artifact hash and fresh
+independent consumer acceptance before treating a newer build as a candidate.
 
 ## Reproduce a candidate
 

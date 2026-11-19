@@ -247,7 +247,11 @@ Acceptance criteria:
 - Pass interpreter/dependency-bound CI and security/license review. Document all implementation differences and supported restrictions, without claiming conformance beyond the evidence.
 - Consume REF-006's four-pairing report and close any semantic discrepancies. Provide a Python release-candidate report tied to exact artifact hashes and contract revision.
 
-Evidence: Not started.
+Evidence: IN_PROGRESS. [Python release preparation](docs/python-release.md) records
+the exact-source, read-only wheel/sdist rehearsal, metadata and ownership gates,
+hosted SDK matrix and platform-specific artifact hashes. REF-006 parity, a Python
+release candidate, registry ownership and actual trusted-publishing/provenance
+verification remain open; no package has been published or tagged.
 
 ## SDK-013: Joint release rehearsal and maintenance readiness
 
@@ -263,7 +267,11 @@ Acceptance criteria:
 - Produce a first-release readiness report with requirement coverage, benchmark/support matrix, residual restrictions and executable validation instructions.
 - Include SDK-016–019, REF-010 and Python discovery/resource-view parity evidence. Original M3 acceptance alone is insufficient for the expanded developer-experience scope.
 
-Evidence: Not started.
+Evidence: IN_PROGRESS. The [Python rehearsal](docs/python-release.md) builds an
+immutable revision independently of Node, while the existing Node rehearsal and
+reference artifact intake remain separate. Joint REF-008 acceptance, final
+maintenance/SBOM policy, release workflow protections, registry ownership and
+first-release readiness remain open; these preparations do not complete SDK-013.
 
 ## SDK-014: Safe schema-bundle support in both languages
 

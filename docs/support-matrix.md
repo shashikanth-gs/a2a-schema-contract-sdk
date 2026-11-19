@@ -12,8 +12,10 @@ with `a2a-sdk==1.2.2`: catalog/skill discovery, immutable native schema inspecti
 explicit invocation, raw admission, atomic publication, continuation/cancellation,
 secure HTTPS resolution and disposable validation processes at async boundaries.
 [Python acceptance](python-resolver-report.md) records 633 tests per fresh macOS arm64
-profile, 100% core coverage and identical installed artifacts; hosted Python CI remains
-configured/unrun. [Python limits/threat model](python-resolver-security.md) explicitly
+profile and 100% core coverage. The [hosted Python matrix](https://github.com/shashikanth-gs/a2a-schema-contract-sdk/actions/runs/44518594807)
+passed at `208a3ca` on Linux 3.11–3.14 and macOS/Windows 3.14. Wheel contents match
+across Linux/Windows, but archive hashes differ; see [Python release preparation](python-release.md).
+[Python limits/threat model](python-resolver-security.md) explicitly
 separates wall/JSON/graph limits from platform memory controls. Python preserves root
 null, unlike the supported Node carrier. Four pairings/reference acceptance and the
 Python RC remain REF-005/006 and SDK-012. The detailed table below describes Node;
