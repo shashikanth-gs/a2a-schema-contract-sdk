@@ -417,6 +417,27 @@ async def test_peer_may_choose_any_accepted_output() -> None:
             client.prepare(ID, input={}, accepted_output_representation_ids=["json", "json2"])
         )
         assert result.payload and result.payload.present and result.payload.value == 7
+        invocation = client.prepare(ID, input={}, allow_server_selection=True)
+        request = as_dict(invocation.request.value)
+        assert "acceptedOutputRepresentationIds" not in as_dict(
+            as_dict(request["metadata"])[EXTENSION_URI]
+        )
+        result = await client.invoke(invocation)
+        assert result.payload and result.payload.present and result.payload.value == 7
+        assert result.payload.representation_id == "json2"
+        as_dict(as_dict(task["metadata"])[EXTENSION_URI])["outputRepresentationId"] = "unknown"
+        as_dict(as_dict(primary(task)["metadata"])[EXTENSION_URI])["representationId"] = "unknown"
+        with pytest.raises(ContractError):
+            await client.invoke(invocation)
+        as_dict(as_dict(task["metadata"])[EXTENSION_URI])["outputRepresentationId"] = "json2"
+        as_dict(as_dict(primary(task)["metadata"])[EXTENSION_URI])["representationId"] = "json2"
+        with pytest.raises(ContractError, match="INVALID_METADATA"):
+            client.prepare(
+                ID,
+                input={},
+                allow_server_selection=True,
+                accepted_output_representation_ids=["json"],
+            )
         with pytest.raises(ContractError):
             await client.invoke(
                 client.prepare(ID, input={}, accepted_output_representation_ids=["json"])

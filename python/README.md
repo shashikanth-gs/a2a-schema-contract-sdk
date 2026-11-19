@@ -97,6 +97,12 @@ contract ID; multiple supported representations require explicit selection.
 Unsupported alternatives remain inspectable. No implicit routing, framework
 dispatch or LLM invocation occurs.
 
+By default `prepare()` requires an explicit output representation when more than
+one is supported. To let the peer choose among the advertised supported outputs,
+pass `allow_server_selection=True` instead of an accepted-ID list. The client
+still verifies the returned representation against the catalog and any accepted
+media modes, and validates the result against that representation's schema.
+
 ## Server integration
 
 Construct an ordinary public AgentExecutor and AgentCard, then

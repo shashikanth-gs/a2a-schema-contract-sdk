@@ -186,6 +186,7 @@ class ContractClient:
         input: object = MISSING,
         input_representation_id: str | None = None,
         accepted_output_representation_ids: list[str] | tuple[str, ...] | None = None,
+        allow_server_selection: bool = False,
         companions: object = MISSING,
         metadata: object = MISSING,
         accepted_output_modes: list[str] | None = None,
@@ -201,6 +202,7 @@ class ContractClient:
             input=input,
             input_representation_id=input_representation_id,
             accepted_output_representation_ids=accepted_output_representation_ids,
+            allow_server_selection=allow_server_selection,
         )
         parts = snapshot([] if companions is MISSING else companions)
         if not isinstance(parts, list) or any(is_primary(part) for part in parts):

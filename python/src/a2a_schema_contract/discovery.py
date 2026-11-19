@@ -100,7 +100,12 @@ def select_invocation(
     input: object = MISSING,
     input_representation_id: str | None = None,
     accepted_output_representation_ids: tuple[str, ...] | list[str] | None = None,
+    allow_server_selection: bool = False,
 ) -> SelectedInvocation:
+    if type(allow_server_selection) is not bool or (
+        allow_server_selection and accepted_output_representation_ids is not None
+    ):
+        raise ContractError("INVALID_METADATA")
     contract = catalog.get_contract(contract_id)
     present = input is not MISSING
     if (contract.input.presence == "required" and not present) or (
@@ -138,6 +143,9 @@ def select_invocation(
     if contract.output.presence == "none":
         if accepted is not None:
             raise ContractError("INVALID_METADATA")
+    elif accepted is None and allow_server_selection:
+        if not any(item.supported for item in catalog.capabilities(contract_id, "output")):
+            raise ContractError("REPRESENTATION_NOT_SUPPORTED")
     elif accepted is None:
         accepted = (sole("output"),)
     else:
