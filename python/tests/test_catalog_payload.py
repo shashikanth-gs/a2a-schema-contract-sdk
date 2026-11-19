@@ -274,6 +274,8 @@ def test_selection_presence_and_metadata() -> None:
     with pytest.raises(ContractError, match="PAYLOAD_PRESENCE_VIOLATION"):
         select_invocation(none, ID, input={})
     with pytest.raises(ContractError, match="REPRESENTATION_NOT_SUPPORTED"):
+        select_invocation(none, ID, input={}, input_representation_id="json")
+    with pytest.raises(ContractError, match="REPRESENTATION_NOT_SUPPORTED"):
         select_invocation(required, ID, input={}, accepted_output_representation_ids=["missing"])
     for accepted in ([], ["json", "json"], [None]):
         with pytest.raises(ContractError, match="INVALID_STRUCTURE"):

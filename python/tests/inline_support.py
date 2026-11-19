@@ -160,7 +160,10 @@ async def provider(
     actual.server = boundary
     http = uvicorn.Server(
         uvicorn.Config(
-            create_app(boundary, context_builder=context_builder), log_level="error", lifespan="on"
+            create_app(boundary, context_builder=context_builder),
+            log_level="error",
+            lifespan="on",
+            timeout_graceful_shutdown=3,
         )
     )
     task = asyncio.create_task(http.serve(sockets=[listener]))
@@ -175,7 +178,7 @@ async def provider(
         http.should_exit = True
         # Cancel owned application work before waiting for HTTP connections to drain.
         await boundary.close()
-        await asyncio.wait_for(task, 5)
+        await asyncio.wait_for(task, 10)
         listener.close()
 
 

@@ -108,6 +108,11 @@ def select_invocation(
         raise ContractError("INVALID_METADATA")
     contract = catalog.get_contract(contract_id)
     present = input is not MISSING
+    if contract.input.presence == "none" and present and input_representation_id is not None:
+        raise ContractError(
+            "REPRESENTATION_NOT_SUPPORTED",
+            ErrorContext(contract_id=contract_id, direction="input"),
+        )
     if (contract.input.presence == "required" and not present) or (
         contract.input.presence == "none" and present
     ):
