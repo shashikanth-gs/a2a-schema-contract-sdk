@@ -293,6 +293,17 @@ direct validators and output helpers remain trusted calling-thread conveniences.
 The final async boundary rechecks results before publication. CPU/model work in the
 application executor remains application-owned/cooperative.
 
+By default a server advertises its prepared catalog inline. To advertise a
+catalog URI instead, resolve extension parameters with `ContractResolver` and
+pass that exact prepared catalog to `ContractServer(..., catalog_delivery="external")`.
+The resolver retains the validated external descriptor with the catalog snapshot;
+passing an inline or independently parsed catalog for external delivery is refused.
+Catalog retrieval requires a declared or locally configured integrity pin, or an
+explicit administrator promise that the exact URI is immutable. A declared pin
+travels in the advertisement; if the pin exists only in local resolver policy,
+each consumer must configure its own trusted pin or immutability policy. An
+immutability promise is an operational commitment, not a cryptographic check.
+
 Frozen diagnostic hooks expose only operation, UUID correlation, duration, outcome
 and a sanitized code. They add no telemetry service. See the
 [resolver threat model, cache/resource semantics and platform limits](../docs/python-resolver-security.md).

@@ -400,6 +400,7 @@ class ContractServer:
         executor: AgentExecutor,
         task_store: TaskStore | None = None,
         required: bool = False,
+        catalog_delivery: str = "inline",
         deadline: float = 30.0,
         concurrent_executions: int = 4,
         validation: ValidationOptions = DEFAULT_VALIDATION,
@@ -418,7 +419,9 @@ class ContractServer:
             item for item in capabilities.get("extensions", []) if item["uri"] != EXTENSION_URI
         ]
         capabilities["extensions"].append(
-            create_contract_extension(self.catalog, required=required)
+            create_contract_extension(
+                self.catalog, required=required, catalog_delivery=catalog_delivery
+            )
         )
         self.card = ParseDict(raw_card, AgentCard())
         self.executor, self.required, self.deadline = executor, required, deadline

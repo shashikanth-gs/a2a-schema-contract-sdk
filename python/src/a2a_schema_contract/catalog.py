@@ -55,6 +55,7 @@ class ContractCatalog:
     _origin: Origin
     _prepared: tuple[tuple[str, Direction, str, PreparedSchema], ...]
     _support: tuple[tuple[str, Direction, str, str | None], ...] | None
+    _reference: JsonDocument | None
 
     def __init__(self, value: object, origin: Origin = "local") -> None:
         context = ErrorContext(origin)
@@ -105,10 +106,16 @@ class ContractCatalog:
         object.__setattr__(self, "_origin", origin)
         object.__setattr__(self, "_prepared", ())
         object.__setattr__(self, "_support", None)
+        object.__setattr__(self, "_reference", None)
 
     @property
     def value(self) -> JsonValue:
         return self._document.value
+
+    @property
+    def reference(self) -> JsonDocument | None:
+        """External descriptor retained only after policy-checked resolution."""
+        return self._reference
 
     def get_contract(self, identifier: str, origin: Origin | None = None) -> Contract:
         context = ErrorContext(origin or self._origin)
@@ -233,10 +240,20 @@ def parse_extension(value: object, origin: Origin = "remote") -> ContractCatalog
     return parse_catalog(catalog["inline"], origin)
 
 
-def create_contract_extension(catalog: ContractCatalog, *, required: bool = False) -> JsonValue:
+def create_contract_extension(
+    catalog: ContractCatalog, *, required: bool = False, catalog_delivery: str = "inline"
+) -> JsonValue:
     if type(required) is not bool:
         raise ContractError("INVALID_STRUCTURE")
-    params = validate_structure("extension-params", {"catalog": {"inline": catalog.value}})
+    if catalog_delivery not in ("inline", "external"):
+        raise ContractError("INVALID_STRUCTURE")
+    if catalog_delivery == "external":
+        if catalog.reference is None:
+            raise ContractError("SCHEMA_UNAVAILABLE")
+        descriptor = catalog.reference.value
+    else:
+        descriptor = {"inline": catalog.value}
+    params = validate_structure("extension-params", {"catalog": descriptor})
     return {
         "uri": EXTENSION_URI,
         "required": required,

@@ -8,10 +8,14 @@ from dataclasses import FrozenInstanceError
 from typing import cast
 
 import pytest
+from google.protobuf.json_format import MessageToDict
 
+from a2a_schema_contract.catalog import create_contract_extension, parse_catalog
 from a2a_schema_contract.core import ContractError, JsonValue, snapshot
 from a2a_schema_contract.resolver import ContractResolver, ResolverLimits
+from a2a_schema_contract.server import ContractServer
 
+from .inline_support import EchoExecutor, card
 from .resolver_support import TLSPeer, catalog, lookup, peer, response, trust
 
 ID = "urn:example:contract:echo:1"
@@ -111,6 +115,26 @@ async def test_pinned_catalog_schema_cache_and_partition(algorithm: str) -> None
             authorization={server.origin: "Bearer identity-A"},
         ) as service:
             first = await service.resolve_extension_params(params)
+            assert first.reference is not None
+            assert first.reference.value == params["catalog"]
+            extension = cast(
+                "dict[str, JsonValue]",
+                create_contract_extension(first, catalog_delivery="external"),
+            )
+            assert cast("dict[str, JsonValue]", extension["params"])["catalog"] == params["catalog"]
+            detached = first.reference.value
+            detached["uri"] = "https://other.test/catalog"
+            assert first.reference.value == params["catalog"]
+            executor = EchoExecutor()
+            boundary = ContractServer(
+                card=card("http://127.0.0.1:1"),
+                catalog=first,
+                executor=executor,
+                catalog_delivery="external",
+            )
+            advertised = MessageToDict(boundary.card)["capabilities"]["extensions"][0]["params"]
+            assert advertised["catalog"] == params["catalog"]
+            await boundary.close()
             count = len(server.requests)
             second = await service.resolve_extension_params(params)
             assert len(server.requests) == count == 2
@@ -129,6 +153,22 @@ async def test_pinned_catalog_schema_cache_and_partition(algorithm: str) -> None
         assert len(server.requests) == 4
         assert server.requests[0][1]["authorization"] == "bearer identity-a"
         assert server.requests[-1][1]["authorization"] == "bearer identity-b"
+
+
+def test_external_advertisement_requires_resolved_reference() -> None:
+    local = parse_catalog(catalog(True, uri=False))
+    assert local.reference is None
+    with pytest.raises(ContractError, match="SCHEMA_UNAVAILABLE"):
+        create_contract_extension(local, catalog_delivery="external")
+    with pytest.raises(ContractError, match="INVALID_STRUCTURE"):
+        create_contract_extension(local, catalog_delivery="unexpected")
+    with pytest.raises(ContractError, match="SCHEMA_UNAVAILABLE"):
+        ContractServer(
+            card=card("http://127.0.0.1:1"),
+            catalog=local,
+            executor=EchoExecutor(),
+            catalog_delivery="external",
+        )
 
 
 @pytest.mark.asyncio
@@ -160,9 +200,18 @@ async def test_catalog_requires_pin_or_exact_immutable_promise() -> None:
                 )
             assert not server.requests
         async with resolver(server, immutable_resources=(uri,)) as service:
-            await service.resolve_extension_params(
+            prepared = await service.resolve_extension_params(
                 {"catalog": {"uri": uri, "mediaType": "application/json"}}
             )
+            assert prepared.reference is not None
+            advertised = cast(
+                "dict[str, JsonValue]",
+                create_contract_extension(prepared, catalog_delivery="external"),
+            )
+            assert cast("dict[str, JsonValue]", advertised["params"])["catalog"] == {
+                "uri": uri,
+                "mediaType": "application/json",
+            }
             await service.resolve_extension_params(
                 {"catalog": {"uri": uri, "mediaType": "application/json"}}
             )

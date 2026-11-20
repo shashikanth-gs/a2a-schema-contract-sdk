@@ -335,11 +335,14 @@ class ContractResolver:
             if "required" in data and type(data["required"]) is not bool:
                 raise ContractError("INVALID_STRUCTURE", context)
             data = data.get("params")
+        reference: JsonDocument | None = None
         if kind != "catalog":
             params = cast(
                 "dict[str, JsonValue]", validate_structure("extension-params", data, context)
             )
             descriptor = cast("dict[str, JsonValue]", params["catalog"])
+            if "uri" in descriptor:
+                reference = JsonDocument(descriptor)
             data = (
                 descriptor["inline"]
                 if "inline" in descriptor
@@ -353,6 +356,7 @@ class ContractResolver:
                 ).value
             )
         catalog = ContractCatalog(data, context.origin)
+        object.__setattr__(catalog, "_reference", reference)
         prepared: list[tuple[str, Direction, str, PreparedSchema]] = []
         async with ValidationSession(diagnostics=self.diagnostics) as session:
             for contract in catalog.contracts:
