@@ -345,6 +345,82 @@ async def test_incremental_sse_atomic_admission(mutation: str) -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("invalid_output", [False, True])
+async def test_working_task_history_is_redacted_without_publishing_output(
+    invalid_output: bool,
+) -> None:
+    candidates = events()
+    first = as_dict(as_dict(candidates[0])["task"])
+    first["history"] = [
+        {"messageId": "prior", "role": "ROLE_USER", "parts": [{"text": "secret-history"}]}
+    ]
+    if invalid_output:
+        update = as_dict(as_dict(candidates[1])["artifactUpdate"])
+        artifact = as_dict(update["artifact"])
+        part = as_dict(cast("list[JsonValue]", artifact["parts"])[0])
+        as_dict(as_dict(part["metadata"])[EXTENSION_URI])["direction"] = "input"
+
+    def reply(request: dict[str, JsonValue]) -> httpx.Response:
+        return sse_response(request, candidates)[0]
+
+    async with (
+        mock_peer(reply) as http,
+        await ContractClient.discover("http://peer.test", http_client=http) as client,
+    ):
+        stream = client.stream(client.prepare(ID, input={}))
+        progress = await anext(stream)
+        data = as_dict(progress.event.value)
+        assert data["kind"] == "task"
+        assert as_dict(data["data"])["id"] == "task"
+        assert "history" not in as_dict(data["data"])
+        assert "artifacts" not in as_dict(data["data"])
+        assert "secret-history" not in json.dumps(data)
+        if invalid_output:
+            with pytest.raises(ContractError):
+                async for event in stream:
+                    assert event.result is None
+        else:
+            rest = [event async for event in stream]
+            assert rest[-1].result is not None
+            assert rest[-1].result.payload is not None
+            assert rest[-1].result.payload.present
+            assert rest[-1].result.payload.value == {"emoji": "😀"}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("invalid_output", [False, True])
+async def test_working_task_artifacts_remain_staged(invalid_output: bool) -> None:
+    candidates = events()
+    first = as_dict(as_dict(candidates[0])["task"])
+    update = as_dict(as_dict(candidates.pop(1))["artifactUpdate"])
+    artifact = as_dict(update["artifact"])
+    if invalid_output:
+        part = as_dict(cast("list[JsonValue]", artifact["parts"])[0])
+        as_dict(as_dict(part["metadata"])[EXTENSION_URI])["direction"] = "input"
+    first["artifacts"] = [artifact]
+
+    def reply(request: dict[str, JsonValue]) -> httpx.Response:
+        return sse_response(request, candidates)[0]
+
+    async with (
+        mock_peer(reply) as http,
+        await ContractClient.discover("http://peer.test", http_client=http) as client,
+    ):
+        stream = client.stream(client.prepare(ID, input={}))
+        if invalid_output:
+            with pytest.raises(ContractError):
+                await anext(stream)
+        else:
+            first_event = await anext(stream)
+            assert first_event.result is not None
+            assert first_event.result.payload is not None
+            assert first_event.result.payload.present
+            assert first_event.result.payload.value == {"emoji": "😀"}
+            with pytest.raises(StopAsyncIteration):
+                await anext(stream)
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("body", [b'{"jsonrpc":"2.0","jsonrpc":"2.0"}', b'{"value":NaN}', b"\xff"])
 async def test_malformed_json_admission(body: bytes) -> None:
     async with (

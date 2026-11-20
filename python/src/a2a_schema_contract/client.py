@@ -407,8 +407,12 @@ class ContractClient:
                 if status.get("state") in STOP_STATES:
                     task["artifacts"] = list(artifacts.values())
                     terminal = task
-                elif not artifacts and not data.get("history"):
-                    yield ClientEvent(JsonDocument({"kind": kind, "data": data}))
+                elif not artifacts:
+                    # A peer may attach prior messages to a working task. Keep
+                    # them inside the guarded task, but never expose unvalidated
+                    # history as progress; callers still need the task identity.
+                    progress = {key: value for key, value in data.items() if key != "history"}
+                    yield ClientEvent(JsonDocument({"kind": kind, "data": progress}))
             if terminal is None:
                 reject()
             result = await self._checked(selection, terminal, request)
